@@ -21,7 +21,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * List Backtests by Strategy
  */
-export const getApiBacktests = <ThrowOnError extends boolean = false>(options: Options<GetApiBacktestsData, ThrowOnError>) => (options.client ?? client).get<GetApiBacktestsResponses, GetApiBacktestsErrors, ThrowOnError>({
+export const getApiBacktests = <ThrowOnError extends boolean = false>(options?: Options<GetApiBacktestsData, ThrowOnError>) => (options?.client ?? client).get<GetApiBacktestsResponses, GetApiBacktestsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests',
     ...options

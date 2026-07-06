@@ -1455,12 +1455,7 @@ export type PulsightInternalCoreUsecasesTraderTraderListResult = {
 
 export type GetApiBacktestsData = {
     body?: never;
-    path: {
-        /**
-         * Strategy ID (when called via /api/strategies/{id}/backtests)
-         */
-        id: string;
-    };
+    path?: never;
     query?: {
         /**
          * Strategy ID (when called via /api/backtests)
