@@ -746,7 +746,7 @@ export type PulsightInternalCoreDomainStrategySubGraph = {
     nodes?: Array<PulsightInternalCoreDomainStrategyNode>;
 };
 
-export type PulsightInternalCoreDomainStrategyVenueId = 'solana' | 'hyperliquid' | 'polymarket' | 'solana';
+export type PulsightInternalCoreDomainStrategyVenueId = 'solana' | 'hyperliquid' | 'polymarket';
 
 export type PulsightInternalCoreDomainSubscriptionSubscriptionTier = 'free' | 'tier1' | 'tier2' | 'tier3' | 'enterprise';
 
@@ -1453,7 +1453,7 @@ export type PulsightInternalCoreUsecasesTraderTraderListResult = {
     total?: number;
 };
 
-export type GetApiBacktestsData = {
+export type GetBacktestsData = {
     body?: never;
     path?: never;
     query?: {
@@ -1465,25 +1465,25 @@ export type GetApiBacktestsData = {
     url: '/api/backtests';
 };
 
-export type GetApiBacktestsErrors = {
+export type GetBacktestsErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiBacktestsError = GetApiBacktestsErrors[keyof GetApiBacktestsErrors];
+export type GetBacktestsError = GetBacktestsErrors[keyof GetBacktestsErrors];
 
-export type GetApiBacktestsResponses = {
+export type GetBacktestsResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreUsecasesBacktestBacktestRecord>;
 };
 
-export type GetApiBacktestsResponse = GetApiBacktestsResponses[keyof GetApiBacktestsResponses];
+export type GetBacktestsResponse = GetBacktestsResponses[keyof GetBacktestsResponses];
 
-export type PostApiBacktestsData = {
+export type PostBacktestsData = {
     /**
      * Backtest request
      */
@@ -1493,7 +1493,7 @@ export type PostApiBacktestsData = {
     url: '/api/backtests';
 };
 
-export type PostApiBacktestsErrors = {
+export type PostBacktestsErrors = {
     /**
      * Bad Request
      */
@@ -1504,43 +1504,43 @@ export type PostApiBacktestsErrors = {
     404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PostApiBacktestsError = PostApiBacktestsErrors[keyof PostApiBacktestsErrors];
+export type PostBacktestsError = PostBacktestsErrors[keyof PostBacktestsErrors];
 
-export type PostApiBacktestsResponses = {
+export type PostBacktestsResponses = {
     /**
      * Accepted
      */
     202: PulsightInternalCoreUsecasesBacktestBacktestRecord;
 };
 
-export type PostApiBacktestsResponse = PostApiBacktestsResponses[keyof PostApiBacktestsResponses];
+export type PostBacktestsResponse = PostBacktestsResponses[keyof PostBacktestsResponses];
 
-export type GetApiBacktestsLimitsData = {
+export type GetBacktestsLimitsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/backtests/limits';
 };
 
-export type GetApiBacktestsLimitsErrors = {
+export type GetBacktestsLimitsErrors = {
     /**
      * Unauthorized
      */
     401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiBacktestsLimitsError = GetApiBacktestsLimitsErrors[keyof GetApiBacktestsLimitsErrors];
+export type GetBacktestsLimitsError = GetBacktestsLimitsErrors[keyof GetBacktestsLimitsErrors];
 
-export type GetApiBacktestsLimitsResponses = {
+export type GetBacktestsLimitsResponses = {
     /**
      * OK
      */
     200: InternalAdaptersPrimaryHttpHandlerBacktestSettingsResponse;
 };
 
-export type GetApiBacktestsLimitsResponse = GetApiBacktestsLimitsResponses[keyof GetApiBacktestsLimitsResponses];
+export type GetBacktestsLimitsResponse = GetBacktestsLimitsResponses[keyof GetBacktestsLimitsResponses];
 
-export type DeleteApiBacktestsByIdData = {
+export type DeleteBacktestsByIdData = {
     body?: never;
     path: {
         /**
@@ -1552,16 +1552,16 @@ export type DeleteApiBacktestsByIdData = {
     url: '/api/backtests/{id}';
 };
 
-export type DeleteApiBacktestsByIdResponses = {
+export type DeleteBacktestsByIdResponses = {
     /**
      * No Content
      */
     204: void;
 };
 
-export type DeleteApiBacktestsByIdResponse = DeleteApiBacktestsByIdResponses[keyof DeleteApiBacktestsByIdResponses];
+export type DeleteBacktestsByIdResponse = DeleteBacktestsByIdResponses[keyof DeleteBacktestsByIdResponses];
 
-export type GetApiBacktestsByIdData = {
+export type GetBacktestsByIdData = {
     body?: never;
     path: {
         /**
@@ -1573,25 +1573,25 @@ export type GetApiBacktestsByIdData = {
     url: '/api/backtests/{id}';
 };
 
-export type GetApiBacktestsByIdErrors = {
+export type GetBacktestsByIdErrors = {
     /**
      * Not Found
      */
     404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiBacktestsByIdError = GetApiBacktestsByIdErrors[keyof GetApiBacktestsByIdErrors];
+export type GetBacktestsByIdError = GetBacktestsByIdErrors[keyof GetBacktestsByIdErrors];
 
-export type GetApiBacktestsByIdResponses = {
+export type GetBacktestsByIdResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreUsecasesBacktestBacktestRecord;
 };
 
-export type GetApiBacktestsByIdResponse = GetApiBacktestsByIdResponses[keyof GetApiBacktestsByIdResponses];
+export type GetBacktestsByIdResponse = GetBacktestsByIdResponses[keyof GetBacktestsByIdResponses];
 
-export type GetApiBacktestsByIdTradesData = {
+export type GetBacktestsByIdTradesData = {
     body?: never;
     path: {
         /**
@@ -1612,32 +1612,32 @@ export type GetApiBacktestsByIdTradesData = {
     url: '/api/backtests/{id}/trades';
 };
 
-export type GetApiBacktestsByIdTradesErrors = {
+export type GetBacktestsByIdTradesErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiBacktestsByIdTradesError = GetApiBacktestsByIdTradesErrors[keyof GetApiBacktestsByIdTradesErrors];
+export type GetBacktestsByIdTradesError = GetBacktestsByIdTradesErrors[keyof GetBacktestsByIdTradesErrors];
 
-export type GetApiBacktestsByIdTradesResponses = {
+export type GetBacktestsByIdTradesResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreUsecasesBacktestBacktestTrade>;
 };
 
-export type GetApiBacktestsByIdTradesResponse = GetApiBacktestsByIdTradesResponses[keyof GetApiBacktestsByIdTradesResponses];
+export type GetBacktestsByIdTradesResponse = GetBacktestsByIdTradesResponses[keyof GetBacktestsByIdTradesResponses];
 
-export type GetApiHealthData = {
+export type GetHealthData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/health';
 };
 
-export type GetApiHealthErrors = {
+export type GetHealthErrors = {
     /**
      * Service Unavailable
      */
@@ -1646,9 +1646,9 @@ export type GetApiHealthErrors = {
     };
 };
 
-export type GetApiHealthError = GetApiHealthErrors[keyof GetApiHealthErrors];
+export type GetHealthError = GetHealthErrors[keyof GetHealthErrors];
 
-export type GetApiHealthResponses = {
+export type GetHealthResponses = {
     /**
      * OK
      */
@@ -1657,16 +1657,16 @@ export type GetApiHealthResponses = {
     };
 };
 
-export type GetApiHealthResponse = GetApiHealthResponses[keyof GetApiHealthResponses];
+export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
 
-export type GetApiMeApiKeysData = {
+export type GetMeApiKeysData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/me/api-keys';
 };
 
-export type GetApiMeApiKeysErrors = {
+export type GetMeApiKeysErrors = {
     /**
      * Unauthorized
      */
@@ -1677,18 +1677,18 @@ export type GetApiMeApiKeysErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMeApiKeysError = GetApiMeApiKeysErrors[keyof GetApiMeApiKeysErrors];
+export type GetMeApiKeysError = GetMeApiKeysErrors[keyof GetMeApiKeysErrors];
 
-export type GetApiMeApiKeysResponses = {
+export type GetMeApiKeysResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainApikeyKey>;
 };
 
-export type GetApiMeApiKeysResponse = GetApiMeApiKeysResponses[keyof GetApiMeApiKeysResponses];
+export type GetMeApiKeysResponse = GetMeApiKeysResponses[keyof GetMeApiKeysResponses];
 
-export type PostApiMeApiKeysData = {
+export type PostMeApiKeysData = {
     /**
      * Key name, scopes, optional expiry
      */
@@ -1698,7 +1698,7 @@ export type PostApiMeApiKeysData = {
     url: '/api/me/api-keys';
 };
 
-export type PostApiMeApiKeysErrors = {
+export type PostMeApiKeysErrors = {
     /**
      * Bad Request
      */
@@ -1717,18 +1717,18 @@ export type PostApiMeApiKeysErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PostApiMeApiKeysError = PostApiMeApiKeysErrors[keyof PostApiMeApiKeysErrors];
+export type PostMeApiKeysError = PostMeApiKeysErrors[keyof PostMeApiKeysErrors];
 
-export type PostApiMeApiKeysResponses = {
+export type PostMeApiKeysResponses = {
     /**
      * Created
      */
     201: PulsightInternalCorePortsInputCreatedApiKey;
 };
 
-export type PostApiMeApiKeysResponse = PostApiMeApiKeysResponses[keyof PostApiMeApiKeysResponses];
+export type PostMeApiKeysResponse = PostMeApiKeysResponses[keyof PostMeApiKeysResponses];
 
-export type DeleteApiMeApiKeysByIdData = {
+export type DeleteMeApiKeysByIdData = {
     body?: never;
     path: {
         /**
@@ -1740,7 +1740,7 @@ export type DeleteApiMeApiKeysByIdData = {
     url: '/api/me/api-keys/{id}';
 };
 
-export type DeleteApiMeApiKeysByIdErrors = {
+export type DeleteMeApiKeysByIdErrors = {
     /**
      * Bad Request
      */
@@ -1759,18 +1759,18 @@ export type DeleteApiMeApiKeysByIdErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type DeleteApiMeApiKeysByIdError = DeleteApiMeApiKeysByIdErrors[keyof DeleteApiMeApiKeysByIdErrors];
+export type DeleteMeApiKeysByIdError = DeleteMeApiKeysByIdErrors[keyof DeleteMeApiKeysByIdErrors];
 
-export type DeleteApiMeApiKeysByIdResponses = {
+export type DeleteMeApiKeysByIdResponses = {
     /**
      * No Content
      */
     204: void;
 };
 
-export type DeleteApiMeApiKeysByIdResponse = DeleteApiMeApiKeysByIdResponses[keyof DeleteApiMeApiKeysByIdResponses];
+export type DeleteMeApiKeysByIdResponse = DeleteMeApiKeysByIdResponses[keyof DeleteMeApiKeysByIdResponses];
 
-export type PatchApiMeApiKeysByIdData = {
+export type PatchMeApiKeysByIdData = {
     /**
      * New name
      */
@@ -1785,7 +1785,7 @@ export type PatchApiMeApiKeysByIdData = {
     url: '/api/me/api-keys/{id}';
 };
 
-export type PatchApiMeApiKeysByIdErrors = {
+export type PatchMeApiKeysByIdErrors = {
     /**
      * Bad Request
      */
@@ -1804,25 +1804,25 @@ export type PatchApiMeApiKeysByIdErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PatchApiMeApiKeysByIdError = PatchApiMeApiKeysByIdErrors[keyof PatchApiMeApiKeysByIdErrors];
+export type PatchMeApiKeysByIdError = PatchMeApiKeysByIdErrors[keyof PatchMeApiKeysByIdErrors];
 
-export type PatchApiMeApiKeysByIdResponses = {
+export type PatchMeApiKeysByIdResponses = {
     /**
      * No Content
      */
     204: void;
 };
 
-export type PatchApiMeApiKeysByIdResponse = PatchApiMeApiKeysByIdResponses[keyof PatchApiMeApiKeysByIdResponses];
+export type PatchMeApiKeysByIdResponse = PatchMeApiKeysByIdResponses[keyof PatchMeApiKeysByIdResponses];
 
-export type GetApiMeCreditsData = {
+export type GetMeCreditsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/me/credits';
 };
 
-export type GetApiMeCreditsErrors = {
+export type GetMeCreditsErrors = {
     /**
      * Unauthorized
      */
@@ -1833,18 +1833,18 @@ export type GetApiMeCreditsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMeCreditsError = GetApiMeCreditsErrors[keyof GetApiMeCreditsErrors];
+export type GetMeCreditsError = GetMeCreditsErrors[keyof GetMeCreditsErrors];
 
-export type GetApiMeCreditsResponses = {
+export type GetMeCreditsResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCorePortsInputUserPoolCredits>;
 };
 
-export type GetApiMeCreditsResponse = GetApiMeCreditsResponses[keyof GetApiMeCreditsResponses];
+export type GetMeCreditsResponse = GetMeCreditsResponses[keyof GetMeCreditsResponses];
 
-export type GetApiMeCreditsLedgerData = {
+export type GetMeCreditsLedgerData = {
     body?: never;
     path?: never;
     query?: {
@@ -1856,7 +1856,7 @@ export type GetApiMeCreditsLedgerData = {
     url: '/api/me/credits/ledger';
 };
 
-export type GetApiMeCreditsLedgerErrors = {
+export type GetMeCreditsLedgerErrors = {
     /**
      * Unauthorized
      */
@@ -1867,18 +1867,18 @@ export type GetApiMeCreditsLedgerErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMeCreditsLedgerError = GetApiMeCreditsLedgerErrors[keyof GetApiMeCreditsLedgerErrors];
+export type GetMeCreditsLedgerError = GetMeCreditsLedgerErrors[keyof GetMeCreditsLedgerErrors];
 
-export type GetApiMeCreditsLedgerResponses = {
+export type GetMeCreditsLedgerResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainCreditTransaction>;
 };
 
-export type GetApiMeCreditsLedgerResponse = GetApiMeCreditsLedgerResponses[keyof GetApiMeCreditsLedgerResponses];
+export type GetMeCreditsLedgerResponse = GetMeCreditsLedgerResponses[keyof GetMeCreditsLedgerResponses];
 
-export type GetApiMintsData = {
+export type GetMintsData = {
     body?: never;
     path?: never;
     query: {
@@ -1918,7 +1918,7 @@ export type GetApiMintsData = {
     url: '/api/mints';
 };
 
-export type GetApiMintsErrors = {
+export type GetMintsErrors = {
     /**
      * Bad Request
      */
@@ -1933,18 +1933,18 @@ export type GetApiMintsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsError = GetApiMintsErrors[keyof GetApiMintsErrors];
+export type GetMintsError = GetMintsErrors[keyof GetMintsErrors];
 
-export type GetApiMintsResponses = {
+export type GetMintsResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorMintRow>;
 };
 
-export type GetApiMintsResponse = GetApiMintsResponses[keyof GetApiMintsResponses];
+export type GetMintsResponse = GetMintsResponses[keyof GetMintsResponses];
 
-export type GetApiMintsByPubkeyData = {
+export type GetMintsByPubkeyData = {
     body?: never;
     path: {
         /**
@@ -1956,7 +1956,7 @@ export type GetApiMintsByPubkeyData = {
     url: '/api/mints/{pubkey}';
 };
 
-export type GetApiMintsByPubkeyErrors = {
+export type GetMintsByPubkeyErrors = {
     /**
      * Not Found
      */
@@ -1967,18 +1967,18 @@ export type GetApiMintsByPubkeyErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyError = GetApiMintsByPubkeyErrors[keyof GetApiMintsByPubkeyErrors];
+export type GetMintsByPubkeyError = GetMintsByPubkeyErrors[keyof GetMintsByPubkeyErrors];
 
-export type GetApiMintsByPubkeyResponses = {
+export type GetMintsByPubkeyResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainAggregatorMintRow;
 };
 
-export type GetApiMintsByPubkeyResponse = GetApiMintsByPubkeyResponses[keyof GetApiMintsByPubkeyResponses];
+export type GetMintsByPubkeyResponse = GetMintsByPubkeyResponses[keyof GetMintsByPubkeyResponses];
 
-export type GetApiMintsByPubkeyLpEventsData = {
+export type GetMintsByPubkeyLpEventsData = {
     body?: never;
     path: {
         /**
@@ -1999,7 +1999,7 @@ export type GetApiMintsByPubkeyLpEventsData = {
     url: '/api/mints/{pubkey}/lp-events';
 };
 
-export type GetApiMintsByPubkeyLpEventsErrors = {
+export type GetMintsByPubkeyLpEventsErrors = {
     /**
      * Bad Request
      */
@@ -2010,18 +2010,18 @@ export type GetApiMintsByPubkeyLpEventsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyLpEventsError = GetApiMintsByPubkeyLpEventsErrors[keyof GetApiMintsByPubkeyLpEventsErrors];
+export type GetMintsByPubkeyLpEventsError = GetMintsByPubkeyLpEventsErrors[keyof GetMintsByPubkeyLpEventsErrors];
 
-export type GetApiMintsByPubkeyLpEventsResponses = {
+export type GetMintsByPubkeyLpEventsResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorLpEvent>;
 };
 
-export type GetApiMintsByPubkeyLpEventsResponse = GetApiMintsByPubkeyLpEventsResponses[keyof GetApiMintsByPubkeyLpEventsResponses];
+export type GetMintsByPubkeyLpEventsResponse = GetMintsByPubkeyLpEventsResponses[keyof GetMintsByPubkeyLpEventsResponses];
 
-export type GetApiMintsByPubkeyMarketsData = {
+export type GetMintsByPubkeyMarketsData = {
     body?: never;
     path: {
         /**
@@ -2038,7 +2038,7 @@ export type GetApiMintsByPubkeyMarketsData = {
     url: '/api/mints/{pubkey}/markets';
 };
 
-export type GetApiMintsByPubkeyMarketsErrors = {
+export type GetMintsByPubkeyMarketsErrors = {
     /**
      * Bad Request
      */
@@ -2049,18 +2049,18 @@ export type GetApiMintsByPubkeyMarketsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyMarketsError = GetApiMintsByPubkeyMarketsErrors[keyof GetApiMintsByPubkeyMarketsErrors];
+export type GetMintsByPubkeyMarketsError = GetMintsByPubkeyMarketsErrors[keyof GetMintsByPubkeyMarketsErrors];
 
-export type GetApiMintsByPubkeyMarketsResponses = {
+export type GetMintsByPubkeyMarketsResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorMintMarket>;
 };
 
-export type GetApiMintsByPubkeyMarketsResponse = GetApiMintsByPubkeyMarketsResponses[keyof GetApiMintsByPubkeyMarketsResponses];
+export type GetMintsByPubkeyMarketsResponse = GetMintsByPubkeyMarketsResponses[keyof GetMintsByPubkeyMarketsResponses];
 
-export type GetApiMintsByPubkeyMigrationsData = {
+export type GetMintsByPubkeyMigrationsData = {
     body?: never;
     path: {
         /**
@@ -2072,7 +2072,7 @@ export type GetApiMintsByPubkeyMigrationsData = {
     url: '/api/mints/{pubkey}/migrations';
 };
 
-export type GetApiMintsByPubkeyMigrationsErrors = {
+export type GetMintsByPubkeyMigrationsErrors = {
     /**
      * Bad Request
      */
@@ -2083,18 +2083,18 @@ export type GetApiMintsByPubkeyMigrationsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyMigrationsError = GetApiMintsByPubkeyMigrationsErrors[keyof GetApiMintsByPubkeyMigrationsErrors];
+export type GetMintsByPubkeyMigrationsError = GetMintsByPubkeyMigrationsErrors[keyof GetMintsByPubkeyMigrationsErrors];
 
-export type GetApiMintsByPubkeyMigrationsResponses = {
+export type GetMintsByPubkeyMigrationsResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorMintMigration>;
 };
 
-export type GetApiMintsByPubkeyMigrationsResponse = GetApiMintsByPubkeyMigrationsResponses[keyof GetApiMintsByPubkeyMigrationsResponses];
+export type GetMintsByPubkeyMigrationsResponse = GetMintsByPubkeyMigrationsResponses[keyof GetMintsByPubkeyMigrationsResponses];
 
-export type GetApiMintsByPubkeySafetyEventsData = {
+export type GetMintsByPubkeySafetyEventsData = {
     body?: never;
     path: {
         /**
@@ -2115,7 +2115,7 @@ export type GetApiMintsByPubkeySafetyEventsData = {
     url: '/api/mints/{pubkey}/safety-events';
 };
 
-export type GetApiMintsByPubkeySafetyEventsErrors = {
+export type GetMintsByPubkeySafetyEventsErrors = {
     /**
      * Bad Request
      */
@@ -2126,18 +2126,18 @@ export type GetApiMintsByPubkeySafetyEventsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeySafetyEventsError = GetApiMintsByPubkeySafetyEventsErrors[keyof GetApiMintsByPubkeySafetyEventsErrors];
+export type GetMintsByPubkeySafetyEventsError = GetMintsByPubkeySafetyEventsErrors[keyof GetMintsByPubkeySafetyEventsErrors];
 
-export type GetApiMintsByPubkeySafetyEventsResponses = {
+export type GetMintsByPubkeySafetyEventsResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorSafetyEvent>;
 };
 
-export type GetApiMintsByPubkeySafetyEventsResponse = GetApiMintsByPubkeySafetyEventsResponses[keyof GetApiMintsByPubkeySafetyEventsResponses];
+export type GetMintsByPubkeySafetyEventsResponse = GetMintsByPubkeySafetyEventsResponses[keyof GetMintsByPubkeySafetyEventsResponses];
 
-export type GetApiMintsByPubkeyStatsData = {
+export type GetMintsByPubkeyStatsData = {
     body?: never;
     path: {
         /**
@@ -2149,7 +2149,7 @@ export type GetApiMintsByPubkeyStatsData = {
     url: '/api/mints/{pubkey}/stats';
 };
 
-export type GetApiMintsByPubkeyStatsErrors = {
+export type GetMintsByPubkeyStatsErrors = {
     /**
      * Not Found
      */
@@ -2160,18 +2160,18 @@ export type GetApiMintsByPubkeyStatsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyStatsError = GetApiMintsByPubkeyStatsErrors[keyof GetApiMintsByPubkeyStatsErrors];
+export type GetMintsByPubkeyStatsError = GetMintsByPubkeyStatsErrors[keyof GetMintsByPubkeyStatsErrors];
 
-export type GetApiMintsByPubkeyStatsResponses = {
+export type GetMintsByPubkeyStatsResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainAggregatorMintWindowStatsBundle;
 };
 
-export type GetApiMintsByPubkeyStatsResponse = GetApiMintsByPubkeyStatsResponses[keyof GetApiMintsByPubkeyStatsResponses];
+export type GetMintsByPubkeyStatsResponse = GetMintsByPubkeyStatsResponses[keyof GetMintsByPubkeyStatsResponses];
 
-export type GetApiMintsByPubkeyTopHoldersData = {
+export type GetMintsByPubkeyTopHoldersData = {
     body?: never;
     path: {
         /**
@@ -2196,7 +2196,7 @@ export type GetApiMintsByPubkeyTopHoldersData = {
     url: '/api/mints/{pubkey}/top-holders';
 };
 
-export type GetApiMintsByPubkeyTopHoldersErrors = {
+export type GetMintsByPubkeyTopHoldersErrors = {
     /**
      * Bad Request
      */
@@ -2207,18 +2207,18 @@ export type GetApiMintsByPubkeyTopHoldersErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyTopHoldersError = GetApiMintsByPubkeyTopHoldersErrors[keyof GetApiMintsByPubkeyTopHoldersErrors];
+export type GetMintsByPubkeyTopHoldersError = GetMintsByPubkeyTopHoldersErrors[keyof GetMintsByPubkeyTopHoldersErrors];
 
-export type GetApiMintsByPubkeyTopHoldersResponses = {
+export type GetMintsByPubkeyTopHoldersResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorMintTraderRow>;
 };
 
-export type GetApiMintsByPubkeyTopHoldersResponse = GetApiMintsByPubkeyTopHoldersResponses[keyof GetApiMintsByPubkeyTopHoldersResponses];
+export type GetMintsByPubkeyTopHoldersResponse = GetMintsByPubkeyTopHoldersResponses[keyof GetMintsByPubkeyTopHoldersResponses];
 
-export type GetApiMintsByPubkeyTopTradersData = {
+export type GetMintsByPubkeyTopTradersData = {
     body?: never;
     path: {
         /**
@@ -2243,7 +2243,7 @@ export type GetApiMintsByPubkeyTopTradersData = {
     url: '/api/mints/{pubkey}/top-traders';
 };
 
-export type GetApiMintsByPubkeyTopTradersErrors = {
+export type GetMintsByPubkeyTopTradersErrors = {
     /**
      * Bad Request
      */
@@ -2254,18 +2254,18 @@ export type GetApiMintsByPubkeyTopTradersErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyTopTradersError = GetApiMintsByPubkeyTopTradersErrors[keyof GetApiMintsByPubkeyTopTradersErrors];
+export type GetMintsByPubkeyTopTradersError = GetMintsByPubkeyTopTradersErrors[keyof GetMintsByPubkeyTopTradersErrors];
 
-export type GetApiMintsByPubkeyTopTradersResponses = {
+export type GetMintsByPubkeyTopTradersResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorMintTraderRow>;
 };
 
-export type GetApiMintsByPubkeyTopTradersResponse = GetApiMintsByPubkeyTopTradersResponses[keyof GetApiMintsByPubkeyTopTradersResponses];
+export type GetMintsByPubkeyTopTradersResponse = GetMintsByPubkeyTopTradersResponses[keyof GetMintsByPubkeyTopTradersResponses];
 
-export type GetApiMintsByPubkeyTradersByTraderData = {
+export type GetMintsByPubkeyTradersByTraderData = {
     body?: never;
     path: {
         /**
@@ -2281,7 +2281,7 @@ export type GetApiMintsByPubkeyTradersByTraderData = {
     url: '/api/mints/{pubkey}/traders/{trader}';
 };
 
-export type GetApiMintsByPubkeyTradersByTraderErrors = {
+export type GetMintsByPubkeyTradersByTraderErrors = {
     /**
      * Bad Request
      */
@@ -2296,18 +2296,18 @@ export type GetApiMintsByPubkeyTradersByTraderErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiMintsByPubkeyTradersByTraderError = GetApiMintsByPubkeyTradersByTraderErrors[keyof GetApiMintsByPubkeyTradersByTraderErrors];
+export type GetMintsByPubkeyTradersByTraderError = GetMintsByPubkeyTradersByTraderErrors[keyof GetMintsByPubkeyTradersByTraderErrors];
 
-export type GetApiMintsByPubkeyTradersByTraderResponses = {
+export type GetMintsByPubkeyTradersByTraderResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainAggregatorMintTraderRow;
 };
 
-export type GetApiMintsByPubkeyTradersByTraderResponse = GetApiMintsByPubkeyTradersByTraderResponses[keyof GetApiMintsByPubkeyTradersByTraderResponses];
+export type GetMintsByPubkeyTradersByTraderResponse = GetMintsByPubkeyTradersByTraderResponses[keyof GetMintsByPubkeyTradersByTraderResponses];
 
-export type GetApiOhlcvData = {
+export type GetOhlcvData = {
     body?: never;
     path?: never;
     query: {
@@ -2339,7 +2339,7 @@ export type GetApiOhlcvData = {
     url: '/api/ohlcv';
 };
 
-export type GetApiOhlcvErrors = {
+export type GetOhlcvErrors = {
     /**
      * Bad Request
      */
@@ -2354,18 +2354,18 @@ export type GetApiOhlcvErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiOhlcvError = GetApiOhlcvErrors[keyof GetApiOhlcvErrors];
+export type GetOhlcvError = GetOhlcvErrors[keyof GetOhlcvErrors];
 
-export type GetApiOhlcvResponses = {
+export type GetOhlcvResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorOhlcvCandle>;
 };
 
-export type GetApiOhlcvResponse = GetApiOhlcvResponses[keyof GetApiOhlcvResponses];
+export type GetOhlcvResponse = GetOhlcvResponses[keyof GetOhlcvResponses];
 
-export type GetApiStrategiesData = {
+export type GetStrategiesData = {
     body?: never;
     path?: never;
     query?: {
@@ -2381,7 +2381,7 @@ export type GetApiStrategiesData = {
     url: '/api/strategies';
 };
 
-export type GetApiStrategiesErrors = {
+export type GetStrategiesErrors = {
     /**
      * Bad Request
      */
@@ -2392,18 +2392,18 @@ export type GetApiStrategiesErrors = {
     401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiStrategiesError = GetApiStrategiesErrors[keyof GetApiStrategiesErrors];
+export type GetStrategiesError = GetStrategiesErrors[keyof GetStrategiesErrors];
 
-export type GetApiStrategiesResponses = {
+export type GetStrategiesResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainStrategyRecord>;
 };
 
-export type GetApiStrategiesResponse = GetApiStrategiesResponses[keyof GetApiStrategiesResponses];
+export type GetStrategiesResponse = GetStrategiesResponses[keyof GetStrategiesResponses];
 
-export type PostApiStrategiesData = {
+export type PostStrategiesData = {
     /**
      * Strategy config
      */
@@ -2413,50 +2413,50 @@ export type PostApiStrategiesData = {
     url: '/api/strategies';
 };
 
-export type PostApiStrategiesErrors = {
+export type PostStrategiesErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PostApiStrategiesError = PostApiStrategiesErrors[keyof PostApiStrategiesErrors];
+export type PostStrategiesError = PostStrategiesErrors[keyof PostStrategiesErrors];
 
-export type PostApiStrategiesResponses = {
+export type PostStrategiesResponses = {
     /**
      * Created
      */
     201: PulsightInternalCoreDomainStrategyRecord;
 };
 
-export type PostApiStrategiesResponse = PostApiStrategiesResponses[keyof PostApiStrategiesResponses];
+export type PostStrategiesResponse = PostStrategiesResponses[keyof PostStrategiesResponses];
 
-export type GetApiStrategiesDashboardData = {
+export type GetStrategiesDashboardData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/strategies/dashboard';
 };
 
-export type GetApiStrategiesDashboardErrors = {
+export type GetStrategiesDashboardErrors = {
     /**
      * Unauthorized
      */
     401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiStrategiesDashboardError = GetApiStrategiesDashboardErrors[keyof GetApiStrategiesDashboardErrors];
+export type GetStrategiesDashboardError = GetStrategiesDashboardErrors[keyof GetStrategiesDashboardErrors];
 
-export type GetApiStrategiesDashboardResponses = {
+export type GetStrategiesDashboardResponses = {
     /**
      * OK
      */
     200: InternalAdaptersPrimaryHttpHandlerDashboardStats;
 };
 
-export type GetApiStrategiesDashboardResponse = GetApiStrategiesDashboardResponses[keyof GetApiStrategiesDashboardResponses];
+export type GetStrategiesDashboardResponse = GetStrategiesDashboardResponses[keyof GetStrategiesDashboardResponses];
 
-export type PostApiStrategiesPreviewData = {
+export type PostStrategiesPreviewData = {
     /**
      * Preview request
      */
@@ -2466,25 +2466,25 @@ export type PostApiStrategiesPreviewData = {
     url: '/api/strategies/preview';
 };
 
-export type PostApiStrategiesPreviewErrors = {
+export type PostStrategiesPreviewErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PostApiStrategiesPreviewError = PostApiStrategiesPreviewErrors[keyof PostApiStrategiesPreviewErrors];
+export type PostStrategiesPreviewError = PostStrategiesPreviewErrors[keyof PostStrategiesPreviewErrors];
 
-export type PostApiStrategiesPreviewResponses = {
+export type PostStrategiesPreviewResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreUsecasesBacktestPreviewResponse;
 };
 
-export type PostApiStrategiesPreviewResponse = PostApiStrategiesPreviewResponses[keyof PostApiStrategiesPreviewResponses];
+export type PostStrategiesPreviewResponse = PostStrategiesPreviewResponses[keyof PostStrategiesPreviewResponses];
 
-export type GetApiStrategiesWithStatsData = {
+export type GetStrategiesWithStatsData = {
     body?: never;
     path?: never;
     query?: {
@@ -2500,25 +2500,25 @@ export type GetApiStrategiesWithStatsData = {
     url: '/api/strategies/with-stats';
 };
 
-export type GetApiStrategiesWithStatsErrors = {
+export type GetStrategiesWithStatsErrors = {
     /**
      * Unauthorized
      */
     401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiStrategiesWithStatsError = GetApiStrategiesWithStatsErrors[keyof GetApiStrategiesWithStatsErrors];
+export type GetStrategiesWithStatsError = GetStrategiesWithStatsErrors[keyof GetStrategiesWithStatsErrors];
 
-export type GetApiStrategiesWithStatsResponses = {
+export type GetStrategiesWithStatsResponses = {
     /**
      * OK
      */
     200: Array<InternalAdaptersPrimaryHttpHandlerStrategyListItem>;
 };
 
-export type GetApiStrategiesWithStatsResponse = GetApiStrategiesWithStatsResponses[keyof GetApiStrategiesWithStatsResponses];
+export type GetStrategiesWithStatsResponse = GetStrategiesWithStatsResponses[keyof GetStrategiesWithStatsResponses];
 
-export type DeleteApiStrategiesByIdData = {
+export type DeleteStrategiesByIdData = {
     body?: never;
     path: {
         /**
@@ -2530,25 +2530,25 @@ export type DeleteApiStrategiesByIdData = {
     url: '/api/strategies/{id}';
 };
 
-export type DeleteApiStrategiesByIdErrors = {
+export type DeleteStrategiesByIdErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type DeleteApiStrategiesByIdError = DeleteApiStrategiesByIdErrors[keyof DeleteApiStrategiesByIdErrors];
+export type DeleteStrategiesByIdError = DeleteStrategiesByIdErrors[keyof DeleteStrategiesByIdErrors];
 
-export type DeleteApiStrategiesByIdResponses = {
+export type DeleteStrategiesByIdResponses = {
     /**
      * No Content
      */
     204: void;
 };
 
-export type DeleteApiStrategiesByIdResponse = DeleteApiStrategiesByIdResponses[keyof DeleteApiStrategiesByIdResponses];
+export type DeleteStrategiesByIdResponse = DeleteStrategiesByIdResponses[keyof DeleteStrategiesByIdResponses];
 
-export type GetApiStrategiesByIdData = {
+export type GetStrategiesByIdData = {
     body?: never;
     path: {
         /**
@@ -2560,25 +2560,25 @@ export type GetApiStrategiesByIdData = {
     url: '/api/strategies/{id}';
 };
 
-export type GetApiStrategiesByIdErrors = {
+export type GetStrategiesByIdErrors = {
     /**
      * Not Found
      */
     404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiStrategiesByIdError = GetApiStrategiesByIdErrors[keyof GetApiStrategiesByIdErrors];
+export type GetStrategiesByIdError = GetStrategiesByIdErrors[keyof GetStrategiesByIdErrors];
 
-export type GetApiStrategiesByIdResponses = {
+export type GetStrategiesByIdResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainStrategyRecord;
 };
 
-export type GetApiStrategiesByIdResponse = GetApiStrategiesByIdResponses[keyof GetApiStrategiesByIdResponses];
+export type GetStrategiesByIdResponse = GetStrategiesByIdResponses[keyof GetStrategiesByIdResponses];
 
-export type PutApiStrategiesByIdData = {
+export type PutStrategiesByIdData = {
     /**
      * Strategy def
      */
@@ -2593,7 +2593,7 @@ export type PutApiStrategiesByIdData = {
     url: '/api/strategies/{id}';
 };
 
-export type PutApiStrategiesByIdErrors = {
+export type PutStrategiesByIdErrors = {
     /**
      * Bad Request
      */
@@ -2604,25 +2604,25 @@ export type PutApiStrategiesByIdErrors = {
     404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PutApiStrategiesByIdError = PutApiStrategiesByIdErrors[keyof PutApiStrategiesByIdErrors];
+export type PutStrategiesByIdError = PutStrategiesByIdErrors[keyof PutStrategiesByIdErrors];
 
-export type PutApiStrategiesByIdResponses = {
+export type PutStrategiesByIdResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainStrategyRecord;
 };
 
-export type PutApiStrategiesByIdResponse = PutApiStrategiesByIdResponses[keyof PutApiStrategiesByIdResponses];
+export type PutStrategiesByIdResponse = PutStrategiesByIdResponses[keyof PutStrategiesByIdResponses];
 
-export type GetApiSubscriptionsMeData = {
+export type GetSubscriptionsMeData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/subscriptions/me';
 };
 
-export type GetApiSubscriptionsMeErrors = {
+export type GetSubscriptionsMeErrors = {
     /**
      * Unauthorized
      */
@@ -2633,18 +2633,18 @@ export type GetApiSubscriptionsMeErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiSubscriptionsMeError = GetApiSubscriptionsMeErrors[keyof GetApiSubscriptionsMeErrors];
+export type GetSubscriptionsMeError = GetSubscriptionsMeErrors[keyof GetSubscriptionsMeErrors];
 
-export type GetApiSubscriptionsMeResponses = {
+export type GetSubscriptionsMeResponses = {
     /**
      * OK
      */
     200: PulsightInternalCorePortsInputSubscriptionInfo;
 };
 
-export type GetApiSubscriptionsMeResponse = GetApiSubscriptionsMeResponses[keyof GetApiSubscriptionsMeResponses];
+export type GetSubscriptionsMeResponse = GetSubscriptionsMeResponses[keyof GetSubscriptionsMeResponses];
 
-export type GetApiSwapsData = {
+export type GetSwapsData = {
     body?: never;
     path?: never;
     query?: {
@@ -2688,7 +2688,7 @@ export type GetApiSwapsData = {
     url: '/api/swaps';
 };
 
-export type GetApiSwapsErrors = {
+export type GetSwapsErrors = {
     /**
      * Bad Request
      */
@@ -2703,18 +2703,18 @@ export type GetApiSwapsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiSwapsError = GetApiSwapsErrors[keyof GetApiSwapsErrors];
+export type GetSwapsError = GetSwapsErrors[keyof GetSwapsErrors];
 
-export type GetApiSwapsResponses = {
+export type GetSwapsResponses = {
     /**
      * OK
      */
     200: Array<InternalAdaptersPrimaryHttpHandlerSwapEventRow>;
 };
 
-export type GetApiSwapsResponse = GetApiSwapsResponses[keyof GetApiSwapsResponses];
+export type GetSwapsResponse = GetSwapsResponses[keyof GetSwapsResponses];
 
-export type GetApiTipsGlobalData = {
+export type GetTipsGlobalData = {
     body?: never;
     path?: never;
     query?: {
@@ -2726,25 +2726,25 @@ export type GetApiTipsGlobalData = {
     url: '/api/tips/global';
 };
 
-export type GetApiTipsGlobalErrors = {
+export type GetTipsGlobalErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTipsGlobalError = GetApiTipsGlobalErrors[keyof GetApiTipsGlobalErrors];
+export type GetTipsGlobalError = GetTipsGlobalErrors[keyof GetTipsGlobalErrors];
 
-export type GetApiTipsGlobalResponses = {
+export type GetTipsGlobalResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainAggregatorGlobalTipStats;
 };
 
-export type GetApiTipsGlobalResponse = GetApiTipsGlobalResponses[keyof GetApiTipsGlobalResponses];
+export type GetTipsGlobalResponse = GetTipsGlobalResponses[keyof GetTipsGlobalResponses];
 
-export type GetApiTipsHeatmapData = {
+export type GetTipsHeatmapData = {
     body?: never;
     path?: never;
     query?: {
@@ -2760,25 +2760,25 @@ export type GetApiTipsHeatmapData = {
     url: '/api/tips/heatmap';
 };
 
-export type GetApiTipsHeatmapErrors = {
+export type GetTipsHeatmapErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTipsHeatmapError = GetApiTipsHeatmapErrors[keyof GetApiTipsHeatmapErrors];
+export type GetTipsHeatmapError = GetTipsHeatmapErrors[keyof GetTipsHeatmapErrors];
 
-export type GetApiTipsHeatmapResponses = {
+export type GetTipsHeatmapResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainAggregatorHeatmapResponse;
 };
 
-export type GetApiTipsHeatmapResponse = GetApiTipsHeatmapResponses[keyof GetApiTipsHeatmapResponses];
+export type GetTipsHeatmapResponse = GetTipsHeatmapResponses[keyof GetTipsHeatmapResponses];
 
-export type GetApiTipsLeaderboardJitoEfficiencyData = {
+export type GetTipsLeaderboardJitoEfficiencyData = {
     body?: never;
     path?: never;
     query?: {
@@ -2794,25 +2794,25 @@ export type GetApiTipsLeaderboardJitoEfficiencyData = {
     url: '/api/tips/leaderboard/jito-efficiency';
 };
 
-export type GetApiTipsLeaderboardJitoEfficiencyErrors = {
+export type GetTipsLeaderboardJitoEfficiencyErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTipsLeaderboardJitoEfficiencyError = GetApiTipsLeaderboardJitoEfficiencyErrors[keyof GetApiTipsLeaderboardJitoEfficiencyErrors];
+export type GetTipsLeaderboardJitoEfficiencyError = GetTipsLeaderboardJitoEfficiencyErrors[keyof GetTipsLeaderboardJitoEfficiencyErrors];
 
-export type GetApiTipsLeaderboardJitoEfficiencyResponses = {
+export type GetTipsLeaderboardJitoEfficiencyResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorJitoEfficiencyRow>;
 };
 
-export type GetApiTipsLeaderboardJitoEfficiencyResponse = GetApiTipsLeaderboardJitoEfficiencyResponses[keyof GetApiTipsLeaderboardJitoEfficiencyResponses];
+export type GetTipsLeaderboardJitoEfficiencyResponse = GetTipsLeaderboardJitoEfficiencyResponses[keyof GetTipsLeaderboardJitoEfficiencyResponses];
 
-export type GetApiTipsMatData = {
+export type GetTipsMatData = {
     body?: never;
     path?: never;
     query?: {
@@ -2824,25 +2824,25 @@ export type GetApiTipsMatData = {
     url: '/api/tips/mat';
 };
 
-export type GetApiTipsMatErrors = {
+export type GetTipsMatErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTipsMatError = GetApiTipsMatErrors[keyof GetApiTipsMatErrors];
+export type GetTipsMatError = GetTipsMatErrors[keyof GetTipsMatErrors];
 
-export type GetApiTipsMatResponses = {
+export type GetTipsMatResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorMatPoint>;
 };
 
-export type GetApiTipsMatResponse = GetApiTipsMatResponses[keyof GetApiTipsMatResponses];
+export type GetTipsMatResponse = GetTipsMatResponses[keyof GetTipsMatResponses];
 
-export type GetApiTipsMevShareData = {
+export type GetTipsMevShareData = {
     body?: never;
     path?: never;
     query?: {
@@ -2854,25 +2854,25 @@ export type GetApiTipsMevShareData = {
     url: '/api/tips/mev-share';
 };
 
-export type GetApiTipsMevShareErrors = {
+export type GetTipsMevShareErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTipsMevShareError = GetApiTipsMevShareErrors[keyof GetApiTipsMevShareErrors];
+export type GetTipsMevShareError = GetTipsMevShareErrors[keyof GetTipsMevShareErrors];
 
-export type GetApiTipsMevShareResponses = {
+export type GetTipsMevShareResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorMevTipSharePoint>;
 };
 
-export type GetApiTipsMevShareResponse = GetApiTipsMevShareResponses[keyof GetApiTipsMevShareResponses];
+export type GetTipsMevShareResponse = GetTipsMevShareResponses[keyof GetTipsMevShareResponses];
 
-export type GetApiTipsPriorityRatioData = {
+export type GetTipsPriorityRatioData = {
     body?: never;
     path?: never;
     query?: {
@@ -2884,25 +2884,25 @@ export type GetApiTipsPriorityRatioData = {
     url: '/api/tips/priority-ratio';
 };
 
-export type GetApiTipsPriorityRatioErrors = {
+export type GetTipsPriorityRatioErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTipsPriorityRatioError = GetApiTipsPriorityRatioErrors[keyof GetApiTipsPriorityRatioErrors];
+export type GetTipsPriorityRatioError = GetTipsPriorityRatioErrors[keyof GetTipsPriorityRatioErrors];
 
-export type GetApiTipsPriorityRatioResponses = {
+export type GetTipsPriorityRatioResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorTipPriorityRatioPoint>;
 };
 
-export type GetApiTipsPriorityRatioResponse = GetApiTipsPriorityRatioResponses[keyof GetApiTipsPriorityRatioResponses];
+export type GetTipsPriorityRatioResponse = GetTipsPriorityRatioResponses[keyof GetTipsPriorityRatioResponses];
 
-export type GetApiTipsServicesData = {
+export type GetTipsServicesData = {
     body?: never;
     path?: never;
     query?: {
@@ -2914,32 +2914,32 @@ export type GetApiTipsServicesData = {
     url: '/api/tips/services';
 };
 
-export type GetApiTipsServicesErrors = {
+export type GetTipsServicesErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTipsServicesError = GetApiTipsServicesErrors[keyof GetApiTipsServicesErrors];
+export type GetTipsServicesError = GetTipsServicesErrors[keyof GetTipsServicesErrors];
 
-export type GetApiTipsServicesResponses = {
+export type GetTipsServicesResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorServiceDominanceRow>;
 };
 
-export type GetApiTipsServicesResponse = GetApiTipsServicesResponses[keyof GetApiTipsServicesResponses];
+export type GetTipsServicesResponse = GetTipsServicesResponses[keyof GetTipsServicesResponses];
 
-export type GetApiTraderFiltersData = {
+export type GetTraderFiltersData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/trader-filters/';
 };
 
-export type GetApiTraderFiltersErrors = {
+export type GetTraderFiltersErrors = {
     /**
      * Unauthorized
      */
@@ -2950,18 +2950,18 @@ export type GetApiTraderFiltersErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTraderFiltersError = GetApiTraderFiltersErrors[keyof GetApiTraderFiltersErrors];
+export type GetTraderFiltersError = GetTraderFiltersErrors[keyof GetTraderFiltersErrors];
 
-export type GetApiTraderFiltersResponses = {
+export type GetTraderFiltersResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainTraderFilter>;
 };
 
-export type GetApiTraderFiltersResponse = GetApiTraderFiltersResponses[keyof GetApiTraderFiltersResponses];
+export type GetTraderFiltersResponse = GetTraderFiltersResponses[keyof GetTraderFiltersResponses];
 
-export type PostApiTraderFiltersData = {
+export type PostTraderFiltersData = {
     /**
      * Filter preset details
      */
@@ -2971,7 +2971,7 @@ export type PostApiTraderFiltersData = {
     url: '/api/trader-filters/';
 };
 
-export type PostApiTraderFiltersErrors = {
+export type PostTraderFiltersErrors = {
     /**
      * Bad Request
      */
@@ -2990,18 +2990,18 @@ export type PostApiTraderFiltersErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PostApiTraderFiltersError = PostApiTraderFiltersErrors[keyof PostApiTraderFiltersErrors];
+export type PostTraderFiltersError = PostTraderFiltersErrors[keyof PostTraderFiltersErrors];
 
-export type PostApiTraderFiltersResponses = {
+export type PostTraderFiltersResponses = {
     /**
      * Created
      */
     201: PulsightInternalCoreDomainTraderFilter;
 };
 
-export type PostApiTraderFiltersResponse = PostApiTraderFiltersResponses[keyof PostApiTraderFiltersResponses];
+export type PostTraderFiltersResponse = PostTraderFiltersResponses[keyof PostTraderFiltersResponses];
 
-export type DeleteApiTraderFiltersByIdData = {
+export type DeleteTraderFiltersByIdData = {
     body?: never;
     path: {
         /**
@@ -3013,7 +3013,7 @@ export type DeleteApiTraderFiltersByIdData = {
     url: '/api/trader-filters/{id}';
 };
 
-export type DeleteApiTraderFiltersByIdErrors = {
+export type DeleteTraderFiltersByIdErrors = {
     /**
      * Bad Request
      */
@@ -3032,18 +3032,18 @@ export type DeleteApiTraderFiltersByIdErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type DeleteApiTraderFiltersByIdError = DeleteApiTraderFiltersByIdErrors[keyof DeleteApiTraderFiltersByIdErrors];
+export type DeleteTraderFiltersByIdError = DeleteTraderFiltersByIdErrors[keyof DeleteTraderFiltersByIdErrors];
 
-export type DeleteApiTraderFiltersByIdResponses = {
+export type DeleteTraderFiltersByIdResponses = {
     /**
      * No Content
      */
     204: void;
 };
 
-export type DeleteApiTraderFiltersByIdResponse = DeleteApiTraderFiltersByIdResponses[keyof DeleteApiTraderFiltersByIdResponses];
+export type DeleteTraderFiltersByIdResponse = DeleteTraderFiltersByIdResponses[keyof DeleteTraderFiltersByIdResponses];
 
-export type GetApiTraderFiltersByIdData = {
+export type GetTraderFiltersByIdData = {
     body?: never;
     path: {
         /**
@@ -3055,7 +3055,7 @@ export type GetApiTraderFiltersByIdData = {
     url: '/api/trader-filters/{id}';
 };
 
-export type GetApiTraderFiltersByIdErrors = {
+export type GetTraderFiltersByIdErrors = {
     /**
      * Bad Request
      */
@@ -3074,18 +3074,18 @@ export type GetApiTraderFiltersByIdErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTraderFiltersByIdError = GetApiTraderFiltersByIdErrors[keyof GetApiTraderFiltersByIdErrors];
+export type GetTraderFiltersByIdError = GetTraderFiltersByIdErrors[keyof GetTraderFiltersByIdErrors];
 
-export type GetApiTraderFiltersByIdResponses = {
+export type GetTraderFiltersByIdResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainTraderFilter;
 };
 
-export type GetApiTraderFiltersByIdResponse = GetApiTraderFiltersByIdResponses[keyof GetApiTraderFiltersByIdResponses];
+export type GetTraderFiltersByIdResponse = GetTraderFiltersByIdResponses[keyof GetTraderFiltersByIdResponses];
 
-export type PutApiTraderFiltersByIdData = {
+export type PutTraderFiltersByIdData = {
     /**
      * Updated filter preset
      */
@@ -3100,7 +3100,7 @@ export type PutApiTraderFiltersByIdData = {
     url: '/api/trader-filters/{id}';
 };
 
-export type PutApiTraderFiltersByIdErrors = {
+export type PutTraderFiltersByIdErrors = {
     /**
      * Bad Request
      */
@@ -3119,18 +3119,18 @@ export type PutApiTraderFiltersByIdErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PutApiTraderFiltersByIdError = PutApiTraderFiltersByIdErrors[keyof PutApiTraderFiltersByIdErrors];
+export type PutTraderFiltersByIdError = PutTraderFiltersByIdErrors[keyof PutTraderFiltersByIdErrors];
 
-export type PutApiTraderFiltersByIdResponses = {
+export type PutTraderFiltersByIdResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreDomainTraderFilter;
 };
 
-export type PutApiTraderFiltersByIdResponse = PutApiTraderFiltersByIdResponses[keyof PutApiTraderFiltersByIdResponses];
+export type PutTraderFiltersByIdResponse = PutTraderFiltersByIdResponses[keyof PutTraderFiltersByIdResponses];
 
-export type GetApiTradersData = {
+export type GetTradersData = {
     body?: never;
     path?: never;
     query?: {
@@ -3158,7 +3158,7 @@ export type GetApiTradersData = {
     url: '/api/traders';
 };
 
-export type GetApiTradersErrors = {
+export type GetTradersErrors = {
     /**
      * Bad Request
      */
@@ -3177,18 +3177,18 @@ export type GetApiTradersErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersError = GetApiTradersErrors[keyof GetApiTradersErrors];
+export type GetTradersError = GetTradersErrors[keyof GetTradersErrors];
 
-export type GetApiTradersResponses = {
+export type GetTradersResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreUsecasesTraderTraderListResult;
 };
 
-export type GetApiTradersResponse = GetApiTradersResponses[keyof GetApiTradersResponses];
+export type GetTradersResponse = GetTradersResponses[keyof GetTradersResponses];
 
-export type GetApiTradersByIdByTraderIdData = {
+export type GetTradersByIdByTraderIdData = {
     body?: never;
     path: {
         /**
@@ -3200,7 +3200,7 @@ export type GetApiTradersByIdByTraderIdData = {
     url: '/api/traders/by-id/{traderID}';
 };
 
-export type GetApiTradersByIdByTraderIdErrors = {
+export type GetTradersByIdByTraderIdErrors = {
     /**
      * Bad Request
      */
@@ -3219,18 +3219,18 @@ export type GetApiTradersByIdByTraderIdErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByIdByTraderIdError = GetApiTradersByIdByTraderIdErrors[keyof GetApiTradersByIdByTraderIdErrors];
+export type GetTradersByIdByTraderIdError = GetTradersByIdByTraderIdErrors[keyof GetTradersByIdByTraderIdErrors];
 
-export type GetApiTradersByIdByTraderIdResponses = {
+export type GetTradersByIdByTraderIdResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreUsecasesTraderTraderListItem;
 };
 
-export type GetApiTradersByIdByTraderIdResponse = GetApiTradersByIdByTraderIdResponses[keyof GetApiTradersByIdByTraderIdResponses];
+export type GetTradersByIdByTraderIdResponse = GetTradersByIdByTraderIdResponses[keyof GetTradersByIdByTraderIdResponses];
 
-export type GetApiTradersByWalletByWalletAddressData = {
+export type GetTradersByWalletByWalletAddressData = {
     body?: never;
     path: {
         /**
@@ -3242,7 +3242,7 @@ export type GetApiTradersByWalletByWalletAddressData = {
     url: '/api/traders/by-wallet/{walletAddress}';
 };
 
-export type GetApiTradersByWalletByWalletAddressErrors = {
+export type GetTradersByWalletByWalletAddressErrors = {
     /**
      * Unauthorized
      */
@@ -3257,18 +3257,18 @@ export type GetApiTradersByWalletByWalletAddressErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByWalletByWalletAddressError = GetApiTradersByWalletByWalletAddressErrors[keyof GetApiTradersByWalletByWalletAddressErrors];
+export type GetTradersByWalletByWalletAddressError = GetTradersByWalletByWalletAddressErrors[keyof GetTradersByWalletByWalletAddressErrors];
 
-export type GetApiTradersByWalletByWalletAddressResponses = {
+export type GetTradersByWalletByWalletAddressResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreUsecasesTraderTraderListItem;
 };
 
-export type GetApiTradersByWalletByWalletAddressResponse = GetApiTradersByWalletByWalletAddressResponses[keyof GetApiTradersByWalletByWalletAddressResponses];
+export type GetTradersByWalletByWalletAddressResponse = GetTradersByWalletByWalletAddressResponses[keyof GetTradersByWalletByWalletAddressResponses];
 
-export type PostApiTradersExportData = {
+export type PostTradersExportData = {
     /**
      * Export Filter Details
      */
@@ -3278,7 +3278,7 @@ export type PostApiTradersExportData = {
     url: '/api/traders/export';
 };
 
-export type PostApiTradersExportErrors = {
+export type PostTradersExportErrors = {
     /**
      * Bad Request
      */
@@ -3297,18 +3297,18 @@ export type PostApiTradersExportErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type PostApiTradersExportError = PostApiTradersExportErrors[keyof PostApiTradersExportErrors];
+export type PostTradersExportError = PostTradersExportErrors[keyof PostTradersExportErrors];
 
-export type PostApiTradersExportResponses = {
+export type PostTradersExportResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainTraderTrader>;
 };
 
-export type PostApiTradersExportResponse = PostApiTradersExportResponses[keyof PostApiTradersExportResponses];
+export type PostTradersExportResponse = PostTradersExportResponses[keyof PostTradersExportResponses];
 
-export type GetApiTradersSearchData = {
+export type GetTradersSearchData = {
     body?: never;
     path?: never;
     query?: {
@@ -3328,7 +3328,7 @@ export type GetApiTradersSearchData = {
     url: '/api/traders/search';
 };
 
-export type GetApiTradersSearchErrors = {
+export type GetTradersSearchErrors = {
     /**
      * Bad Request
      */
@@ -3343,18 +3343,18 @@ export type GetApiTradersSearchErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersSearchError = GetApiTradersSearchErrors[keyof GetApiTradersSearchErrors];
+export type GetTradersSearchError = GetTradersSearchErrors[keyof GetTradersSearchErrors];
 
-export type GetApiTradersSearchResponses = {
+export type GetTradersSearchResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainTraderTrader>;
 };
 
-export type GetApiTradersSearchResponse = GetApiTradersSearchResponses[keyof GetApiTradersSearchResponses];
+export type GetTradersSearchResponse = GetTradersSearchResponses[keyof GetTradersSearchResponses];
 
-export type GetApiTradersSnapshotData = {
+export type GetTradersSnapshotData = {
     body?: never;
     path?: never;
     query: {
@@ -3370,25 +3370,25 @@ export type GetApiTradersSnapshotData = {
     url: '/api/traders/snapshot';
 };
 
-export type GetApiTradersSnapshotErrors = {
+export type GetTradersSnapshotErrors = {
     /**
      * Unauthorized
      */
     401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersSnapshotError = GetApiTradersSnapshotErrors[keyof GetApiTradersSnapshotErrors];
+export type GetTradersSnapshotError = GetTradersSnapshotErrors[keyof GetTradersSnapshotErrors];
 
-export type GetApiTradersSnapshotResponses = {
+export type GetTradersSnapshotResponses = {
     /**
      * OK
      */
     200: InternalAdaptersPrimaryHttpHandlerSnapshotResponse;
 };
 
-export type GetApiTradersSnapshotResponse = GetApiTradersSnapshotResponses[keyof GetApiTradersSnapshotResponses];
+export type GetTradersSnapshotResponse = GetTradersSnapshotResponses[keyof GetTradersSnapshotResponses];
 
-export type GetApiTradersByTraderIdDailyProfitsData = {
+export type GetTradersByTraderIdDailyProfitsData = {
     body?: never;
     path: {
         /**
@@ -3425,7 +3425,7 @@ export type GetApiTradersByTraderIdDailyProfitsData = {
     url: '/api/traders/{traderID}/daily-profits';
 };
 
-export type GetApiTradersByTraderIdDailyProfitsErrors = {
+export type GetTradersByTraderIdDailyProfitsErrors = {
     /**
      * Bad Request
      */
@@ -3440,18 +3440,18 @@ export type GetApiTradersByTraderIdDailyProfitsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByTraderIdDailyProfitsError = GetApiTradersByTraderIdDailyProfitsErrors[keyof GetApiTradersByTraderIdDailyProfitsErrors];
+export type GetTradersByTraderIdDailyProfitsError = GetTradersByTraderIdDailyProfitsErrors[keyof GetTradersByTraderIdDailyProfitsErrors];
 
-export type GetApiTradersByTraderIdDailyProfitsResponses = {
+export type GetTradersByTraderIdDailyProfitsResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreUsecasesTraderDailyProfitsResult;
 };
 
-export type GetApiTradersByTraderIdDailyProfitsResponse = GetApiTradersByTraderIdDailyProfitsResponses[keyof GetApiTradersByTraderIdDailyProfitsResponses];
+export type GetTradersByTraderIdDailyProfitsResponse = GetTradersByTraderIdDailyProfitsResponses[keyof GetTradersByTraderIdDailyProfitsResponses];
 
-export type GetApiTradersByTraderIdPnlsData = {
+export type GetTradersByTraderIdPnlsData = {
     body?: never;
     path: {
         /**
@@ -3484,7 +3484,7 @@ export type GetApiTradersByTraderIdPnlsData = {
     url: '/api/traders/{traderID}/pnls';
 };
 
-export type GetApiTradersByTraderIdPnlsErrors = {
+export type GetTradersByTraderIdPnlsErrors = {
     /**
      * Bad Request
      */
@@ -3495,18 +3495,18 @@ export type GetApiTradersByTraderIdPnlsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByTraderIdPnlsError = GetApiTradersByTraderIdPnlsErrors[keyof GetApiTradersByTraderIdPnlsErrors];
+export type GetTradersByTraderIdPnlsError = GetTradersByTraderIdPnlsErrors[keyof GetTradersByTraderIdPnlsErrors];
 
-export type GetApiTradersByTraderIdPnlsResponses = {
+export type GetTradersByTraderIdPnlsResponses = {
     /**
      * OK
      */
     200: InternalAdaptersPrimaryHttpHandlerPaginatedPnls;
 };
 
-export type GetApiTradersByTraderIdPnlsResponse = GetApiTradersByTraderIdPnlsResponses[keyof GetApiTradersByTraderIdPnlsResponses];
+export type GetTradersByTraderIdPnlsResponse = GetTradersByTraderIdPnlsResponses[keyof GetTradersByTraderIdPnlsResponses];
 
-export type GetApiTradersByWalletAddressCreatedTokensData = {
+export type GetTradersByWalletAddressCreatedTokensData = {
     body?: never;
     path: {
         /**
@@ -3527,7 +3527,7 @@ export type GetApiTradersByWalletAddressCreatedTokensData = {
     url: '/api/traders/{walletAddress}/created-tokens';
 };
 
-export type GetApiTradersByWalletAddressCreatedTokensErrors = {
+export type GetTradersByWalletAddressCreatedTokensErrors = {
     /**
      * Unauthorized
      */
@@ -3538,18 +3538,18 @@ export type GetApiTradersByWalletAddressCreatedTokensErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByWalletAddressCreatedTokensError = GetApiTradersByWalletAddressCreatedTokensErrors[keyof GetApiTradersByWalletAddressCreatedTokensErrors];
+export type GetTradersByWalletAddressCreatedTokensError = GetTradersByWalletAddressCreatedTokensErrors[keyof GetTradersByWalletAddressCreatedTokensErrors];
 
-export type GetApiTradersByWalletAddressCreatedTokensResponses = {
+export type GetTradersByWalletAddressCreatedTokensResponses = {
     /**
      * OK
      */
     200: Array<PulsightInternalCoreDomainAggregatorCreatedMintRow>;
 };
 
-export type GetApiTradersByWalletAddressCreatedTokensResponse = GetApiTradersByWalletAddressCreatedTokensResponses[keyof GetApiTradersByWalletAddressCreatedTokensResponses];
+export type GetTradersByWalletAddressCreatedTokensResponse = GetTradersByWalletAddressCreatedTokensResponses[keyof GetTradersByWalletAddressCreatedTokensResponses];
 
-export type GetApiTradersByWalletAddressPnlSeriesData = {
+export type GetTradersByWalletAddressPnlSeriesData = {
     body?: never;
     path: {
         /**
@@ -3566,7 +3566,7 @@ export type GetApiTradersByWalletAddressPnlSeriesData = {
     url: '/api/traders/{walletAddress}/pnl-series';
 };
 
-export type GetApiTradersByWalletAddressPnlSeriesErrors = {
+export type GetTradersByWalletAddressPnlSeriesErrors = {
     /**
      * Bad Request
      */
@@ -3581,18 +3581,18 @@ export type GetApiTradersByWalletAddressPnlSeriesErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByWalletAddressPnlSeriesError = GetApiTradersByWalletAddressPnlSeriesErrors[keyof GetApiTradersByWalletAddressPnlSeriesErrors];
+export type GetTradersByWalletAddressPnlSeriesError = GetTradersByWalletAddressPnlSeriesErrors[keyof GetTradersByWalletAddressPnlSeriesErrors];
 
-export type GetApiTradersByWalletAddressPnlSeriesResponses = {
+export type GetTradersByWalletAddressPnlSeriesResponses = {
     /**
      * OK
      */
     200: PulsightInternalCoreUsecasesTraderPnlSeriesResult;
 };
 
-export type GetApiTradersByWalletAddressPnlSeriesResponse = GetApiTradersByWalletAddressPnlSeriesResponses[keyof GetApiTradersByWalletAddressPnlSeriesResponses];
+export type GetTradersByWalletAddressPnlSeriesResponse = GetTradersByWalletAddressPnlSeriesResponses[keyof GetTradersByWalletAddressPnlSeriesResponses];
 
-export type GetApiTradersByWalletAddressTipsData = {
+export type GetTradersByWalletAddressTipsData = {
     body?: never;
     path: {
         /**
@@ -3609,7 +3609,7 @@ export type GetApiTradersByWalletAddressTipsData = {
     url: '/api/traders/{walletAddress}/tips';
 };
 
-export type GetApiTradersByWalletAddressTipsErrors = {
+export type GetTradersByWalletAddressTipsErrors = {
     /**
      * Bad Request
      */
@@ -3628,18 +3628,18 @@ export type GetApiTradersByWalletAddressTipsErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByWalletAddressTipsError = GetApiTradersByWalletAddressTipsErrors[keyof GetApiTradersByWalletAddressTipsErrors];
+export type GetTradersByWalletAddressTipsError = GetTradersByWalletAddressTipsErrors[keyof GetTradersByWalletAddressTipsErrors];
 
-export type GetApiTradersByWalletAddressTipsResponses = {
+export type GetTradersByWalletAddressTipsResponses = {
     /**
      * OK
      */
     200: InternalAdaptersPrimaryHttpHandlerTraderTipStatsResponse;
 };
 
-export type GetApiTradersByWalletAddressTipsResponse = GetApiTradersByWalletAddressTipsResponses[keyof GetApiTradersByWalletAddressTipsResponses];
+export type GetTradersByWalletAddressTipsResponse = GetTradersByWalletAddressTipsResponses[keyof GetTradersByWalletAddressTipsResponses];
 
-export type GetApiTradersByWalletAddressTipsServicesData = {
+export type GetTradersByWalletAddressTipsServicesData = {
     body?: never;
     path: {
         /**
@@ -3656,7 +3656,7 @@ export type GetApiTradersByWalletAddressTipsServicesData = {
     url: '/api/traders/{walletAddress}/tips/services';
 };
 
-export type GetApiTradersByWalletAddressTipsServicesErrors = {
+export type GetTradersByWalletAddressTipsServicesErrors = {
     /**
      * Bad Request
      */
@@ -3671,18 +3671,18 @@ export type GetApiTradersByWalletAddressTipsServicesErrors = {
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByWalletAddressTipsServicesError = GetApiTradersByWalletAddressTipsServicesErrors[keyof GetApiTradersByWalletAddressTipsServicesErrors];
+export type GetTradersByWalletAddressTipsServicesError = GetTradersByWalletAddressTipsServicesErrors[keyof GetTradersByWalletAddressTipsServicesErrors];
 
-export type GetApiTradersByWalletAddressTipsServicesResponses = {
+export type GetTradersByWalletAddressTipsServicesResponses = {
     /**
      * OK
      */
     200: Array<InternalAdaptersPrimaryHttpHandlerServiceLoyaltyRow>;
 };
 
-export type GetApiTradersByWalletAddressTipsServicesResponse = GetApiTradersByWalletAddressTipsServicesResponses[keyof GetApiTradersByWalletAddressTipsServicesResponses];
+export type GetTradersByWalletAddressTipsServicesResponse = GetTradersByWalletAddressTipsServicesResponses[keyof GetTradersByWalletAddressTipsServicesResponses];
 
-export type GetApiTradersByWalletAddressTokensData = {
+export type GetTradersByWalletAddressTokensData = {
     body?: never;
     path: {
         /**
@@ -3707,7 +3707,7 @@ export type GetApiTradersByWalletAddressTokensData = {
     url: '/api/traders/{walletAddress}/tokens';
 };
 
-export type GetApiTradersByWalletAddressTokensErrors = {
+export type GetTradersByWalletAddressTokensErrors = {
     /**
      * Unauthorized
      */
@@ -3718,13 +3718,13 @@ export type GetApiTradersByWalletAddressTokensErrors = {
     404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetApiTradersByWalletAddressTokensError = GetApiTradersByWalletAddressTokensErrors[keyof GetApiTradersByWalletAddressTokensErrors];
+export type GetTradersByWalletAddressTokensError = GetTradersByWalletAddressTokensErrors[keyof GetTradersByWalletAddressTokensErrors];
 
-export type GetApiTradersByWalletAddressTokensResponses = {
+export type GetTradersByWalletAddressTokensResponses = {
     /**
      * OK
      */
     200: Array<InternalAdaptersPrimaryHttpHandlerTokensRow>;
 };
 
-export type GetApiTradersByWalletAddressTokensResponse = GetApiTradersByWalletAddressTokensResponses[keyof GetApiTradersByWalletAddressTokensResponses];
+export type GetTradersByWalletAddressTokensResponse = GetTradersByWalletAddressTokensResponses[keyof GetTradersByWalletAddressTokensResponses];

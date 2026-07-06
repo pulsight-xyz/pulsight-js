@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteApiBacktestsByIdData, DeleteApiBacktestsByIdResponses, DeleteApiMeApiKeysByIdData, DeleteApiMeApiKeysByIdErrors, DeleteApiMeApiKeysByIdResponses, DeleteApiStrategiesByIdData, DeleteApiStrategiesByIdErrors, DeleteApiStrategiesByIdResponses, DeleteApiTraderFiltersByIdData, DeleteApiTraderFiltersByIdErrors, DeleteApiTraderFiltersByIdResponses, GetApiBacktestsByIdData, GetApiBacktestsByIdErrors, GetApiBacktestsByIdResponses, GetApiBacktestsByIdTradesData, GetApiBacktestsByIdTradesErrors, GetApiBacktestsByIdTradesResponses, GetApiBacktestsData, GetApiBacktestsErrors, GetApiBacktestsLimitsData, GetApiBacktestsLimitsErrors, GetApiBacktestsLimitsResponses, GetApiBacktestsResponses, GetApiHealthData, GetApiHealthErrors, GetApiHealthResponses, GetApiMeApiKeysData, GetApiMeApiKeysErrors, GetApiMeApiKeysResponses, GetApiMeCreditsData, GetApiMeCreditsErrors, GetApiMeCreditsLedgerData, GetApiMeCreditsLedgerErrors, GetApiMeCreditsLedgerResponses, GetApiMeCreditsResponses, GetApiMintsByPubkeyData, GetApiMintsByPubkeyErrors, GetApiMintsByPubkeyLpEventsData, GetApiMintsByPubkeyLpEventsErrors, GetApiMintsByPubkeyLpEventsResponses, GetApiMintsByPubkeyMarketsData, GetApiMintsByPubkeyMarketsErrors, GetApiMintsByPubkeyMarketsResponses, GetApiMintsByPubkeyMigrationsData, GetApiMintsByPubkeyMigrationsErrors, GetApiMintsByPubkeyMigrationsResponses, GetApiMintsByPubkeyResponses, GetApiMintsByPubkeySafetyEventsData, GetApiMintsByPubkeySafetyEventsErrors, GetApiMintsByPubkeySafetyEventsResponses, GetApiMintsByPubkeyStatsData, GetApiMintsByPubkeyStatsErrors, GetApiMintsByPubkeyStatsResponses, GetApiMintsByPubkeyTopHoldersData, GetApiMintsByPubkeyTopHoldersErrors, GetApiMintsByPubkeyTopHoldersResponses, GetApiMintsByPubkeyTopTradersData, GetApiMintsByPubkeyTopTradersErrors, GetApiMintsByPubkeyTopTradersResponses, GetApiMintsByPubkeyTradersByTraderData, GetApiMintsByPubkeyTradersByTraderErrors, GetApiMintsByPubkeyTradersByTraderResponses, GetApiMintsData, GetApiMintsErrors, GetApiMintsResponses, GetApiOhlcvData, GetApiOhlcvErrors, GetApiOhlcvResponses, GetApiStrategiesByIdData, GetApiStrategiesByIdErrors, GetApiStrategiesByIdResponses, GetApiStrategiesDashboardData, GetApiStrategiesDashboardErrors, GetApiStrategiesDashboardResponses, GetApiStrategiesData, GetApiStrategiesErrors, GetApiStrategiesResponses, GetApiStrategiesWithStatsData, GetApiStrategiesWithStatsErrors, GetApiStrategiesWithStatsResponses, GetApiSubscriptionsMeData, GetApiSubscriptionsMeErrors, GetApiSubscriptionsMeResponses, GetApiSwapsData, GetApiSwapsErrors, GetApiSwapsResponses, GetApiTipsGlobalData, GetApiTipsGlobalErrors, GetApiTipsGlobalResponses, GetApiTipsHeatmapData, GetApiTipsHeatmapErrors, GetApiTipsHeatmapResponses, GetApiTipsLeaderboardJitoEfficiencyData, GetApiTipsLeaderboardJitoEfficiencyErrors, GetApiTipsLeaderboardJitoEfficiencyResponses, GetApiTipsMatData, GetApiTipsMatErrors, GetApiTipsMatResponses, GetApiTipsMevShareData, GetApiTipsMevShareErrors, GetApiTipsMevShareResponses, GetApiTipsPriorityRatioData, GetApiTipsPriorityRatioErrors, GetApiTipsPriorityRatioResponses, GetApiTipsServicesData, GetApiTipsServicesErrors, GetApiTipsServicesResponses, GetApiTraderFiltersByIdData, GetApiTraderFiltersByIdErrors, GetApiTraderFiltersByIdResponses, GetApiTraderFiltersData, GetApiTraderFiltersErrors, GetApiTraderFiltersResponses, GetApiTradersByIdByTraderIdData, GetApiTradersByIdByTraderIdErrors, GetApiTradersByIdByTraderIdResponses, GetApiTradersByTraderIdDailyProfitsData, GetApiTradersByTraderIdDailyProfitsErrors, GetApiTradersByTraderIdDailyProfitsResponses, GetApiTradersByTraderIdPnlsData, GetApiTradersByTraderIdPnlsErrors, GetApiTradersByTraderIdPnlsResponses, GetApiTradersByWalletAddressCreatedTokensData, GetApiTradersByWalletAddressCreatedTokensErrors, GetApiTradersByWalletAddressCreatedTokensResponses, GetApiTradersByWalletAddressPnlSeriesData, GetApiTradersByWalletAddressPnlSeriesErrors, GetApiTradersByWalletAddressPnlSeriesResponses, GetApiTradersByWalletAddressTipsData, GetApiTradersByWalletAddressTipsErrors, GetApiTradersByWalletAddressTipsResponses, GetApiTradersByWalletAddressTipsServicesData, GetApiTradersByWalletAddressTipsServicesErrors, GetApiTradersByWalletAddressTipsServicesResponses, GetApiTradersByWalletAddressTokensData, GetApiTradersByWalletAddressTokensErrors, GetApiTradersByWalletAddressTokensResponses, GetApiTradersByWalletByWalletAddressData, GetApiTradersByWalletByWalletAddressErrors, GetApiTradersByWalletByWalletAddressResponses, GetApiTradersData, GetApiTradersErrors, GetApiTradersResponses, GetApiTradersSearchData, GetApiTradersSearchErrors, GetApiTradersSearchResponses, GetApiTradersSnapshotData, GetApiTradersSnapshotErrors, GetApiTradersSnapshotResponses, PatchApiMeApiKeysByIdData, PatchApiMeApiKeysByIdErrors, PatchApiMeApiKeysByIdResponses, PostApiBacktestsData, PostApiBacktestsErrors, PostApiBacktestsResponses, PostApiMeApiKeysData, PostApiMeApiKeysErrors, PostApiMeApiKeysResponses, PostApiStrategiesData, PostApiStrategiesErrors, PostApiStrategiesPreviewData, PostApiStrategiesPreviewErrors, PostApiStrategiesPreviewResponses, PostApiStrategiesResponses, PostApiTraderFiltersData, PostApiTraderFiltersErrors, PostApiTraderFiltersResponses, PostApiTradersExportData, PostApiTradersExportErrors, PostApiTradersExportResponses, PutApiStrategiesByIdData, PutApiStrategiesByIdErrors, PutApiStrategiesByIdResponses, PutApiTraderFiltersByIdData, PutApiTraderFiltersByIdErrors, PutApiTraderFiltersByIdResponses } from './types.gen';
+import type { DeleteBacktestsByIdData, DeleteBacktestsByIdResponses, DeleteMeApiKeysByIdData, DeleteMeApiKeysByIdErrors, DeleteMeApiKeysByIdResponses, DeleteStrategiesByIdData, DeleteStrategiesByIdErrors, DeleteStrategiesByIdResponses, DeleteTraderFiltersByIdData, DeleteTraderFiltersByIdErrors, DeleteTraderFiltersByIdResponses, GetBacktestsByIdData, GetBacktestsByIdErrors, GetBacktestsByIdResponses, GetBacktestsByIdTradesData, GetBacktestsByIdTradesErrors, GetBacktestsByIdTradesResponses, GetBacktestsData, GetBacktestsErrors, GetBacktestsLimitsData, GetBacktestsLimitsErrors, GetBacktestsLimitsResponses, GetBacktestsResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMeApiKeysData, GetMeApiKeysErrors, GetMeApiKeysResponses, GetMeCreditsData, GetMeCreditsErrors, GetMeCreditsLedgerData, GetMeCreditsLedgerErrors, GetMeCreditsLedgerResponses, GetMeCreditsResponses, GetMintsByPubkeyData, GetMintsByPubkeyErrors, GetMintsByPubkeyLpEventsData, GetMintsByPubkeyLpEventsErrors, GetMintsByPubkeyLpEventsResponses, GetMintsByPubkeyMarketsData, GetMintsByPubkeyMarketsErrors, GetMintsByPubkeyMarketsResponses, GetMintsByPubkeyMigrationsData, GetMintsByPubkeyMigrationsErrors, GetMintsByPubkeyMigrationsResponses, GetMintsByPubkeyResponses, GetMintsByPubkeySafetyEventsData, GetMintsByPubkeySafetyEventsErrors, GetMintsByPubkeySafetyEventsResponses, GetMintsByPubkeyStatsData, GetMintsByPubkeyStatsErrors, GetMintsByPubkeyStatsResponses, GetMintsByPubkeyTopHoldersData, GetMintsByPubkeyTopHoldersErrors, GetMintsByPubkeyTopHoldersResponses, GetMintsByPubkeyTopTradersData, GetMintsByPubkeyTopTradersErrors, GetMintsByPubkeyTopTradersResponses, GetMintsByPubkeyTradersByTraderData, GetMintsByPubkeyTradersByTraderErrors, GetMintsByPubkeyTradersByTraderResponses, GetMintsData, GetMintsErrors, GetMintsResponses, GetOhlcvData, GetOhlcvErrors, GetOhlcvResponses, GetStrategiesByIdData, GetStrategiesByIdErrors, GetStrategiesByIdResponses, GetStrategiesDashboardData, GetStrategiesDashboardErrors, GetStrategiesDashboardResponses, GetStrategiesData, GetStrategiesErrors, GetStrategiesResponses, GetStrategiesWithStatsData, GetStrategiesWithStatsErrors, GetStrategiesWithStatsResponses, GetSubscriptionsMeData, GetSubscriptionsMeErrors, GetSubscriptionsMeResponses, GetSwapsData, GetSwapsErrors, GetSwapsResponses, GetTipsGlobalData, GetTipsGlobalErrors, GetTipsGlobalResponses, GetTipsHeatmapData, GetTipsHeatmapErrors, GetTipsHeatmapResponses, GetTipsLeaderboardJitoEfficiencyData, GetTipsLeaderboardJitoEfficiencyErrors, GetTipsLeaderboardJitoEfficiencyResponses, GetTipsMatData, GetTipsMatErrors, GetTipsMatResponses, GetTipsMevShareData, GetTipsMevShareErrors, GetTipsMevShareResponses, GetTipsPriorityRatioData, GetTipsPriorityRatioErrors, GetTipsPriorityRatioResponses, GetTipsServicesData, GetTipsServicesErrors, GetTipsServicesResponses, GetTraderFiltersByIdData, GetTraderFiltersByIdErrors, GetTraderFiltersByIdResponses, GetTraderFiltersData, GetTraderFiltersErrors, GetTraderFiltersResponses, GetTradersByIdByTraderIdData, GetTradersByIdByTraderIdErrors, GetTradersByIdByTraderIdResponses, GetTradersByTraderIdDailyProfitsData, GetTradersByTraderIdDailyProfitsErrors, GetTradersByTraderIdDailyProfitsResponses, GetTradersByTraderIdPnlsData, GetTradersByTraderIdPnlsErrors, GetTradersByTraderIdPnlsResponses, GetTradersByWalletAddressCreatedTokensData, GetTradersByWalletAddressCreatedTokensErrors, GetTradersByWalletAddressCreatedTokensResponses, GetTradersByWalletAddressPnlSeriesData, GetTradersByWalletAddressPnlSeriesErrors, GetTradersByWalletAddressPnlSeriesResponses, GetTradersByWalletAddressTipsData, GetTradersByWalletAddressTipsErrors, GetTradersByWalletAddressTipsResponses, GetTradersByWalletAddressTipsServicesData, GetTradersByWalletAddressTipsServicesErrors, GetTradersByWalletAddressTipsServicesResponses, GetTradersByWalletAddressTokensData, GetTradersByWalletAddressTokensErrors, GetTradersByWalletAddressTokensResponses, GetTradersByWalletByWalletAddressData, GetTradersByWalletByWalletAddressErrors, GetTradersByWalletByWalletAddressResponses, GetTradersData, GetTradersErrors, GetTradersResponses, GetTradersSearchData, GetTradersSearchErrors, GetTradersSearchResponses, GetTradersSnapshotData, GetTradersSnapshotErrors, GetTradersSnapshotResponses, PatchMeApiKeysByIdData, PatchMeApiKeysByIdErrors, PatchMeApiKeysByIdResponses, PostBacktestsData, PostBacktestsErrors, PostBacktestsResponses, PostMeApiKeysData, PostMeApiKeysErrors, PostMeApiKeysResponses, PostStrategiesData, PostStrategiesErrors, PostStrategiesPreviewData, PostStrategiesPreviewErrors, PostStrategiesPreviewResponses, PostStrategiesResponses, PostTraderFiltersData, PostTraderFiltersErrors, PostTraderFiltersResponses, PostTradersExportData, PostTradersExportErrors, PostTradersExportResponses, PutStrategiesByIdData, PutStrategiesByIdErrors, PutStrategiesByIdResponses, PutTraderFiltersByIdData, PutTraderFiltersByIdErrors, PutTraderFiltersByIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -21,7 +21,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * List Backtests by Strategy
  */
-export const getApiBacktests = <ThrowOnError extends boolean = false>(options?: Options<GetApiBacktestsData, ThrowOnError>) => (options?.client ?? client).get<GetApiBacktestsResponses, GetApiBacktestsErrors, ThrowOnError>({
+export const getBacktests = <ThrowOnError extends boolean = false>(options?: Options<GetBacktestsData, ThrowOnError>) => (options?.client ?? client).get<GetBacktestsResponses, GetBacktestsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests',
     ...options
@@ -30,7 +30,7 @@ export const getApiBacktests = <ThrowOnError extends boolean = false>(options?: 
 /**
  * Submit Backtest
  */
-export const postApiBacktests = <ThrowOnError extends boolean = false>(options: Options<PostApiBacktestsData, ThrowOnError>) => (options.client ?? client).post<PostApiBacktestsResponses, PostApiBacktestsErrors, ThrowOnError>({
+export const postBacktests = <ThrowOnError extends boolean = false>(options: Options<PostBacktestsData, ThrowOnError>) => (options.client ?? client).post<PostBacktestsResponses, PostBacktestsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests',
     ...options,
@@ -45,7 +45,7 @@ export const postApiBacktests = <ThrowOnError extends boolean = false>(options: 
  *
  * Returns the per-run backtest cost ceiling (max credits per run) so clients can show and pre-check it.
  */
-export const getApiBacktestsLimits = <ThrowOnError extends boolean = false>(options?: Options<GetApiBacktestsLimitsData, ThrowOnError>) => (options?.client ?? client).get<GetApiBacktestsLimitsResponses, GetApiBacktestsLimitsErrors, ThrowOnError>({
+export const getBacktestsLimits = <ThrowOnError extends boolean = false>(options?: Options<GetBacktestsLimitsData, ThrowOnError>) => (options?.client ?? client).get<GetBacktestsLimitsResponses, GetBacktestsLimitsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests/limits',
     ...options
@@ -54,7 +54,7 @@ export const getApiBacktestsLimits = <ThrowOnError extends boolean = false>(opti
 /**
  * Cancel Backtest
  */
-export const deleteApiBacktestsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiBacktestsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiBacktestsByIdResponses, unknown, ThrowOnError>({
+export const deleteBacktestsById = <ThrowOnError extends boolean = false>(options: Options<DeleteBacktestsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteBacktestsByIdResponses, unknown, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests/{id}',
     ...options
@@ -63,7 +63,7 @@ export const deleteApiBacktestsById = <ThrowOnError extends boolean = false>(opt
 /**
  * Get Backtest
  */
-export const getApiBacktestsById = <ThrowOnError extends boolean = false>(options: Options<GetApiBacktestsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiBacktestsByIdResponses, GetApiBacktestsByIdErrors, ThrowOnError>({
+export const getBacktestsById = <ThrowOnError extends boolean = false>(options: Options<GetBacktestsByIdData, ThrowOnError>) => (options.client ?? client).get<GetBacktestsByIdResponses, GetBacktestsByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests/{id}',
     ...options
@@ -72,7 +72,7 @@ export const getApiBacktestsById = <ThrowOnError extends boolean = false>(option
 /**
  * List Backtest Trades
  */
-export const getApiBacktestsByIdTrades = <ThrowOnError extends boolean = false>(options: Options<GetApiBacktestsByIdTradesData, ThrowOnError>) => (options.client ?? client).get<GetApiBacktestsByIdTradesResponses, GetApiBacktestsByIdTradesErrors, ThrowOnError>({
+export const getBacktestsByIdTrades = <ThrowOnError extends boolean = false>(options: Options<GetBacktestsByIdTradesData, ThrowOnError>) => (options.client ?? client).get<GetBacktestsByIdTradesResponses, GetBacktestsByIdTradesErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests/{id}/trades',
     ...options
@@ -83,14 +83,14 @@ export const getApiBacktestsByIdTrades = <ThrowOnError extends boolean = false>(
  *
  * Evaluates the connectivity of backing services and returns a system status overview.
  */
-export const getApiHealth = <ThrowOnError extends boolean = false>(options?: Options<GetApiHealthData, ThrowOnError>) => (options?.client ?? client).get<GetApiHealthResponses, GetApiHealthErrors, ThrowOnError>({ url: '/api/health', ...options });
+export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>) => (options?.client ?? client).get<GetHealthResponses, GetHealthErrors, ThrowOnError>({ url: '/api/health', ...options });
 
 /**
  * List API Keys
  *
  * Returns the caller's api tokens: prefix, name, scopes, last_used_at, status timestamps.
  */
-export const getApiMeApiKeys = <ThrowOnError extends boolean = false>(options?: Options<GetApiMeApiKeysData, ThrowOnError>) => (options?.client ?? client).get<GetApiMeApiKeysResponses, GetApiMeApiKeysErrors, ThrowOnError>({
+export const getMeApiKeys = <ThrowOnError extends boolean = false>(options?: Options<GetMeApiKeysData, ThrowOnError>) => (options?.client ?? client).get<GetMeApiKeysResponses, GetMeApiKeysErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/me/api-keys',
     ...options
@@ -101,7 +101,7 @@ export const getApiMeApiKeys = <ThrowOnError extends boolean = false>(options?: 
  *
  * Creates an api token. The plaintext is returned once and never stored — copy it now.
  */
-export const postApiMeApiKeys = <ThrowOnError extends boolean = false>(options: Options<PostApiMeApiKeysData, ThrowOnError>) => (options.client ?? client).post<PostApiMeApiKeysResponses, PostApiMeApiKeysErrors, ThrowOnError>({
+export const postMeApiKeys = <ThrowOnError extends boolean = false>(options: Options<PostMeApiKeysData, ThrowOnError>) => (options.client ?? client).post<PostMeApiKeysResponses, PostMeApiKeysErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/me/api-keys',
     ...options,
@@ -116,7 +116,7 @@ export const postApiMeApiKeys = <ThrowOnError extends boolean = false>(options: 
  *
  * Revokes one of the caller's api tokens. Irreversible.
  */
-export const deleteApiMeApiKeysById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiMeApiKeysByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiMeApiKeysByIdResponses, DeleteApiMeApiKeysByIdErrors, ThrowOnError>({
+export const deleteMeApiKeysById = <ThrowOnError extends boolean = false>(options: Options<DeleteMeApiKeysByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteMeApiKeysByIdResponses, DeleteMeApiKeysByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/me/api-keys/{id}',
     ...options
@@ -127,7 +127,7 @@ export const deleteApiMeApiKeysById = <ThrowOnError extends boolean = false>(opt
  *
  * Updates the display name of one of the caller's api tokens.
  */
-export const patchApiMeApiKeysById = <ThrowOnError extends boolean = false>(options: Options<PatchApiMeApiKeysByIdData, ThrowOnError>) => (options.client ?? client).patch<PatchApiMeApiKeysByIdResponses, PatchApiMeApiKeysByIdErrors, ThrowOnError>({
+export const patchMeApiKeysById = <ThrowOnError extends boolean = false>(options: Options<PatchMeApiKeysByIdData, ThrowOnError>) => (options.client ?? client).patch<PatchMeApiKeysByIdResponses, PatchMeApiKeysByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/me/api-keys/{id}',
     ...options,
@@ -142,7 +142,7 @@ export const patchApiMeApiKeysById = <ThrowOnError extends boolean = false>(opti
  *
  * Returns the caller's credit balance, per-cycle allowance and current period for the api credit pool.
  */
-export const getApiMeCredits = <ThrowOnError extends boolean = false>(options?: Options<GetApiMeCreditsData, ThrowOnError>) => (options?.client ?? client).get<GetApiMeCreditsResponses, GetApiMeCreditsErrors, ThrowOnError>({
+export const getMeCredits = <ThrowOnError extends boolean = false>(options?: Options<GetMeCreditsData, ThrowOnError>) => (options?.client ?? client).get<GetMeCreditsResponses, GetMeCreditsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/me/credits',
     ...options
@@ -153,7 +153,7 @@ export const getApiMeCredits = <ThrowOnError extends boolean = false>(options?: 
  *
  * Returns the caller's recent credit ledger entries (grants, consumes, refunds), newest first.
  */
-export const getApiMeCreditsLedger = <ThrowOnError extends boolean = false>(options?: Options<GetApiMeCreditsLedgerData, ThrowOnError>) => (options?.client ?? client).get<GetApiMeCreditsLedgerResponses, GetApiMeCreditsLedgerErrors, ThrowOnError>({
+export const getMeCreditsLedger = <ThrowOnError extends boolean = false>(options?: Options<GetMeCreditsLedgerData, ThrowOnError>) => (options?.client ?? client).get<GetMeCreditsLedgerResponses, GetMeCreditsLedgerErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/me/credits/ledger',
     ...options
@@ -164,7 +164,7 @@ export const getApiMeCreditsLedger = <ThrowOnError extends boolean = false>(opti
  *
  * Returns the active-mint catalog with windowed stats. The activity gate is `hourly_mint_trader_activity`; rows ordered by window-bound activity desc. By default the list hides low-liquidity (dust / drained-pool) mints — see `min_pool_sol`.
  */
-export const getApiMints = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsResponses, GetApiMintsErrors, ThrowOnError>({
+export const getMints = <ThrowOnError extends boolean = false>(options: Options<GetMintsData, ThrowOnError>) => (options.client ?? client).get<GetMintsResponses, GetMintsErrors, ThrowOnError>({
     querySerializer: { parameters: { dex: { array: { explode: false } } } },
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints',
@@ -176,7 +176,7 @@ export const getApiMints = <ThrowOnError extends boolean = false>(options: Optio
  *
  * Returns the mint's identity row (symbol, name, logo_uri, decimals, creator) from the CA catalog. 404 when the pubkey is not present — the enricher may not have seen this mint yet.
  */
-export const getApiMintsByPubkey = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyResponses, GetApiMintsByPubkeyErrors, ThrowOnError>({
+export const getMintsByPubkey = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyResponses, GetMintsByPubkeyErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}',
     ...options
@@ -187,7 +187,7 @@ export const getApiMintsByPubkey = <ThrowOnError extends boolean = false>(option
  *
  * Recent liquidity-pool add/remove/burn events for a mint (newest first), from `lp_events`. Sparse where upstream doesn't yet extract LP for a DEX; returns an empty array then.
  */
-export const getApiMintsByPubkeyLpEvents = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyLpEventsData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyLpEventsResponses, GetApiMintsByPubkeyLpEventsErrors, ThrowOnError>({
+export const getMintsByPubkeyLpEvents = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyLpEventsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyLpEventsResponses, GetMintsByPubkeyLpEventsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/lp-events',
     ...options
@@ -198,7 +198,7 @@ export const getApiMintsByPubkeyLpEvents = <ThrowOnError extends boolean = false
  *
  * Returns per-(pool, dex) rollup with SOL-volume share (0..1) for a single mint over the requested window. `window=all` lists every market the mint ever traded on — use it to resolve markets for tokens with no recent activity.
  */
-export const getApiMintsByPubkeyMarkets = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyMarketsData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyMarketsResponses, GetApiMintsByPubkeyMarketsErrors, ThrowOnError>({
+export const getMintsByPubkeyMarkets = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyMarketsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyMarketsResponses, GetMintsByPubkeyMarketsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/markets',
     ...options
@@ -209,7 +209,7 @@ export const getApiMintsByPubkeyMarkets = <ThrowOnError extends boolean = false>
  *
  * Returns bonding-curve → AMM graduation events (PumpFun → PumpSwap, Raydium Launchpad → CPMM, Meteora DBC → DAMM v2, etc.) for a single mint.
  */
-export const getApiMintsByPubkeyMigrations = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyMigrationsData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyMigrationsResponses, GetApiMintsByPubkeyMigrationsErrors, ThrowOnError>({
+export const getMintsByPubkeyMigrations = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyMigrationsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyMigrationsResponses, GetMintsByPubkeyMigrationsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/migrations',
     ...options
@@ -220,7 +220,7 @@ export const getApiMintsByPubkeyMigrations = <ThrowOnError extends boolean = fal
  *
  * Recent token-safety events (burn|mint_to|freeze|thaw|authority_change) for a mint (newest first), from `mint_safety_events`.
  */
-export const getApiMintsByPubkeySafetyEvents = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeySafetyEventsData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeySafetyEventsResponses, GetApiMintsByPubkeySafetyEventsErrors, ThrowOnError>({
+export const getMintsByPubkeySafetyEvents = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeySafetyEventsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeySafetyEventsResponses, GetMintsByPubkeySafetyEventsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/safety-events',
     ...options
@@ -231,7 +231,7 @@ export const getApiMintsByPubkeySafetyEvents = <ThrowOnError extends boolean = f
  *
  * Returns per-mint windowed stats (volume, price_change, swap_count, buy/sell split) for all four windows (1m/5m/1h/24h) in one response.
  */
-export const getApiMintsByPubkeyStats = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyStatsData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyStatsResponses, GetApiMintsByPubkeyStatsErrors, ThrowOnError>({
+export const getMintsByPubkeyStats = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyStatsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyStatsResponses, GetMintsByPubkeyStatsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/stats',
     ...options
@@ -242,7 +242,7 @@ export const getApiMintsByPubkeyStats = <ThrowOnError extends boolean = false>(o
  *
  * Current holders (token_balance > 0) of one mint from `trader_token_stats`. sort ∈ {balance,holding_pnl,recent} (default balance). Paged via offset.
  */
-export const getApiMintsByPubkeyTopHolders = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyTopHoldersData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyTopHoldersResponses, GetApiMintsByPubkeyTopHoldersErrors, ThrowOnError>({
+export const getMintsByPubkeyTopHolders = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyTopHoldersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyTopHoldersResponses, GetMintsByPubkeyTopHoldersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/top-holders',
     ...options
@@ -253,7 +253,7 @@ export const getApiMintsByPubkeyTopHolders = <ThrowOnError extends boolean = fal
  *
  * Per-(trader) leaderboard for one mint from `trader_token_stats` (all positions). sort ∈ {pnl,volume,swaps,recent} (default pnl). Paged via offset.
  */
-export const getApiMintsByPubkeyTopTraders = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyTopTradersData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyTopTradersResponses, GetApiMintsByPubkeyTopTradersErrors, ThrowOnError>({
+export const getMintsByPubkeyTopTraders = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyTopTradersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyTopTradersResponses, GetMintsByPubkeyTopTradersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/top-traders',
     ...options
@@ -264,7 +264,7 @@ export const getApiMintsByPubkeyTopTraders = <ThrowOnError extends boolean = fal
  *
  * Single per-(trader, mint) stats row (same shape as a top-traders row) from `trader_token_stats`. 404 when the trader never traded the mint.
  */
-export const getApiMintsByPubkeyTradersByTrader = <ThrowOnError extends boolean = false>(options: Options<GetApiMintsByPubkeyTradersByTraderData, ThrowOnError>) => (options.client ?? client).get<GetApiMintsByPubkeyTradersByTraderResponses, GetApiMintsByPubkeyTradersByTraderErrors, ThrowOnError>({
+export const getMintsByPubkeyTradersByTrader = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyTradersByTraderData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyTradersByTraderResponses, GetMintsByPubkeyTradersByTraderErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/mints/{pubkey}/traders/{trader}',
     ...options
@@ -275,7 +275,7 @@ export const getApiMintsByPubkeyTradersByTrader = <ThrowOnError extends boolean 
  *
  * Returns OHLCV buckets for a mint at the given timeframe within `[from, to)`. Both time params are optional; omitting them returns the last ~500 candles.
  */
-export const getApiOhlcv = <ThrowOnError extends boolean = false>(options: Options<GetApiOhlcvData, ThrowOnError>) => (options.client ?? client).get<GetApiOhlcvResponses, GetApiOhlcvErrors, ThrowOnError>({
+export const getOhlcv = <ThrowOnError extends boolean = false>(options: Options<GetOhlcvData, ThrowOnError>) => (options.client ?? client).get<GetOhlcvResponses, GetOhlcvErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/ohlcv',
     ...options
@@ -284,7 +284,7 @@ export const getApiOhlcv = <ThrowOnError extends boolean = false>(options: Optio
 /**
  * List Strategies
  */
-export const getApiStrategies = <ThrowOnError extends boolean = false>(options?: Options<GetApiStrategiesData, ThrowOnError>) => (options?.client ?? client).get<GetApiStrategiesResponses, GetApiStrategiesErrors, ThrowOnError>({
+export const getStrategies = <ThrowOnError extends boolean = false>(options?: Options<GetStrategiesData, ThrowOnError>) => (options?.client ?? client).get<GetStrategiesResponses, GetStrategiesErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies',
     ...options
@@ -293,7 +293,7 @@ export const getApiStrategies = <ThrowOnError extends boolean = false>(options?:
 /**
  * Create Strategy
  */
-export const postApiStrategies = <ThrowOnError extends boolean = false>(options: Options<PostApiStrategiesData, ThrowOnError>) => (options.client ?? client).post<PostApiStrategiesResponses, PostApiStrategiesErrors, ThrowOnError>({
+export const postStrategies = <ThrowOnError extends boolean = false>(options: Options<PostStrategiesData, ThrowOnError>) => (options.client ?? client).post<PostStrategiesResponses, PostStrategiesErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies',
     ...options,
@@ -306,7 +306,7 @@ export const postApiStrategies = <ThrowOnError extends boolean = false>(options:
 /**
  * Strategy Dashboard Stats
  */
-export const getApiStrategiesDashboard = <ThrowOnError extends boolean = false>(options?: Options<GetApiStrategiesDashboardData, ThrowOnError>) => (options?.client ?? client).get<GetApiStrategiesDashboardResponses, GetApiStrategiesDashboardErrors, ThrowOnError>({
+export const getStrategiesDashboard = <ThrowOnError extends boolean = false>(options?: Options<GetStrategiesDashboardData, ThrowOnError>) => (options?.client ?? client).get<GetStrategiesDashboardResponses, GetStrategiesDashboardErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies/dashboard',
     ...options
@@ -315,7 +315,7 @@ export const getApiStrategiesDashboard = <ThrowOnError extends boolean = false>(
 /**
  * Preview Strategy
  */
-export const postApiStrategiesPreview = <ThrowOnError extends boolean = false>(options: Options<PostApiStrategiesPreviewData, ThrowOnError>) => (options.client ?? client).post<PostApiStrategiesPreviewResponses, PostApiStrategiesPreviewErrors, ThrowOnError>({
+export const postStrategiesPreview = <ThrowOnError extends boolean = false>(options: Options<PostStrategiesPreviewData, ThrowOnError>) => (options.client ?? client).post<PostStrategiesPreviewResponses, PostStrategiesPreviewErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies/preview',
     ...options,
@@ -328,7 +328,7 @@ export const postApiStrategiesPreview = <ThrowOnError extends boolean = false>(o
 /**
  * List Strategies with Stats
  */
-export const getApiStrategiesWithStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiStrategiesWithStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiStrategiesWithStatsResponses, GetApiStrategiesWithStatsErrors, ThrowOnError>({
+export const getStrategiesWithStats = <ThrowOnError extends boolean = false>(options?: Options<GetStrategiesWithStatsData, ThrowOnError>) => (options?.client ?? client).get<GetStrategiesWithStatsResponses, GetStrategiesWithStatsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies/with-stats',
     ...options
@@ -337,7 +337,7 @@ export const getApiStrategiesWithStats = <ThrowOnError extends boolean = false>(
 /**
  * Delete Strategy
  */
-export const deleteApiStrategiesById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiStrategiesByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiStrategiesByIdResponses, DeleteApiStrategiesByIdErrors, ThrowOnError>({
+export const deleteStrategiesById = <ThrowOnError extends boolean = false>(options: Options<DeleteStrategiesByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteStrategiesByIdResponses, DeleteStrategiesByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies/{id}',
     ...options
@@ -346,7 +346,7 @@ export const deleteApiStrategiesById = <ThrowOnError extends boolean = false>(op
 /**
  * Get Strategy
  */
-export const getApiStrategiesById = <ThrowOnError extends boolean = false>(options: Options<GetApiStrategiesByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiStrategiesByIdResponses, GetApiStrategiesByIdErrors, ThrowOnError>({
+export const getStrategiesById = <ThrowOnError extends boolean = false>(options: Options<GetStrategiesByIdData, ThrowOnError>) => (options.client ?? client).get<GetStrategiesByIdResponses, GetStrategiesByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies/{id}',
     ...options
@@ -355,7 +355,7 @@ export const getApiStrategiesById = <ThrowOnError extends boolean = false>(optio
 /**
  * Update Strategy
  */
-export const putApiStrategiesById = <ThrowOnError extends boolean = false>(options: Options<PutApiStrategiesByIdData, ThrowOnError>) => (options.client ?? client).put<PutApiStrategiesByIdResponses, PutApiStrategiesByIdErrors, ThrowOnError>({
+export const putStrategiesById = <ThrowOnError extends boolean = false>(options: Options<PutStrategiesByIdData, ThrowOnError>) => (options.client ?? client).put<PutStrategiesByIdResponses, PutStrategiesByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies/{id}',
     ...options,
@@ -370,7 +370,7 @@ export const putApiStrategiesById = <ThrowOnError extends boolean = false>(optio
  *
  * Returns the current user's subscription info including limits and usage.
  */
-export const getApiSubscriptionsMe = <ThrowOnError extends boolean = false>(options?: Options<GetApiSubscriptionsMeData, ThrowOnError>) => (options?.client ?? client).get<GetApiSubscriptionsMeResponses, GetApiSubscriptionsMeErrors, ThrowOnError>({
+export const getSubscriptionsMe = <ThrowOnError extends boolean = false>(options?: Options<GetSubscriptionsMeData, ThrowOnError>) => (options?.client ?? client).get<GetSubscriptionsMeResponses, GetSubscriptionsMeErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/subscriptions/me',
     ...options
@@ -381,7 +381,7 @@ export const getApiSubscriptionsMe = <ThrowOnError extends boolean = false>(opti
  *
  * Returns swaps filtered by `mint` and/or one-or-more `trader` params (AND-combined; at least one required). `trader` may be repeated (trader=a&trader=b) or comma-separated. All time params are optional; with none supplied the latest swaps are returned regardless of age. Supports RFC3339 from/to, Unix epoch from_ts/to_ts, and cursor-based before_ts (returns the latest swaps strictly older than the cursor — no lower bound, so pagination crosses activity gaps).
  */
-export const getApiSwaps = <ThrowOnError extends boolean = false>(options?: Options<GetApiSwapsData, ThrowOnError>) => (options?.client ?? client).get<GetApiSwapsResponses, GetApiSwapsErrors, ThrowOnError>({
+export const getSwaps = <ThrowOnError extends boolean = false>(options?: Options<GetSwapsData, ThrowOnError>) => (options?.client ?? client).get<GetSwapsResponses, GetSwapsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/swaps',
     ...options
@@ -390,44 +390,44 @@ export const getApiSwaps = <ThrowOnError extends boolean = false>(options?: Opti
 /**
  * Global tip stats
  */
-export const getApiTipsGlobal = <ThrowOnError extends boolean = false>(options?: Options<GetApiTipsGlobalData, ThrowOnError>) => (options?.client ?? client).get<GetApiTipsGlobalResponses, GetApiTipsGlobalErrors, ThrowOnError>({ url: '/api/tips/global', ...options });
+export const getTipsGlobal = <ThrowOnError extends boolean = false>(options?: Options<GetTipsGlobalData, ThrowOnError>) => (options?.client ?? client).get<GetTipsGlobalResponses, GetTipsGlobalErrors, ThrowOnError>({ url: '/api/tips/global', ...options });
 
 /**
  * Tip heatmap
  */
-export const getApiTipsHeatmap = <ThrowOnError extends boolean = false>(options?: Options<GetApiTipsHeatmapData, ThrowOnError>) => (options?.client ?? client).get<GetApiTipsHeatmapResponses, GetApiTipsHeatmapErrors, ThrowOnError>({ url: '/api/tips/heatmap', ...options });
+export const getTipsHeatmap = <ThrowOnError extends boolean = false>(options?: Options<GetTipsHeatmapData, ThrowOnError>) => (options?.client ?? client).get<GetTipsHeatmapResponses, GetTipsHeatmapErrors, ThrowOnError>({ url: '/api/tips/heatmap', ...options });
 
 /**
  * Jito-efficiency leaderboard
  */
-export const getApiTipsLeaderboardJitoEfficiency = <ThrowOnError extends boolean = false>(options?: Options<GetApiTipsLeaderboardJitoEfficiencyData, ThrowOnError>) => (options?.client ?? client).get<GetApiTipsLeaderboardJitoEfficiencyResponses, GetApiTipsLeaderboardJitoEfficiencyErrors, ThrowOnError>({ url: '/api/tips/leaderboard/jito-efficiency', ...options });
+export const getTipsLeaderboardJitoEfficiency = <ThrowOnError extends boolean = false>(options?: Options<GetTipsLeaderboardJitoEfficiencyData, ThrowOnError>) => (options?.client ?? client).get<GetTipsLeaderboardJitoEfficiencyResponses, GetTipsLeaderboardJitoEfficiencyErrors, ThrowOnError>({ url: '/api/tips/leaderboard/jito-efficiency', ...options });
 
 /**
  * Tip moving-average series
  */
-export const getApiTipsMat = <ThrowOnError extends boolean = false>(options?: Options<GetApiTipsMatData, ThrowOnError>) => (options?.client ?? client).get<GetApiTipsMatResponses, GetApiTipsMatErrors, ThrowOnError>({ url: '/api/tips/mat', ...options });
+export const getTipsMat = <ThrowOnError extends boolean = false>(options?: Options<GetTipsMatData, ThrowOnError>) => (options?.client ?? client).get<GetTipsMatResponses, GetTipsMatErrors, ThrowOnError>({ url: '/api/tips/mat', ...options });
 
 /**
  * Tipped-volume share series
  */
-export const getApiTipsMevShare = <ThrowOnError extends boolean = false>(options?: Options<GetApiTipsMevShareData, ThrowOnError>) => (options?.client ?? client).get<GetApiTipsMevShareResponses, GetApiTipsMevShareErrors, ThrowOnError>({ url: '/api/tips/mev-share', ...options });
+export const getTipsMevShare = <ThrowOnError extends boolean = false>(options?: Options<GetTipsMevShareData, ThrowOnError>) => (options?.client ?? client).get<GetTipsMevShareResponses, GetTipsMevShareErrors, ThrowOnError>({ url: '/api/tips/mev-share', ...options });
 
 /**
  * Tip vs priority-fee ratio series
  */
-export const getApiTipsPriorityRatio = <ThrowOnError extends boolean = false>(options?: Options<GetApiTipsPriorityRatioData, ThrowOnError>) => (options?.client ?? client).get<GetApiTipsPriorityRatioResponses, GetApiTipsPriorityRatioErrors, ThrowOnError>({ url: '/api/tips/priority-ratio', ...options });
+export const getTipsPriorityRatio = <ThrowOnError extends boolean = false>(options?: Options<GetTipsPriorityRatioData, ThrowOnError>) => (options?.client ?? client).get<GetTipsPriorityRatioResponses, GetTipsPriorityRatioErrors, ThrowOnError>({ url: '/api/tips/priority-ratio', ...options });
 
 /**
  * Tip service dominance
  */
-export const getApiTipsServices = <ThrowOnError extends boolean = false>(options?: Options<GetApiTipsServicesData, ThrowOnError>) => (options?.client ?? client).get<GetApiTipsServicesResponses, GetApiTipsServicesErrors, ThrowOnError>({ url: '/api/tips/services', ...options });
+export const getTipsServices = <ThrowOnError extends boolean = false>(options?: Options<GetTipsServicesData, ThrowOnError>) => (options?.client ?? client).get<GetTipsServicesResponses, GetTipsServicesErrors, ThrowOnError>({ url: '/api/tips/services', ...options });
 
 /**
  * List Trader Filters
  *
  * Returns all saved filter presets belonging to the authenticated user.
  */
-export const getApiTraderFilters = <ThrowOnError extends boolean = false>(options?: Options<GetApiTraderFiltersData, ThrowOnError>) => (options?.client ?? client).get<GetApiTraderFiltersResponses, GetApiTraderFiltersErrors, ThrowOnError>({
+export const getTraderFilters = <ThrowOnError extends boolean = false>(options?: Options<GetTraderFiltersData, ThrowOnError>) => (options?.client ?? client).get<GetTraderFiltersResponses, GetTraderFiltersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/trader-filters/',
     ...options
@@ -438,7 +438,7 @@ export const getApiTraderFilters = <ThrowOnError extends boolean = false>(option
  *
  * Creates a new filter preset for the authenticated user.
  */
-export const postApiTraderFilters = <ThrowOnError extends boolean = false>(options: Options<PostApiTraderFiltersData, ThrowOnError>) => (options.client ?? client).post<PostApiTraderFiltersResponses, PostApiTraderFiltersErrors, ThrowOnError>({
+export const postTraderFilters = <ThrowOnError extends boolean = false>(options: Options<PostTraderFiltersData, ThrowOnError>) => (options.client ?? client).post<PostTraderFiltersResponses, PostTraderFiltersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/trader-filters/',
     ...options,
@@ -453,7 +453,7 @@ export const postApiTraderFilters = <ThrowOnError extends boolean = false>(optio
  *
  * Permanently removes a filter preset belonging to the authenticated user.
  */
-export const deleteApiTraderFiltersById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiTraderFiltersByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiTraderFiltersByIdResponses, DeleteApiTraderFiltersByIdErrors, ThrowOnError>({
+export const deleteTraderFiltersById = <ThrowOnError extends boolean = false>(options: Options<DeleteTraderFiltersByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteTraderFiltersByIdResponses, DeleteTraderFiltersByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/trader-filters/{id}',
     ...options
@@ -464,7 +464,7 @@ export const deleteApiTraderFiltersById = <ThrowOnError extends boolean = false>
  *
  * Returns a specific filter preset by ID.
  */
-export const getApiTraderFiltersById = <ThrowOnError extends boolean = false>(options: Options<GetApiTraderFiltersByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiTraderFiltersByIdResponses, GetApiTraderFiltersByIdErrors, ThrowOnError>({
+export const getTraderFiltersById = <ThrowOnError extends boolean = false>(options: Options<GetTraderFiltersByIdData, ThrowOnError>) => (options.client ?? client).get<GetTraderFiltersByIdResponses, GetTraderFiltersByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/trader-filters/{id}',
     ...options
@@ -475,7 +475,7 @@ export const getApiTraderFiltersById = <ThrowOnError extends boolean = false>(op
  *
  * Replaces an existing filter preset for the authenticated user.
  */
-export const putApiTraderFiltersById = <ThrowOnError extends boolean = false>(options: Options<PutApiTraderFiltersByIdData, ThrowOnError>) => (options.client ?? client).put<PutApiTraderFiltersByIdResponses, PutApiTraderFiltersByIdErrors, ThrowOnError>({
+export const putTraderFiltersById = <ThrowOnError extends boolean = false>(options: Options<PutTraderFiltersByIdData, ThrowOnError>) => (options.client ?? client).put<PutTraderFiltersByIdResponses, PutTraderFiltersByIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/trader-filters/{id}',
     ...options,
@@ -490,7 +490,7 @@ export const putApiTraderFiltersById = <ThrowOnError extends boolean = false>(op
  *
  * Retrieves a list of traders supporting advanced filtering and sorting.
  */
-export const getApiTraders = <ThrowOnError extends boolean = false>(options?: Options<GetApiTradersData, ThrowOnError>) => (options?.client ?? client).get<GetApiTradersResponses, GetApiTradersErrors, ThrowOnError>({
+export const getTraders = <ThrowOnError extends boolean = false>(options?: Options<GetTradersData, ThrowOnError>) => (options?.client ?? client).get<GetTradersResponses, GetTradersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders',
     ...options
@@ -501,7 +501,7 @@ export const getApiTraders = <ThrowOnError extends boolean = false>(options?: Op
  *
  * Retrieves a trader's aggregated statistics by internal UUID.
  */
-export const getApiTradersByIdByTraderId = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByIdByTraderIdData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByIdByTraderIdResponses, GetApiTradersByIdByTraderIdErrors, ThrowOnError>({
+export const getTradersByIdByTraderId = <ThrowOnError extends boolean = false>(options: Options<GetTradersByIdByTraderIdData, ThrowOnError>) => (options.client ?? client).get<GetTradersByIdByTraderIdResponses, GetTradersByIdByTraderIdErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/by-id/{traderID}',
     ...options
@@ -512,7 +512,7 @@ export const getApiTradersByIdByTraderId = <ThrowOnError extends boolean = false
  *
  * Retrieves a trader's aggregated statistics by their wallet address.
  */
-export const getApiTradersByWalletByWalletAddress = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByWalletByWalletAddressData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByWalletByWalletAddressResponses, GetApiTradersByWalletByWalletAddressErrors, ThrowOnError>({
+export const getTradersByWalletByWalletAddress = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletByWalletAddressData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletByWalletAddressResponses, GetTradersByWalletByWalletAddressErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/by-wallet/{walletAddress}',
     ...options
@@ -523,7 +523,7 @@ export const getApiTradersByWalletByWalletAddress = <ThrowOnError extends boolea
  *
  * Exports trader records based on advanced filters.
  */
-export const postApiTradersExport = <ThrowOnError extends boolean = false>(options: Options<PostApiTradersExportData, ThrowOnError>) => (options.client ?? client).post<PostApiTradersExportResponses, PostApiTradersExportErrors, ThrowOnError>({
+export const postTradersExport = <ThrowOnError extends boolean = false>(options: Options<PostTradersExportData, ThrowOnError>) => (options.client ?? client).post<PostTradersExportResponses, PostTradersExportErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/export',
     ...options,
@@ -538,7 +538,7 @@ export const postApiTradersExport = <ThrowOnError extends boolean = false>(optio
  *
  * Fuzzy searches traders by wallet address or known name.
  */
-export const getApiTradersSearch = <ThrowOnError extends boolean = false>(options?: Options<GetApiTradersSearchData, ThrowOnError>) => (options?.client ?? client).get<GetApiTradersSearchResponses, GetApiTradersSearchErrors, ThrowOnError>({
+export const getTradersSearch = <ThrowOnError extends boolean = false>(options?: Options<GetTradersSearchData, ThrowOnError>) => (options?.client ?? client).get<GetTradersSearchResponses, GetTradersSearchErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/search',
     ...options
@@ -547,7 +547,7 @@ export const getApiTradersSearch = <ThrowOnError extends boolean = false>(option
 /**
  * Trader Snapshot
  */
-export const getApiTradersSnapshot = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersSnapshotData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersSnapshotResponses, GetApiTradersSnapshotErrors, ThrowOnError>({
+export const getTradersSnapshot = <ThrowOnError extends boolean = false>(options: Options<GetTradersSnapshotData, ThrowOnError>) => (options.client ?? client).get<GetTradersSnapshotResponses, GetTradersSnapshotErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/snapshot',
     ...options
@@ -558,7 +558,7 @@ export const getApiTradersSnapshot = <ThrowOnError extends boolean = false>(opti
  *
  * Retrieves aggregated daily profits for a specific trader.
  */
-export const getApiTradersByTraderIdDailyProfits = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByTraderIdDailyProfitsData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByTraderIdDailyProfitsResponses, GetApiTradersByTraderIdDailyProfitsErrors, ThrowOnError>({
+export const getTradersByTraderIdDailyProfits = <ThrowOnError extends boolean = false>(options: Options<GetTradersByTraderIdDailyProfitsData, ThrowOnError>) => (options.client ?? client).get<GetTradersByTraderIdDailyProfitsResponses, GetTradersByTraderIdDailyProfitsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{traderID}/daily-profits',
     ...options
@@ -569,7 +569,7 @@ export const getApiTradersByTraderIdDailyProfits = <ThrowOnError extends boolean
  *
  * Retrieves per-token PnL statistics for a specific trader.
  */
-export const getApiTradersByTraderIdPnls = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByTraderIdPnlsData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByTraderIdPnlsResponses, GetApiTradersByTraderIdPnlsErrors, ThrowOnError>({
+export const getTradersByTraderIdPnls = <ThrowOnError extends boolean = false>(options: Options<GetTradersByTraderIdPnlsData, ThrowOnError>) => (options.client ?? client).get<GetTradersByTraderIdPnlsResponses, GetTradersByTraderIdPnlsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{traderID}/pnls',
     ...options
@@ -580,7 +580,7 @@ export const getApiTradersByTraderIdPnls = <ThrowOnError extends boolean = false
  *
  * Mints created by this wallet (from `mint_creators`), newest first, each with a graduation flag. Empty array for non-creators.
  */
-export const getApiTradersByWalletAddressCreatedTokens = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByWalletAddressCreatedTokensData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByWalletAddressCreatedTokensResponses, GetApiTradersByWalletAddressCreatedTokensErrors, ThrowOnError>({
+export const getTradersByWalletAddressCreatedTokens = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressCreatedTokensData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressCreatedTokensResponses, GetTradersByWalletAddressCreatedTokensErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{walletAddress}/created-tokens',
     ...options
@@ -591,7 +591,7 @@ export const getApiTradersByWalletAddressCreatedTokens = <ThrowOnError extends b
  *
  * Returns daily realised PnL points (oldest first) for a trader, sourced from the aggregator's `trader_daily_pnl_series` SQL function.
  */
-export const getApiTradersByWalletAddressPnlSeries = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByWalletAddressPnlSeriesData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByWalletAddressPnlSeriesResponses, GetApiTradersByWalletAddressPnlSeriesErrors, ThrowOnError>({
+export const getTradersByWalletAddressPnlSeries = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressPnlSeriesData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressPnlSeriesResponses, GetTradersByWalletAddressPnlSeriesErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{walletAddress}/pnl-series',
     ...options
@@ -600,7 +600,7 @@ export const getApiTradersByWalletAddressPnlSeries = <ThrowOnError extends boole
 /**
  * Get Trader Tip Stats
  */
-export const getApiTradersByWalletAddressTips = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByWalletAddressTipsData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByWalletAddressTipsResponses, GetApiTradersByWalletAddressTipsErrors, ThrowOnError>({
+export const getTradersByWalletAddressTips = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressTipsData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressTipsResponses, GetTradersByWalletAddressTipsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{walletAddress}/tips',
     ...options
@@ -609,7 +609,7 @@ export const getApiTradersByWalletAddressTips = <ThrowOnError extends boolean = 
 /**
  * List Trader Tip Services
  */
-export const getApiTradersByWalletAddressTipsServices = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByWalletAddressTipsServicesData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByWalletAddressTipsServicesResponses, GetApiTradersByWalletAddressTipsServicesErrors, ThrowOnError>({
+export const getTradersByWalletAddressTipsServices = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressTipsServicesData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressTipsServicesResponses, GetTradersByWalletAddressTipsServicesErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{walletAddress}/tips/services',
     ...options
@@ -618,7 +618,7 @@ export const getApiTradersByWalletAddressTipsServices = <ThrowOnError extends bo
 /**
  * List Trader Token Positions
  */
-export const getApiTradersByWalletAddressTokens = <ThrowOnError extends boolean = false>(options: Options<GetApiTradersByWalletAddressTokensData, ThrowOnError>) => (options.client ?? client).get<GetApiTradersByWalletAddressTokensResponses, GetApiTradersByWalletAddressTokensErrors, ThrowOnError>({
+export const getTradersByWalletAddressTokens = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressTokensData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressTokensResponses, GetTradersByWalletAddressTokensErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{walletAddress}/tokens',
     ...options
