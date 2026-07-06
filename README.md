@@ -3,6 +3,8 @@
 Official JavaScript/TypeScript client for the [Pulsight](https://pulsight.xyz)
 public API (data reads, backtests, strategies).
 
+📦 **[npmjs.com/package/@pulsight-xyz/sdk](https://www.npmjs.com/package/@pulsight-xyz/sdk)** — `npm install @pulsight-xyz/sdk`
+
 > This directory is the source of truth; CI mirrors it to
 > `github.com/pulsight-xyz/pulsight-js` and publishes `@pulsight-xyz/sdk` to npm
 > on a `publish-{VERSION}` tag (see the `sdk-*` jobs in `.gitlab-ci.yml`).
@@ -31,12 +33,12 @@ make sdk-js
 ## Usage
 
 ```ts
-import { createPulsightClient, getApiTraders, CreditExhaustedError, creditsRemaining } from '@pulsight-xyz/sdk';
+import { createPulsightClient, getTraders, CreditExhaustedError, creditsRemaining } from '@pulsight-xyz/sdk';
 
 const client = createPulsightClient('pk_live_…'); // api token from the settings UI
 
 try {
-  const { data, response } = await getApiTraders({ client });
+  const { data, response } = await getTraders({ client });
   console.log('credits left:', creditsRemaining(response.headers));
 } catch (err) {
   if (err instanceof CreditExhaustedError) {
