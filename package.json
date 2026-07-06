@@ -1,0 +1,40 @@
+{
+  "name": "@pulsight-xyz/sdk",
+  "version": "0.1.0",
+  "description": "Official JavaScript/TypeScript client for the Pulsight public API (data, backtests, strategies).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pulsight-xyz/pulsight-js.git"
+  },
+  "homepage": "https://pulsight.xyz",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "generate": "openapi-ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@hey-api/client-fetch": "^0.13.0",
+    "@hey-api/openapi-ts": "^0.97.1",
+    "typescript": "^6.0.3"
+  }
+}
