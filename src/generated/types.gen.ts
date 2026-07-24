@@ -53,6 +53,35 @@ export type InternalAdaptersPrimaryHttpHandlerTraderExportRequest = {
     sort_by?: string;
 };
 
+export type InternalAdaptersPrimaryHttpHandlerWebhookNotifierCreateRequest = {
+    filter_preset_id?: string;
+    interval_hours?: number;
+    latest_activity_seconds?: number;
+    name?: string;
+    oldest_trade_op?: string;
+    oldest_trade_seconds?: number;
+    webhook_extra?: {
+        [key: string]: unknown;
+    };
+    webhook_type?: PulsightInternalCoreDomainWebhookType;
+    webhook_url?: string;
+};
+
+export type InternalAdaptersPrimaryHttpHandlerWebhookNotifierUpdateRequest = {
+    filter_preset_id?: string;
+    interval_hours?: number;
+    is_active?: boolean;
+    latest_activity_seconds?: number;
+    name?: string;
+    oldest_trade_op?: string;
+    oldest_trade_seconds?: number;
+    webhook_extra?: {
+        [key: string]: unknown;
+    };
+    webhook_type?: PulsightInternalCoreDomainWebhookType;
+    webhook_url?: string;
+};
+
 export type InternalAdaptersPrimaryHttpHandlerApiKeyRenameRequest = {
     name?: string;
 };
@@ -70,6 +99,15 @@ export type InternalAdaptersPrimaryHttpHandlerBestRunRef = {
 
 export type InternalAdaptersPrimaryHttpHandlerErrorResponse = {
     error?: string;
+};
+
+export type InternalAdaptersPrimaryHttpHandlerPickTokensRequest = {
+    scope?: PulsightInternalCoreUsecasesBacktestTokenScope;
+    time_range?: PulsightInternalCoreUsecasesBacktestTimeRange;
+};
+
+export type InternalAdaptersPrimaryHttpHandlerPickTokensResponse = {
+    mints?: Array<string>;
 };
 
 export type InternalAdaptersPrimaryHttpHandlerServiceLoyaltyRow = {
@@ -156,16 +194,20 @@ export type InternalAdaptersPrimaryHttpHandlerSwapEventRow = {
     amount_in?: number;
     amount_out?: number;
     arb_pnl_lamports?: number;
+    base_decimals?: number;
     dex?: string;
     fee?: number;
     is_arb?: boolean;
     is_buy?: boolean;
+    label?: string;
+    label_type?: string;
     mint?: string;
     pool?: string;
     priority_fee_lamports?: number;
     quote_mint?: string;
     realized_profit?: number;
     signature?: string;
+    slot?: number;
     sold_more_than_bought?: boolean;
     sold_without_buy?: boolean;
     tip_lamports?: number;
@@ -215,6 +257,19 @@ export type InternalAdaptersPrimaryHttpHandlerTraderTipStatsResponse = {
     window?: string;
 };
 
+export type InternalAdaptersPrimaryHttpHandlerValidateStrategyRequest = {
+    def?: PulsightInternalCoreDomainStrategyStrategyDef;
+    venue?: PulsightInternalCoreDomainStrategyVenueId;
+};
+
+export type PulsightInternalCoreDomainAggregatorAuthorityStat = {
+    freeze?: string;
+    freeze_active?: boolean;
+    mint?: string;
+    mint_active?: boolean;
+    observed?: boolean;
+};
+
 export type PulsightInternalCoreDomainAggregatorBondingCurveState = {
     /**
      * True iff mint_migrations carries any graduation row for this mint.
@@ -244,6 +299,43 @@ export type PulsightInternalCoreDomainAggregatorBondingCurveState = {
      * JSON safety). "0" when no curve swap is on file.
      */
     virtual_token?: string;
+};
+
+export type PulsightInternalCoreDomainAggregatorBundlerEntry = {
+    balance?: string;
+    initial_balance?: string;
+    initial_pct_of_supply?: number;
+    /**
+     * Label/LabelType identify a known wallet (e.g. "Bybit"/"cex") from the
+     * admin-managed registry; empty when unknown. Same provenance as
+     * HolderEntry.Label.
+     */
+    label?: string;
+    label_type?: string;
+    pct_of_supply?: number;
+    slot?: number;
+    wallet?: string;
+};
+
+export type PulsightInternalCoreDomainAggregatorBundlerStat = {
+    available?: boolean;
+    count?: number;
+    total_initial_pct?: number;
+    total_pct?: number;
+    wallets?: Array<PulsightInternalCoreDomainAggregatorBundlerEntry>;
+};
+
+export type PulsightInternalCoreDomainAggregatorCohortStat = {
+    /**
+     * false = signal not computable yet
+     */
+    available?: boolean;
+    count?: number;
+    /**
+     * % of circulating
+     */
+    total_pct?: number;
+    wallets?: Array<PulsightInternalCoreDomainAggregatorHolderEntry>;
 };
 
 export type PulsightInternalCoreDomainAggregatorCreatedMintRow = {
@@ -287,6 +379,12 @@ export type PulsightInternalCoreDomainAggregatorDevHoldings = {
     supply_raw?: string;
 };
 
+export type PulsightInternalCoreDomainAggregatorDevStat = {
+    creator?: string;
+    pct_of_supply?: number;
+    sold?: boolean;
+};
+
 export type PulsightInternalCoreDomainAggregatorGlobalTipStats = {
     p50_tip_lamports?: number;
     p90_tip_lamports?: number;
@@ -308,8 +406,36 @@ export type PulsightInternalCoreDomainAggregatorHeatmapResponse = {
     points?: Array<PulsightInternalCoreDomainAggregatorTipHeatmapPoint>;
 };
 
+export type PulsightInternalCoreDomainAggregatorHolderEntry = {
+    /**
+     * raw base units (decimal string)
+     */
+    balance?: string;
+    is_bundler?: boolean;
+    is_insider?: boolean;
+    is_sniper?: boolean;
+    /**
+     * Label/LabelType identify a known wallet (e.g. "Bybit"/"cex",
+     * "Pump.fun Fees"/"fee") from the admin-managed registry; empty when
+     * unknown.
+     */
+    label?: string;
+    label_type?: string;
+    owner?: string;
+    /**
+     * % of circulating, 0..100
+     */
+    pct_of_supply?: number;
+};
+
 export type PulsightInternalCoreDomainAggregatorJitoEfficiencyRow = {
     efficiency_score?: number;
+    /**
+     * Label/LabelType identify a known wallet (CEX/fee/KOL/...) from the
+     * known_addresses registry; empty when the trader isn't labelled.
+     */
+    label?: string;
+    label_type?: string;
     tip_swaps?: number;
     total_tip_sum?: number;
     total_volume_in?: number;
@@ -339,6 +465,19 @@ export type PulsightInternalCoreDomainAggregatorLpEvent = {
     timestamp?: string;
 };
 
+export type PulsightInternalCoreDomainAggregatorLpStat = {
+    burned?: boolean;
+};
+
+export type PulsightInternalCoreDomainAggregatorMarketStat = {
+    /**
+     * top-pool volume share, 0..1
+     */
+    concentration?: number;
+    pool_count?: number;
+    total_liquidity_usd?: number;
+};
+
 export type PulsightInternalCoreDomainAggregatorMatPoint = {
     bucket_ts?: number;
     ma_1h?: number;
@@ -351,6 +490,37 @@ export type PulsightInternalCoreDomainAggregatorMevTipSharePoint = {
     share_pct?: number;
     tipped_volume_lamports?: number;
     total_volume_lamports?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintBundled = {
+    initial_pct?: number;
+    wallets?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintHoneypot = {
+    /**
+     * BuyCount/SellCount/Buyers/Sellers back "buy_dominant": an all-time sell-trap
+     * (> buyDominanceMinBuyShare buys over > buyDominanceMinSwaps swaps).
+     * Buyers/Sellers are distinct wallets.
+     */
+    buy_count?: number;
+    buyers?: number;
+    /**
+     * DuplicateCount backs "copycat": how many mints share this (symbol, name).
+     */
+    duplicate_count?: number;
+    /**
+     * FreezeCount/ThawCount back the "freezes_holders" reason.
+     */
+    freeze_count?: number;
+    reasons?: Array<string>;
+    sell_count?: number;
+    sellers?: number;
+    thaw_count?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintInsiders = {
+    wallets?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintMarket = {
@@ -379,13 +549,21 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     authorities_observed_at?: string;
     /**
      * ── CA mint-catalog enrichment (ported from mint_catalog.rs::find /
-     * list_active). bonding_curve + dev_holdings populate on BOTH
-     * /api/mints (list) and /api/mints/:pubkey (detail); supply +
-     * authorities populate on the detail path only (nil on list rows).
-     * All pointer + omitempty so list rows stay lean. The frontend's
-     * CurveBadge/DevPill already render bonding_curve/dev_holdings.
+     * list_active). bonding_curve + dev_holdings + supply populate on BOTH
+     * /api/mints (list) and /api/mints/:pubkey (detail); authorities
+     * populate on the detail path only (nil on list rows). All pointer +
+     * omitempty so list rows stay lean. The frontend's CurveBadge/DevPill
+     * already render bonding_curve/dev_holdings.
      */
     bonding_curve?: PulsightInternalCoreDomainAggregatorBondingCurveState;
+    /**
+     * Bundled/Insiders are the audit-cell cohort flags (best-effort list
+     * decoration; absent when not notable). Bundled = a same-slot launch buy
+     * cluster (swap-derived); Insiders = the creator distributed supply via
+     * launch-window SPL transfers (needs token-program capture). Both are
+     * at-a-glance proxies for the per-mint risk card's full cohorts.
+     */
+    bundled?: PulsightInternalCoreDomainAggregatorMintBundled;
     /**
      * BuyCount/SellCount: buy- vs sell-side swap counts over the `?hours`
      * activity window (countIf(is_buy)). Populated on the list path; 0 on
@@ -399,6 +577,22 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     first_seen_ts?: string;
     freeze_authority?: string;
     /**
+     * ── GMGN-style discovery enrichment (list path only, best-effort). ──
+     * HolderCount is the number of distinct wallets currently holding a
+     * positive balance of this mint (uniqExact over trader_token_stats).
+     * nil when the holders batch is unavailable. Best-effort: a holders
+     * hiccup decorates fewer rows, it never fails the listing.
+     */
+    holder_count?: number;
+    /**
+     * Honeypot flags a likely sell-blocking token. Best-effort decoration;
+     * absent when no reason fires. Step 1 populates the "freezes_holders"
+     * reason from mint_safety_events (froze many holder accounts, thawed
+     * few). Future Token-2022 reasons (transfer_fee/hook/…) accrete here.
+     */
+    honeypot?: PulsightInternalCoreDomainAggregatorMintHoneypot;
+    insiders?: PulsightInternalCoreDomainAggregatorMintInsiders;
+    /**
      * IsMayhemMode flags a Pump.fun "Mayhem"-mode token (its trades route
      * through the Mayhem custody program). Populated on BOTH list and detail
      * from the mint_mayhem table; omitted when false.
@@ -406,6 +600,13 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     is_mayhem_mode?: boolean;
     last_trade_ts?: string;
     logo_uri?: string;
+    /**
+     * MarketCapUsd is PriceUsd × circulating supply. Equivalently
+     * close_sol × supply_raw × sol_usd / 1e6 (token decimals cancel), so
+     * it's populated even when decimals are unknown (unlike PriceUsd). nil
+     * when the WSOL close, supply, or SOL/USD ref is missing.
+     */
+    market_cap_usd?: number;
     markets_count?: number;
     /**
      * MetadataURI/FetchStatus are detail-only identity fields the
@@ -421,6 +622,23 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      */
     mint_authority?: string;
     name?: string;
+    /**
+     * PriceUsd is the latest price per WHOLE token in USD, derived from the
+     * dominant WSOL-quoted OHLCV close × the SOL/USD reference rate. nil
+     * when there's no WSOL pool, decimals are unknown, or no SOL/USD ref.
+     */
+    price_usd?: number;
+    /**
+     * RiskScore/RiskVerdict are a fast at-a-glance risk score (0..100 +
+     * low|caution|high|critical) computed from the signals already on this row
+     * (authorities, honeypot/copycat/sell-trap, dev %, bundle) via the same
+     * domain ScoreRisk as the per-mint risk card. The listing omits the inputs
+     * that need per-mint queries (top-10 concentration, snipers, insider %,
+     * liquidity), so this is a LOWER BOUND of the card's full score — the token
+     * page is authoritative. nil only if scoring was skipped.
+     */
+    risk_score?: number;
+    risk_verdict?: string;
     sell_count?: number;
     /**
      * Windowed stats bundle keyed by window. Reuses the same
@@ -443,8 +661,9 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      */
     stats?: PulsightInternalCoreDomainAggregatorMintStatsByWindow;
     /**
-     * Supply is the on-chain total supply (NUMERIC → decimal string);
-     * nil until the enricher has decoded the mint account.
+     * Supply is the on-chain total supply (NUMERIC → decimal string, raw
+     * smallest units); nil until the enricher has decoded the mint account.
+     * Populated on the list path to back the market-cap column.
      */
     supply?: string;
     /**
@@ -459,6 +678,17 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     swap_count?: number;
     symbol?: string;
     trader_count?: number;
+    /**
+     * UniqueTraders is the number of distinct wallets that have EVER traded
+     * this mint (all-time count() over trader_token_stats, the same
+     * projection-served source as HolderCount). Distinct from TraderCount
+     * (which is a WINDOWED, HLL-approximate count over the `?hours` gate and
+     * is set on the list path only): UniqueTraders is exact and lifetime, so
+     * the list column and the /api/mints/:pubkey detail render the same value.
+     * Populated on BOTH paths, best-effort: nil when the trader_token_stats
+     * read is unavailable.
+     */
+    unique_traders?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintStatsByWindow = {
@@ -473,7 +703,23 @@ export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
     cost_basis_lamports?: string;
     first_buy_ts?: string;
     holding_pnl_lamports?: number;
+    is_bundler?: boolean;
+    is_insider?: boolean;
+    is_sniper?: boolean;
+    /**
+     * Label/LabelType identify a known wallet (CEX/fee/...) from the
+     * admin-managed registry; empty when unknown.
+     */
+    label?: string;
+    label_type?: string;
     last_active_ts?: string;
+    /**
+     * PctOfSupply is the holder's % of circulating supply, set on the
+     * top-holders path (now sourced from on-chain holder_balances). nil on the
+     * top-traders path. IsSniper/IsBundler/IsInsider flag cohort membership
+     * (bundler/insider populate in phase 2 — always false until then).
+     */
+    pct_of_supply?: number;
     realized_profit?: number;
     sell_tx_count?: number;
     token_balance?: string;
@@ -530,6 +776,54 @@ export type PulsightInternalCoreDomainAggregatorOhlcvCandle = {
     sell_volume_sol?: number;
     swap_count?: number;
     token_volume?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorRiskCohort = {
+    bundlers?: Array<PulsightInternalCoreDomainAggregatorBundlerEntry>;
+    group?: string;
+    wallets?: Array<PulsightInternalCoreDomainAggregatorHolderEntry>;
+};
+
+export type PulsightInternalCoreDomainAggregatorRiskItem = {
+    description?: string;
+    level?: PulsightInternalCoreDomainAggregatorRiskLevel;
+    name?: string;
+    score?: number;
+    value?: string;
+};
+
+export type PulsightInternalCoreDomainAggregatorRiskLevel = 'warn' | 'danger';
+
+export type PulsightInternalCoreDomainAggregatorRiskReport = {
+    authorities?: PulsightInternalCoreDomainAggregatorAuthorityStat;
+    bundlers?: PulsightInternalCoreDomainAggregatorBundlerStat;
+    dev?: PulsightInternalCoreDomainAggregatorDevStat;
+    holder_count?: number;
+    /**
+     * top few (summary)
+     */
+    holders?: Array<PulsightInternalCoreDomainAggregatorHolderEntry>;
+    insiders?: PulsightInternalCoreDomainAggregatorCohortStat;
+    lp?: PulsightInternalCoreDomainAggregatorLpStat;
+    markets?: PulsightInternalCoreDomainAggregatorMarketStat;
+    mint?: string;
+    risks?: Array<PulsightInternalCoreDomainAggregatorRiskItem>;
+    rugged?: boolean;
+    score?: number;
+    /**
+     * 0..100
+     */
+    score_normalised?: number;
+    snipers?: PulsightInternalCoreDomainAggregatorCohortStat;
+    supply_known?: boolean;
+    /**
+     * % of circulating
+     */
+    top10?: number;
+    /**
+     * low|caution|high|critical
+     */
+    verdict?: string;
 };
 
 export type PulsightInternalCoreDomainAggregatorSafetyEvent = {
@@ -651,6 +945,11 @@ export type PulsightInternalCoreDomainApikeyKey = {
     created_at?: string;
     expires_at?: string;
     id?: string;
+    /**
+     * Kind is user for self-minted api tokens, bot for admin-minted bot
+     * service keys. Empty (pre-076 rows) reads as user.
+     */
+    kind?: PulsightInternalCoreDomainApikeyKind;
     last_used_at?: string;
     name?: string;
     prefix?: string;
@@ -659,7 +958,9 @@ export type PulsightInternalCoreDomainApikeyKey = {
     user_id?: string;
 };
 
-export type PulsightInternalCoreDomainApikeyScope = 'data:read' | 'backtest:run' | 'strategy:read' | 'strategy:write';
+export type PulsightInternalCoreDomainApikeyKind = 'user' | 'bot';
+
+export type PulsightInternalCoreDomainApikeyScope = 'data:read' | 'backtest:read' | 'backtest:run' | 'strategy:read' | 'strategy:write' | 'workspace:read' | 'workspace:write';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -685,7 +986,7 @@ export type PulsightInternalCoreDomainStrategyEdge = {
 
 export type PulsightInternalCoreDomainStrategyEdgePort = 'default' | 'cond' | 'then' | 'else';
 
-export type PulsightInternalCoreDomainStrategyEventKind = 'freeze_renounced' | 'mint_renounced' | 'lp_burned' | 'dev_sold';
+export type PulsightInternalCoreDomainStrategyEventKind = 'freeze_renounced' | 'mint_renounced' | 'lp_burned' | 'dev_sold' | 'honeypot';
 
 export type PulsightInternalCoreDomainStrategyGlobalConstraints = {
     max_buy_sol?: number;
@@ -872,6 +1173,12 @@ export type PulsightInternalCoreDomainTraderTrader = {
     id?: string;
     is_favorite?: boolean;
     /**
+     * Label/LabelType identify a known wallet (CEX/fee/KOL/...) from the
+     * known_addresses registry; empty when the wallet isn't labelled.
+     */
+    label?: string;
+    label_type?: string;
+    /**
      * Activity
      */
     last_active_timestamp?: number;
@@ -978,6 +1285,43 @@ export type PulsightInternalCoreDomainTraderTrader = {
     winrate_7d?: number;
 };
 
+export type PulsightInternalCoreDomainWebhookNotifier = {
+    created_at?: string;
+    /**
+     * Solana trader filter
+     */
+    filter_preset_id?: string;
+    id?: string;
+    interval_hours?: number;
+    is_active?: boolean;
+    last_sent_at?: string;
+    /**
+     * LatestActivitySeconds restricts delivery to traders whose most recent
+     * activity is within this many seconds (nil = off). Unlike the oldest-trade
+     * knob, it has no leaderboard-clause equivalent: the dispatch worker
+     * post-filters matched rows by last_active_timestamp.
+     */
+    latest_activity_seconds?: number;
+    name?: string;
+    /**
+     * ">", "<", ">=", "<="
+     */
+    oldest_trade_op?: string;
+    oldest_trade_seconds?: number;
+    updated_at?: string;
+    user_id?: string;
+    /**
+     * platform-specific config (e.g. channel ID)
+     */
+    webhook_extra?: {
+        [key: string]: unknown;
+    };
+    webhook_type?: PulsightInternalCoreDomainWebhookType;
+    webhook_url?: string;
+};
+
+export type PulsightInternalCoreDomainWebhookType = 'discord' | 'telegram';
+
 export type PulsightInternalCorePortsInputApiKeyCreateRequest = {
     expires_at?: string;
     name?: string;
@@ -1006,6 +1350,12 @@ export type PulsightInternalCorePortsInputPlanLimitsRead = {
     can_view_full_data?: boolean;
     max_filters?: number;
     max_webhooks?: number;
+    mcp_access?: boolean;
+};
+
+export type PulsightInternalCorePortsInputStrategyValidation = {
+    errors?: Array<string>;
+    valid?: boolean;
 };
 
 export type PulsightInternalCorePortsInputSubscriptionInfo = {
@@ -1067,6 +1417,13 @@ export type PulsightInternalCoreUsecasesBacktestBacktestPosition = {
     final_price_sol?: number;
     mint?: string;
     /**
+     * Pool is the market this held position was simulated on — set for a
+     * pinned or PerPool instrument, empty when the run resolved the mint's
+     * dominant pool. Disambiguates two open positions of the same mint on
+     * different pools under PerPool.
+     */
+    pool?: string;
+    /**
      * PoolState flags the exit liquidity used to value the position:
      * "ok" (priced into a live pool), "drained" (pool empty → unrealizable,
      * ~total loss), or "unknown" (no pool snapshot → valued at raw mid).
@@ -1098,6 +1455,16 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRecord = {
 };
 
 export type PulsightInternalCoreUsecasesBacktestBacktestRequest = {
+    /**
+     * PerPool, when true, simulates each of a mint's significant markets as an
+     * INDEPENDENT instrument — its own candle stream, indicators, ledger and
+     * (for copy strategies) the target swaps on THAT pool — instead of a single
+     * dominant/pinned pool per mint. Off ⇒ the historical one-position-per-mint
+     * behaviour. Mutually exclusive with a SingleMint pool pin (a pin already
+     * selects one market). Fans out compute by up to MaxPoolsPerMint per mint,
+     * reflected in the tick-budget estimate.
+     */
+    per_pool?: boolean;
     scope?: PulsightInternalCoreUsecasesBacktestTokenScope;
     starting_balance_sol?: number;
     strategy_id?: string;
@@ -1114,6 +1481,21 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRequest = {
 export type PulsightInternalCoreUsecasesBacktestBacktestStatus = 'pending' | 'running' | 'done' | 'failed' | 'cancelled';
 
 export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
+    /**
+     * CopiesSkippedUnpriced counts mirror trades that passed every rule and
+     * would have fired, but whose triggering swap carried no post-swap price
+     * — so no honest fill price exists for them and they were NOT traded.
+     *
+     * A non-zero value means the run under-represents the strategy: it is a
+     * COVERAGE gap, not a signal quality one. It is dominated by venues whose
+     * decoder emits no marginal price (every Meteora DLMM leg, and every
+     * DAMM v2 / DBC leg ingested before those decoders were fixed), so a
+     * launch-sniping mirror over historical data can skip most of its entries
+     * while a PumpSwap mirror skips none. Surfaced so a mostly-skipped run
+     * reads as "not enough data" instead of quietly looking like a thin
+     * strategy. Additive JSONB field — pre-existing rows decode as 0.
+     */
+    copies_skipped_unpriced?: number;
     ending_balance_sol?: number;
     fees_paid_sol?: number;
     /**
@@ -1160,6 +1542,13 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     fee_sol?: number;
     idx?: number;
     mint?: string;
+    /**
+     * Pool is the AMM market this trade executed in. For a COPY trade it's the
+     * pool the mirrored target actually swapped in (per-leg dex_swaps); for an
+     * EMIT trade it's the run's pinned pool (SingleMint pin) or nil when the
+     * run resolved the mint's dominant pool (whose identity isn't surfaced).
+     */
+    pool?: string;
     pool_sol_at_trigger?: number;
     /**
      * PriceImpactPct is OUR own price impact on this fill, as a percent of the
@@ -1221,6 +1610,11 @@ export type PulsightInternalCoreUsecasesBacktestPreviewMarker = {
 export type PulsightInternalCoreUsecasesBacktestPreviewRequest = {
     def?: PulsightInternalCoreDomainStrategyStrategyDef;
     mint?: string;
+    /**
+     * Pool pins the preview to one market of the mint. Empty lets the
+     * candle source resolve the dominant pool within the window.
+     */
+    pool?: string;
     time_range?: PulsightInternalCoreUsecasesBacktestTimeRange;
     timeframe?: PulsightInternalCoreDomainAggregatorTimeframe;
 };
@@ -1262,6 +1656,16 @@ export type PulsightInternalCoreUsecasesBacktestTokenScope = {
      * Mints
      */
     mints?: Array<string>;
+    /**
+     * Pool optionally pins a SingleMint run to one specific market (the AMM
+     * pool pubkey) of the mint. Empty ⇒ the candle source resolves the mint's
+     * dominant pool within the replay window (the historical default). Only
+     * valid on the SingleMint variant — a pool belongs to exactly one mint, so
+     * it is meaningless on a multi-mint / dynamic scope. Mirrors the preview's
+     * PreviewRequest.Pool so a pinned run replays the same market the builder
+     * previewed.
+     */
+    pool?: string;
     /**
      * TraderTraded only.
      */
@@ -1359,6 +1763,12 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     holding_pnl_lamports?: number;
     id?: string;
     is_favorite?: boolean;
+    /**
+     * Label/LabelType identify a known wallet (CEX/fee/KOL/...) from the
+     * known_addresses registry; empty when the wallet isn't labelled.
+     */
+    label?: string;
+    label_type?: string;
     last_active_timestamp?: number;
     median_buy_count_per_token?: number;
     median_first_buy_reactivity?: number;
@@ -1488,6 +1898,12 @@ export type PostBacktestsData = {
      * Backtest request
      */
     body: PulsightInternalCoreUsecasesBacktestBacktestRequest;
+    headers?: {
+        /**
+         * Deduplicates retried submissions: a repeat with the same key replays the existing run instead of charging and starting a new one (max 128 chars)
+         */
+        'Idempotency-Key'?: string;
+    };
     path?: never;
     query?: never;
     url: '/api/backtests';
@@ -1539,6 +1955,34 @@ export type GetBacktestsLimitsResponses = {
 };
 
 export type GetBacktestsLimitsResponse = GetBacktestsLimitsResponses[keyof GetBacktestsLimitsResponses];
+
+export type PostBacktestsPickTokensData = {
+    /**
+     * By-criteria scope + resolution window
+     */
+    body: InternalAdaptersPrimaryHttpHandlerPickTokensRequest;
+    path?: never;
+    query?: never;
+    url: '/api/backtests/pick-tokens';
+};
+
+export type PostBacktestsPickTokensErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PostBacktestsPickTokensError = PostBacktestsPickTokensErrors[keyof PostBacktestsPickTokensErrors];
+
+export type PostBacktestsPickTokensResponses = {
+    /**
+     * OK
+     */
+    200: InternalAdaptersPrimaryHttpHandlerPickTokensResponse;
+};
+
+export type PostBacktestsPickTokensResponse = PostBacktestsPickTokensResponses[keyof PostBacktestsPickTokensResponses];
 
 export type DeleteBacktestsByIdData = {
     body?: never;
@@ -1891,7 +2335,7 @@ export type GetMintsData = {
          */
         search?: string;
         /**
-         * trades|traders|recent|volume (others fall back to swap_count)
+         * trades|traders|recent|volume|buys|sells|net_buy|price_change|liquidity_usdc|age (age = newest first_seen first)
          */
         sort?: string;
         /**
@@ -1906,6 +2350,10 @@ export type GetMintsData = {
          * Min window pool quote-reserves (liquidity), WSOL lamports. Omitted ⇒ a default ~1 SOL floor hides dust on untargeted browse; pass 0 to disable, or any value to override.
          */
         min_pool_sol?: number;
+        /**
+         * Min market cap in USD (price × circulating supply). Mints with no computable market cap are excluded. Omitted ⇒ no floor.
+         */
+        min_market_cap_usd?: number;
         /**
          * Max rows (default 50, max 500)
          */
@@ -2093,6 +2541,87 @@ export type GetMintsByPubkeyMigrationsResponses = {
 };
 
 export type GetMintsByPubkeyMigrationsResponse = GetMintsByPubkeyMigrationsResponses[keyof GetMintsByPubkeyMigrationsResponses];
+
+export type GetMintsByPubkeyRiskData = {
+    body?: never;
+    path: {
+        /**
+         * Mint pubkey
+         */
+        pubkey: string;
+    };
+    query?: never;
+    url: '/api/mints/{pubkey}/risk';
+};
+
+export type GetMintsByPubkeyRiskErrors = {
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetMintsByPubkeyRiskError = GetMintsByPubkeyRiskErrors[keyof GetMintsByPubkeyRiskErrors];
+
+export type GetMintsByPubkeyRiskResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorRiskReport;
+};
+
+export type GetMintsByPubkeyRiskResponse = GetMintsByPubkeyRiskResponses[keyof GetMintsByPubkeyRiskResponses];
+
+export type GetMintsByPubkeyRiskCohortsData = {
+    body?: never;
+    path: {
+        /**
+         * Mint pubkey
+         */
+        pubkey: string;
+    };
+    query: {
+        /**
+         * Cohort (snipers|bundlers|insiders|holders)
+         */
+        group: string;
+        /**
+         * Max rows (default 100, max 500)
+         */
+        limit?: number;
+    };
+    url: '/api/mints/{pubkey}/risk/cohorts';
+};
+
+export type GetMintsByPubkeyRiskCohortsErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetMintsByPubkeyRiskCohortsError = GetMintsByPubkeyRiskCohortsErrors[keyof GetMintsByPubkeyRiskCohortsErrors];
+
+export type GetMintsByPubkeyRiskCohortsResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorRiskCohort;
+};
+
+export type GetMintsByPubkeyRiskCohortsResponse = GetMintsByPubkeyRiskCohortsResponses[keyof GetMintsByPubkeyRiskCohortsResponses];
 
 export type GetMintsByPubkeySafetyEventsData = {
     body?: never;
@@ -2335,6 +2864,14 @@ export type GetOhlcvData = {
          * End of window (RFC3339, exclusive)
          */
         to?: string;
+        /**
+         * Max candles to return when `from` is omitted (count of candles, gaps ignored; default 500, capped at 5000)
+         */
+        limit?: number;
+        /**
+         * Drop clear price-outlier candles at read time (cosmetic; never changes stored data). Default false.
+         */
+        removeOutliers?: boolean;
     };
     url: '/api/ohlcv';
 };
@@ -2483,6 +3020,34 @@ export type PostStrategiesPreviewResponses = {
 };
 
 export type PostStrategiesPreviewResponse = PostStrategiesPreviewResponses[keyof PostStrategiesPreviewResponses];
+
+export type PostStrategiesValidateData = {
+    /**
+     * Definition to check + optional venue
+     */
+    body: InternalAdaptersPrimaryHttpHandlerValidateStrategyRequest;
+    path?: never;
+    query?: never;
+    url: '/api/strategies/validate';
+};
+
+export type PostStrategiesValidateErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PostStrategiesValidateError = PostStrategiesValidateErrors[keyof PostStrategiesValidateErrors];
+
+export type PostStrategiesValidateResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCorePortsInputStrategyValidation;
+};
+
+export type PostStrategiesValidateResponse = PostStrategiesValidateResponses[keyof PostStrategiesValidateResponses];
 
 export type GetStrategiesWithStatsData = {
     body?: never;
@@ -3692,9 +4257,13 @@ export type GetTradersByWalletAddressTokensData = {
     };
     query?: {
         /**
-         * Sort key (profit|invested|balance|recent)
+         * Sort key (profit|holding_pnl|roi|invested|balance|recent)
          */
         sort?: string;
+        /**
+         * Sort direction (asc|desc)
+         */
+        dir?: string;
         /**
          * Limit
          */
@@ -3728,3 +4297,201 @@ export type GetTradersByWalletAddressTokensResponses = {
 };
 
 export type GetTradersByWalletAddressTokensResponse = GetTradersByWalletAddressTokensResponses[keyof GetTradersByWalletAddressTokensResponses];
+
+export type GetWebhookNotifiersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/webhook-notifiers/';
+};
+
+export type GetWebhookNotifiersErrors = {
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetWebhookNotifiersError = GetWebhookNotifiersErrors[keyof GetWebhookNotifiersErrors];
+
+export type GetWebhookNotifiersResponses = {
+    /**
+     * OK
+     */
+    200: Array<PulsightInternalCoreDomainWebhookNotifier>;
+};
+
+export type GetWebhookNotifiersResponse = GetWebhookNotifiersResponses[keyof GetWebhookNotifiersResponses];
+
+export type PostWebhookNotifiersData = {
+    /**
+     * Notifier details
+     */
+    body: InternalAdaptersPrimaryHttpHandlerWebhookNotifierCreateRequest;
+    path?: never;
+    query?: never;
+    url: '/api/webhook-notifiers/';
+};
+
+export type PostWebhookNotifiersErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PostWebhookNotifiersError = PostWebhookNotifiersErrors[keyof PostWebhookNotifiersErrors];
+
+export type PostWebhookNotifiersResponses = {
+    /**
+     * Created
+     */
+    201: PulsightInternalCoreDomainWebhookNotifier;
+};
+
+export type PostWebhookNotifiersResponse = PostWebhookNotifiersResponses[keyof PostWebhookNotifiersResponses];
+
+export type DeleteWebhookNotifiersByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Notifier ID (UUID)
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/webhook-notifiers/{id}';
+};
+
+export type DeleteWebhookNotifiersByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type DeleteWebhookNotifiersByIdError = DeleteWebhookNotifiersByIdErrors[keyof DeleteWebhookNotifiersByIdErrors];
+
+export type DeleteWebhookNotifiersByIdResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type DeleteWebhookNotifiersByIdResponse = DeleteWebhookNotifiersByIdResponses[keyof DeleteWebhookNotifiersByIdResponses];
+
+export type GetWebhookNotifiersByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Notifier ID (UUID)
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/webhook-notifiers/{id}';
+};
+
+export type GetWebhookNotifiersByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetWebhookNotifiersByIdError = GetWebhookNotifiersByIdErrors[keyof GetWebhookNotifiersByIdErrors];
+
+export type GetWebhookNotifiersByIdResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainWebhookNotifier;
+};
+
+export type GetWebhookNotifiersByIdResponse = GetWebhookNotifiersByIdResponses[keyof GetWebhookNotifiersByIdResponses];
+
+export type PatchWebhookNotifiersByIdData = {
+    /**
+     * Fields to update
+     */
+    body: InternalAdaptersPrimaryHttpHandlerWebhookNotifierUpdateRequest;
+    path: {
+        /**
+         * Notifier ID (UUID)
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/webhook-notifiers/{id}';
+};
+
+export type PatchWebhookNotifiersByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PatchWebhookNotifiersByIdError = PatchWebhookNotifiersByIdErrors[keyof PatchWebhookNotifiersByIdErrors];
+
+export type PatchWebhookNotifiersByIdResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainWebhookNotifier;
+};
+
+export type PatchWebhookNotifiersByIdResponse = PatchWebhookNotifiersByIdResponses[keyof PatchWebhookNotifiersByIdResponses];

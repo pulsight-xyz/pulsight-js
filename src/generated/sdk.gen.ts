@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteBacktestsByIdData, DeleteBacktestsByIdResponses, DeleteMeApiKeysByIdData, DeleteMeApiKeysByIdErrors, DeleteMeApiKeysByIdResponses, DeleteStrategiesByIdData, DeleteStrategiesByIdErrors, DeleteStrategiesByIdResponses, DeleteTraderFiltersByIdData, DeleteTraderFiltersByIdErrors, DeleteTraderFiltersByIdResponses, GetBacktestsByIdData, GetBacktestsByIdErrors, GetBacktestsByIdResponses, GetBacktestsByIdTradesData, GetBacktestsByIdTradesErrors, GetBacktestsByIdTradesResponses, GetBacktestsData, GetBacktestsErrors, GetBacktestsLimitsData, GetBacktestsLimitsErrors, GetBacktestsLimitsResponses, GetBacktestsResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMeApiKeysData, GetMeApiKeysErrors, GetMeApiKeysResponses, GetMeCreditsData, GetMeCreditsErrors, GetMeCreditsLedgerData, GetMeCreditsLedgerErrors, GetMeCreditsLedgerResponses, GetMeCreditsResponses, GetMintsByPubkeyData, GetMintsByPubkeyErrors, GetMintsByPubkeyLpEventsData, GetMintsByPubkeyLpEventsErrors, GetMintsByPubkeyLpEventsResponses, GetMintsByPubkeyMarketsData, GetMintsByPubkeyMarketsErrors, GetMintsByPubkeyMarketsResponses, GetMintsByPubkeyMigrationsData, GetMintsByPubkeyMigrationsErrors, GetMintsByPubkeyMigrationsResponses, GetMintsByPubkeyResponses, GetMintsByPubkeySafetyEventsData, GetMintsByPubkeySafetyEventsErrors, GetMintsByPubkeySafetyEventsResponses, GetMintsByPubkeyStatsData, GetMintsByPubkeyStatsErrors, GetMintsByPubkeyStatsResponses, GetMintsByPubkeyTopHoldersData, GetMintsByPubkeyTopHoldersErrors, GetMintsByPubkeyTopHoldersResponses, GetMintsByPubkeyTopTradersData, GetMintsByPubkeyTopTradersErrors, GetMintsByPubkeyTopTradersResponses, GetMintsByPubkeyTradersByTraderData, GetMintsByPubkeyTradersByTraderErrors, GetMintsByPubkeyTradersByTraderResponses, GetMintsData, GetMintsErrors, GetMintsResponses, GetOhlcvData, GetOhlcvErrors, GetOhlcvResponses, GetStrategiesByIdData, GetStrategiesByIdErrors, GetStrategiesByIdResponses, GetStrategiesDashboardData, GetStrategiesDashboardErrors, GetStrategiesDashboardResponses, GetStrategiesData, GetStrategiesErrors, GetStrategiesResponses, GetStrategiesWithStatsData, GetStrategiesWithStatsErrors, GetStrategiesWithStatsResponses, GetSubscriptionsMeData, GetSubscriptionsMeErrors, GetSubscriptionsMeResponses, GetSwapsData, GetSwapsErrors, GetSwapsResponses, GetTipsGlobalData, GetTipsGlobalErrors, GetTipsGlobalResponses, GetTipsHeatmapData, GetTipsHeatmapErrors, GetTipsHeatmapResponses, GetTipsLeaderboardJitoEfficiencyData, GetTipsLeaderboardJitoEfficiencyErrors, GetTipsLeaderboardJitoEfficiencyResponses, GetTipsMatData, GetTipsMatErrors, GetTipsMatResponses, GetTipsMevShareData, GetTipsMevShareErrors, GetTipsMevShareResponses, GetTipsPriorityRatioData, GetTipsPriorityRatioErrors, GetTipsPriorityRatioResponses, GetTipsServicesData, GetTipsServicesErrors, GetTipsServicesResponses, GetTraderFiltersByIdData, GetTraderFiltersByIdErrors, GetTraderFiltersByIdResponses, GetTraderFiltersData, GetTraderFiltersErrors, GetTraderFiltersResponses, GetTradersByIdByTraderIdData, GetTradersByIdByTraderIdErrors, GetTradersByIdByTraderIdResponses, GetTradersByTraderIdDailyProfitsData, GetTradersByTraderIdDailyProfitsErrors, GetTradersByTraderIdDailyProfitsResponses, GetTradersByTraderIdPnlsData, GetTradersByTraderIdPnlsErrors, GetTradersByTraderIdPnlsResponses, GetTradersByWalletAddressCreatedTokensData, GetTradersByWalletAddressCreatedTokensErrors, GetTradersByWalletAddressCreatedTokensResponses, GetTradersByWalletAddressPnlSeriesData, GetTradersByWalletAddressPnlSeriesErrors, GetTradersByWalletAddressPnlSeriesResponses, GetTradersByWalletAddressTipsData, GetTradersByWalletAddressTipsErrors, GetTradersByWalletAddressTipsResponses, GetTradersByWalletAddressTipsServicesData, GetTradersByWalletAddressTipsServicesErrors, GetTradersByWalletAddressTipsServicesResponses, GetTradersByWalletAddressTokensData, GetTradersByWalletAddressTokensErrors, GetTradersByWalletAddressTokensResponses, GetTradersByWalletByWalletAddressData, GetTradersByWalletByWalletAddressErrors, GetTradersByWalletByWalletAddressResponses, GetTradersData, GetTradersErrors, GetTradersResponses, GetTradersSearchData, GetTradersSearchErrors, GetTradersSearchResponses, GetTradersSnapshotData, GetTradersSnapshotErrors, GetTradersSnapshotResponses, PatchMeApiKeysByIdData, PatchMeApiKeysByIdErrors, PatchMeApiKeysByIdResponses, PostBacktestsData, PostBacktestsErrors, PostBacktestsResponses, PostMeApiKeysData, PostMeApiKeysErrors, PostMeApiKeysResponses, PostStrategiesData, PostStrategiesErrors, PostStrategiesPreviewData, PostStrategiesPreviewErrors, PostStrategiesPreviewResponses, PostStrategiesResponses, PostTraderFiltersData, PostTraderFiltersErrors, PostTraderFiltersResponses, PostTradersExportData, PostTradersExportErrors, PostTradersExportResponses, PutStrategiesByIdData, PutStrategiesByIdErrors, PutStrategiesByIdResponses, PutTraderFiltersByIdData, PutTraderFiltersByIdErrors, PutTraderFiltersByIdResponses } from './types.gen';
+import type { DeleteBacktestsByIdData, DeleteBacktestsByIdResponses, DeleteMeApiKeysByIdData, DeleteMeApiKeysByIdErrors, DeleteMeApiKeysByIdResponses, DeleteStrategiesByIdData, DeleteStrategiesByIdErrors, DeleteStrategiesByIdResponses, DeleteTraderFiltersByIdData, DeleteTraderFiltersByIdErrors, DeleteTraderFiltersByIdResponses, DeleteWebhookNotifiersByIdData, DeleteWebhookNotifiersByIdErrors, DeleteWebhookNotifiersByIdResponses, GetBacktestsByIdData, GetBacktestsByIdErrors, GetBacktestsByIdResponses, GetBacktestsByIdTradesData, GetBacktestsByIdTradesErrors, GetBacktestsByIdTradesResponses, GetBacktestsData, GetBacktestsErrors, GetBacktestsLimitsData, GetBacktestsLimitsErrors, GetBacktestsLimitsResponses, GetBacktestsResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMeApiKeysData, GetMeApiKeysErrors, GetMeApiKeysResponses, GetMeCreditsData, GetMeCreditsErrors, GetMeCreditsLedgerData, GetMeCreditsLedgerErrors, GetMeCreditsLedgerResponses, GetMeCreditsResponses, GetMintsByPubkeyData, GetMintsByPubkeyErrors, GetMintsByPubkeyLpEventsData, GetMintsByPubkeyLpEventsErrors, GetMintsByPubkeyLpEventsResponses, GetMintsByPubkeyMarketsData, GetMintsByPubkeyMarketsErrors, GetMintsByPubkeyMarketsResponses, GetMintsByPubkeyMigrationsData, GetMintsByPubkeyMigrationsErrors, GetMintsByPubkeyMigrationsResponses, GetMintsByPubkeyResponses, GetMintsByPubkeyRiskCohortsData, GetMintsByPubkeyRiskCohortsErrors, GetMintsByPubkeyRiskCohortsResponses, GetMintsByPubkeyRiskData, GetMintsByPubkeyRiskErrors, GetMintsByPubkeyRiskResponses, GetMintsByPubkeySafetyEventsData, GetMintsByPubkeySafetyEventsErrors, GetMintsByPubkeySafetyEventsResponses, GetMintsByPubkeyStatsData, GetMintsByPubkeyStatsErrors, GetMintsByPubkeyStatsResponses, GetMintsByPubkeyTopHoldersData, GetMintsByPubkeyTopHoldersErrors, GetMintsByPubkeyTopHoldersResponses, GetMintsByPubkeyTopTradersData, GetMintsByPubkeyTopTradersErrors, GetMintsByPubkeyTopTradersResponses, GetMintsByPubkeyTradersByTraderData, GetMintsByPubkeyTradersByTraderErrors, GetMintsByPubkeyTradersByTraderResponses, GetMintsData, GetMintsErrors, GetMintsResponses, GetOhlcvData, GetOhlcvErrors, GetOhlcvResponses, GetStrategiesByIdData, GetStrategiesByIdErrors, GetStrategiesByIdResponses, GetStrategiesDashboardData, GetStrategiesDashboardErrors, GetStrategiesDashboardResponses, GetStrategiesData, GetStrategiesErrors, GetStrategiesResponses, GetStrategiesWithStatsData, GetStrategiesWithStatsErrors, GetStrategiesWithStatsResponses, GetSubscriptionsMeData, GetSubscriptionsMeErrors, GetSubscriptionsMeResponses, GetSwapsData, GetSwapsErrors, GetSwapsResponses, GetTipsGlobalData, GetTipsGlobalErrors, GetTipsGlobalResponses, GetTipsHeatmapData, GetTipsHeatmapErrors, GetTipsHeatmapResponses, GetTipsLeaderboardJitoEfficiencyData, GetTipsLeaderboardJitoEfficiencyErrors, GetTipsLeaderboardJitoEfficiencyResponses, GetTipsMatData, GetTipsMatErrors, GetTipsMatResponses, GetTipsMevShareData, GetTipsMevShareErrors, GetTipsMevShareResponses, GetTipsPriorityRatioData, GetTipsPriorityRatioErrors, GetTipsPriorityRatioResponses, GetTipsServicesData, GetTipsServicesErrors, GetTipsServicesResponses, GetTraderFiltersByIdData, GetTraderFiltersByIdErrors, GetTraderFiltersByIdResponses, GetTraderFiltersData, GetTraderFiltersErrors, GetTraderFiltersResponses, GetTradersByIdByTraderIdData, GetTradersByIdByTraderIdErrors, GetTradersByIdByTraderIdResponses, GetTradersByTraderIdDailyProfitsData, GetTradersByTraderIdDailyProfitsErrors, GetTradersByTraderIdDailyProfitsResponses, GetTradersByTraderIdPnlsData, GetTradersByTraderIdPnlsErrors, GetTradersByTraderIdPnlsResponses, GetTradersByWalletAddressCreatedTokensData, GetTradersByWalletAddressCreatedTokensErrors, GetTradersByWalletAddressCreatedTokensResponses, GetTradersByWalletAddressPnlSeriesData, GetTradersByWalletAddressPnlSeriesErrors, GetTradersByWalletAddressPnlSeriesResponses, GetTradersByWalletAddressTipsData, GetTradersByWalletAddressTipsErrors, GetTradersByWalletAddressTipsResponses, GetTradersByWalletAddressTipsServicesData, GetTradersByWalletAddressTipsServicesErrors, GetTradersByWalletAddressTipsServicesResponses, GetTradersByWalletAddressTokensData, GetTradersByWalletAddressTokensErrors, GetTradersByWalletAddressTokensResponses, GetTradersByWalletByWalletAddressData, GetTradersByWalletByWalletAddressErrors, GetTradersByWalletByWalletAddressResponses, GetTradersData, GetTradersErrors, GetTradersResponses, GetTradersSearchData, GetTradersSearchErrors, GetTradersSearchResponses, GetTradersSnapshotData, GetTradersSnapshotErrors, GetTradersSnapshotResponses, GetWebhookNotifiersByIdData, GetWebhookNotifiersByIdErrors, GetWebhookNotifiersByIdResponses, GetWebhookNotifiersData, GetWebhookNotifiersErrors, GetWebhookNotifiersResponses, PatchMeApiKeysByIdData, PatchMeApiKeysByIdErrors, PatchMeApiKeysByIdResponses, PatchWebhookNotifiersByIdData, PatchWebhookNotifiersByIdErrors, PatchWebhookNotifiersByIdResponses, PostBacktestsData, PostBacktestsErrors, PostBacktestsPickTokensData, PostBacktestsPickTokensErrors, PostBacktestsPickTokensResponses, PostBacktestsResponses, PostMeApiKeysData, PostMeApiKeysErrors, PostMeApiKeysResponses, PostStrategiesData, PostStrategiesErrors, PostStrategiesPreviewData, PostStrategiesPreviewErrors, PostStrategiesPreviewResponses, PostStrategiesResponses, PostStrategiesValidateData, PostStrategiesValidateErrors, PostStrategiesValidateResponses, PostTraderFiltersData, PostTraderFiltersErrors, PostTraderFiltersResponses, PostTradersExportData, PostTradersExportErrors, PostTradersExportResponses, PostWebhookNotifiersData, PostWebhookNotifiersErrors, PostWebhookNotifiersResponses, PutStrategiesByIdData, PutStrategiesByIdErrors, PutStrategiesByIdResponses, PutTraderFiltersByIdData, PutTraderFiltersByIdErrors, PutTraderFiltersByIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -49,6 +49,19 @@ export const getBacktestsLimits = <ThrowOnError extends boolean = false>(options
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/backtests/limits',
     ...options
+});
+
+/**
+ * Pick Backtest Tokens
+ */
+export const postBacktestsPickTokens = <ThrowOnError extends boolean = false>(options: Options<PostBacktestsPickTokensData, ThrowOnError>) => (options.client ?? client).post<PostBacktestsPickTokensResponses, PostBacktestsPickTokensErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/backtests/pick-tokens',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
@@ -216,6 +229,28 @@ export const getMintsByPubkeyMigrations = <ThrowOnError extends boolean = false>
 });
 
 /**
+ * Token Risk Report
+ *
+ * Scored token risk assessment: normalised score + named risks, top-10 concentration, dev %, mint/freeze authority state, snipers, liquidity, honeypot/copycat. Wallet lists are behind /risk/cohorts.
+ */
+export const getMintsByPubkeyRisk = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyRiskData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyRiskResponses, GetMintsByPubkeyRiskErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/mints/{pubkey}/risk',
+    ...options
+});
+
+/**
+ * Token Risk Cohort Wallets
+ *
+ * Wallet list for one risk cohort. group ∈ {snipers,bundlers,insiders,holders}. Login required (reveals wallet addresses).
+ */
+export const getMintsByPubkeyRiskCohorts = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyRiskCohortsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyRiskCohortsResponses, GetMintsByPubkeyRiskCohortsErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/mints/{pubkey}/risk/cohorts',
+    ...options
+});
+
+/**
  * List Mint Safety Events
  *
  * Recent token-safety events (burn|mint_to|freeze|thaw|authority_change) for a mint (newest first), from `mint_safety_events`.
@@ -318,6 +353,19 @@ export const getStrategiesDashboard = <ThrowOnError extends boolean = false>(opt
 export const postStrategiesPreview = <ThrowOnError extends boolean = false>(options: Options<PostStrategiesPreviewData, ThrowOnError>) => (options.client ?? client).post<PostStrategiesPreviewResponses, PostStrategiesPreviewErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/strategies/preview',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Validate Strategy
+ */
+export const postStrategiesValidate = <ThrowOnError extends boolean = false>(options: Options<PostStrategiesValidateData, ThrowOnError>) => (options.client ?? client).post<PostStrategiesValidateResponses, PostStrategiesValidateErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/strategies/validate',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -622,4 +670,67 @@ export const getTradersByWalletAddressTokens = <ThrowOnError extends boolean = f
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/api/traders/{walletAddress}/tokens',
     ...options
+});
+
+/**
+ * List Webhook Notifiers
+ *
+ * Returns a list of webhook notifiers belonging to the authenticated user.
+ */
+export const getWebhookNotifiers = <ThrowOnError extends boolean = false>(options?: Options<GetWebhookNotifiersData, ThrowOnError>) => (options?.client ?? client).get<GetWebhookNotifiersResponses, GetWebhookNotifiersErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/webhook-notifiers/',
+    ...options
+});
+
+/**
+ * Create Webhook Notifier
+ *
+ * Creates a new webhook notifier for the authenticated user.
+ */
+export const postWebhookNotifiers = <ThrowOnError extends boolean = false>(options: Options<PostWebhookNotifiersData, ThrowOnError>) => (options.client ?? client).post<PostWebhookNotifiersResponses, PostWebhookNotifiersErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/webhook-notifiers/',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Webhook Notifier
+ *
+ * Deletes a webhook notifier owned by the authenticated user.
+ */
+export const deleteWebhookNotifiersById = <ThrowOnError extends boolean = false>(options: Options<DeleteWebhookNotifiersByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteWebhookNotifiersByIdResponses, DeleteWebhookNotifiersByIdErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/webhook-notifiers/{id}',
+    ...options
+});
+
+/**
+ * Get Webhook Notifier
+ *
+ * Returns a specific webhook notifier owned by the authenticated user.
+ */
+export const getWebhookNotifiersById = <ThrowOnError extends boolean = false>(options: Options<GetWebhookNotifiersByIdData, ThrowOnError>) => (options.client ?? client).get<GetWebhookNotifiersByIdResponses, GetWebhookNotifiersByIdErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/webhook-notifiers/{id}',
+    ...options
+});
+
+/**
+ * Update Webhook Notifier
+ *
+ * Updates an existing webhook notifier owned by the authenticated user.
+ */
+export const patchWebhookNotifiersById = <ThrowOnError extends boolean = false>(options: Options<PatchWebhookNotifiersByIdData, ThrowOnError>) => (options.client ?? client).patch<PatchWebhookNotifiersByIdResponses, PatchWebhookNotifiersByIdErrors, ThrowOnError>({
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/api/webhook-notifiers/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
