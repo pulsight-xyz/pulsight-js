@@ -541,6 +541,15 @@ export type PulsightInternalCoreDomainAggregatorMintMigration = {
      * Source ∈ {"observed","inferred"} (CHECK constraint).
      */
     source?: string;
+    /**
+     * SourcePool is the bonding-curve pool the mint traded on BEFORE
+     * graduating. Together with DestinationPool it is the mint's market
+     * lineage — the pools /api/ohlcv merges into one continuous chart when
+     * no pool is pinned. Empty when unknown (rows predating
+     * carbon-aggregator CH migration 000073, or a venue whose migration ix
+     * doesn't expose the curve); treat '' as "no pre-graduation side".
+     */
+    source_pool?: string;
     timestamp?: string;
     to_dex?: string;
 };
@@ -967,6 +976,12 @@ export type PulsightInternalCoreDomainCreditPool = 'api';
 export type PulsightInternalCoreDomainCreditReason = 'grant' | 'consume' | 'refund' | 'adjust' | 'referral_bonus';
 
 export type PulsightInternalCoreDomainCreditTransaction = {
+    /**
+     * APIKeyID attributes a metered consume to the api token that caused
+     * it. nil for interactive sessions, OAuth callers, admin adjustments
+     * and period grants — and for every row written before changeset 079.
+     */
+    api_key_id?: string;
     created_at?: string;
     delta?: number;
     id?: string;
@@ -1483,17 +1498,22 @@ export type PulsightInternalCoreUsecasesBacktestBacktestStatus = 'pending' | 'ru
 export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     /**
      * CopiesSkippedUnpriced counts mirror trades that passed every rule and
-     * would have fired, but whose triggering swap carried no post-swap price
-     * — so no honest fill price exists for them and they were NOT traded.
+     * would have fired, but whose triggering swap could not be priced honestly
+     * — so they were NOT traded. Two causes, both data-side:
+     *
+     * 1. no post-swap price on the leg at all (every Meteora DLMM leg, and
+     * every DAMM v2 / DBC leg ingested before those decoders were fixed);
+     * 2. a leg whose reserve is impossible for a post-swap snapshot, which
+     * means it is a PRE-swap one and its price is the pre-swap price
+     * (PumpSwap — see postSwapReserveConsistent).
      *
      * A non-zero value means the run under-represents the strategy: it is a
-     * COVERAGE gap, not a signal quality one. It is dominated by venues whose
-     * decoder emits no marginal price (every Meteora DLMM leg, and every
-     * DAMM v2 / DBC leg ingested before those decoders were fixed), so a
-     * launch-sniping mirror over historical data can skip most of its entries
-     * while a PumpSwap mirror skips none. Surfaced so a mostly-skipped run
-     * reads as "not enough data" instead of quietly looking like a thin
-     * strategy. Additive JSONB field — pre-existing rows decode as 0.
+     * COVERAGE gap, not a signal quality one. Cause 1 makes a launch-sniping
+     * mirror over historical data skip most of its entries; cause 2 fires on
+     * exactly the large launch buys such a strategy targets. Surfaced so a
+     * mostly-skipped run reads as "not enough data" instead of quietly looking
+     * like a thin strategy — or worse, than being filled at a fictional price
+     * and looking profitable. Additive JSONB field — old rows decode as 0.
      */
     copies_skipped_unpriced?: number;
     ending_balance_sol?: number;
@@ -2853,6 +2873,10 @@ export type GetOhlcvData = {
          */
         pool?: string;
         /**
+         * Scope of an unpinned chart (lineage|pool; default lineage). lineage merges a graduated token's bonding curve with the pool it migrated to so it charts as one continuous market; pool reads the single dominant pool. Ignored when `pool` is set.
+         */
+        market?: string;
+        /**
          * Price denomination (native|sol|usd; default native)
          */
         quote?: string;
@@ -4183,10 +4207,6 @@ export type GetTradersByWalletAddressTipsErrors = {
      * Unauthorized
      */
     401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Not Found
-     */
-    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
      * Internal Server Error
      */
