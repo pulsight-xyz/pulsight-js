@@ -103,7 +103,6 @@ export type InternalAdaptersPrimaryHttpHandlerErrorResponse = {
 
 export type InternalAdaptersPrimaryHttpHandlerPickTokensRequest = {
     def?: PulsightInternalCoreDomainStrategyStrategyDef;
-    scope?: PulsightInternalCoreUsecasesBacktestTokenScope;
     strategy_id?: string;
     time_range?: PulsightInternalCoreUsecasesBacktestTimeRange;
 };
@@ -997,8 +996,6 @@ export type PulsightInternalCoreDomainCreditTransaction = {
     user_id?: string;
 };
 
-export type PulsightInternalCoreDomainStrategyComparisonOp = 'gt' | 'gte' | 'lt' | 'lte' | 'eq';
-
 export type PulsightInternalCoreDomainStrategyEdge = {
     from?: string;
     port?: PulsightInternalCoreDomainStrategyEdgePort;
@@ -1006,8 +1003,6 @@ export type PulsightInternalCoreDomainStrategyEdge = {
 };
 
 export type PulsightInternalCoreDomainStrategyEdgePort = 'default' | 'cond' | 'then' | 'else';
-
-export type PulsightInternalCoreDomainStrategyEventKind = 'freeze_renounced' | 'mint_renounced' | 'lp_burned' | 'dev_sold' | 'honeypot';
 
 export type PulsightInternalCoreDomainStrategyGlobalConstraints = {
     max_buy_sol?: number;
@@ -1609,22 +1604,6 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     ts?: string;
 };
 
-export type PulsightInternalCoreUsecasesBacktestEventPredicate = {
-    event?: PulsightInternalCoreDomainStrategyEventKind;
-    negate?: boolean;
-};
-
-export type PulsightInternalCoreUsecasesBacktestMetricPredicate = {
-    metric?: PulsightInternalCoreUsecasesBacktestSelectionMetric;
-    op?: PulsightInternalCoreDomainStrategyComparisonOp;
-    value?: number;
-    /**
-     * Window — optional trailing window ending at the selection `to`. Ignored
-     * for liquidity_sol (always the latest reserve).
-     */
-    window?: PulsightInternalCoreUsecasesBacktestSelectionMetricWindow;
-};
-
 export type PulsightInternalCoreUsecasesBacktestPreviewMarker = {
     pool_sol_at_trigger?: number;
     /**
@@ -1657,15 +1636,6 @@ export type PulsightInternalCoreUsecasesBacktestPreviewResponse = {
     simulation_assumptions?: Array<string>;
 };
 
-export type PulsightInternalCoreUsecasesBacktestSelectionFilter = {
-    events?: Array<PulsightInternalCoreUsecasesBacktestEventPredicate>;
-    metrics?: Array<PulsightInternalCoreUsecasesBacktestMetricPredicate>;
-};
-
-export type PulsightInternalCoreUsecasesBacktestSelectionMetric = 'liquidity_sol' | 'volume_sol' | 'price_change_pct' | 'swap_count';
-
-export type PulsightInternalCoreUsecasesBacktestSelectionMetricWindow = '5m' | '30m' | '1h' | '6h' | '12h';
-
 export type PulsightInternalCoreUsecasesBacktestSide = 'buy' | 'sell';
 
 export type PulsightInternalCoreUsecasesBacktestTimeRange = {
@@ -1674,14 +1644,15 @@ export type PulsightInternalCoreUsecasesBacktestTimeRange = {
 };
 
 export type PulsightInternalCoreUsecasesBacktestTokenScope = {
-    exclude?: PulsightInternalCoreUsecasesBacktestSelectionFilter;
-    include?: PulsightInternalCoreUsecasesBacktestSelectionFilter;
     kind?: PulsightInternalCoreUsecasesBacktestTokenScopeKind;
     /**
      * MaxMints — on a Strategy scope this is STAMPED BY THE RUNNER at submit
      * (from the def's Universe node / mirror default) so the tick-budget and
      * credit math have a mint bound; requests don't set it. Legacy kinds
-     * carried it on the wire.
+     * carried it on the wire. (The other legacy payload fields — trader,
+     * window, include/exclude filters — were dropped 2026-07-28 with the
+     * standalone resolution path; unknown keys on old persisted rows are
+     * ignored on decode, so tolerant reads are unaffected.)
      */
     max_mints?: number;
     /**
@@ -1702,15 +1673,6 @@ export type PulsightInternalCoreUsecasesBacktestTokenScope = {
      * previewed.
      */
     pool?: string;
-    /**
-     * Legacy TraderTraded only.
-     */
-    trader?: string;
-    /**
-     * Legacy Standalone only — kept so old rows round-trip and the
-     * pick-tokens legacy form parses.
-     */
-    window?: PulsightInternalCoreUsecasesBacktestTimeRange;
 };
 
 export type PulsightInternalCoreUsecasesBacktestTokenScopeKind = 'strategy' | 'single_mint' | 'mints' | 'mirrors_traded' | 'standalone' | 'trader_traded';
@@ -1994,7 +1956,7 @@ export type GetBacktestsLimitsResponse = GetBacktestsLimitsResponses[keyof GetBa
 
 export type PostBacktestsPickTokensData = {
     /**
-     * Token-selection source (def | strategy_id | legacy scope) + resolution window
+     * Token-selection source (def | strategy_id) + resolution window
      */
     body: InternalAdaptersPrimaryHttpHandlerPickTokensRequest;
     path?: never;
