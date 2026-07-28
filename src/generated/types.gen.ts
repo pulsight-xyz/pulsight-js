@@ -102,7 +102,9 @@ export type InternalAdaptersPrimaryHttpHandlerErrorResponse = {
 };
 
 export type InternalAdaptersPrimaryHttpHandlerPickTokensRequest = {
+    def?: PulsightInternalCoreDomainStrategyStrategyDef;
     scope?: PulsightInternalCoreUsecasesBacktestTokenScope;
+    strategy_id?: string;
     time_range?: PulsightInternalCoreUsecasesBacktestTimeRange;
 };
 
@@ -164,6 +166,10 @@ export type InternalAdaptersPrimaryHttpHandlerSnapshotRow = {
      */
     tokens_graduated?: number;
     trader?: string;
+};
+
+export type InternalAdaptersPrimaryHttpHandlerSolPriceResponse = {
+    sol_usd?: number;
 };
 
 export type InternalAdaptersPrimaryHttpHandlerStrategyCreateRequest = {
@@ -1055,6 +1061,13 @@ export type PulsightInternalCoreDomainStrategyStrategyDef = {
     constraints?: PulsightInternalCoreDomainStrategyGlobalConstraints;
     entry?: PulsightInternalCoreDomainStrategySubGraph;
     exit?: PulsightInternalCoreDomainStrategySubGraph;
+    /**
+     * Selection is the token-universe plane: a boolean tree of selection
+     * predicates rooted at a single Universe node. nil (or empty) ⇒ the
+     * strategy does not describe its own universe — it needs mirror
+     * wallets or an explicit run-time scope.
+     */
+    selection?: PulsightInternalCoreDomainStrategySubGraph;
 };
 
 export type PulsightInternalCoreDomainStrategySubGraph = {
@@ -1665,7 +1678,10 @@ export type PulsightInternalCoreUsecasesBacktestTokenScope = {
     include?: PulsightInternalCoreUsecasesBacktestSelectionFilter;
     kind?: PulsightInternalCoreUsecasesBacktestTokenScopeKind;
     /**
-     * MirrorsTraded + TraderTraded + Standalone (cap on selected mints).
+     * MaxMints — on a Strategy scope this is STAMPED BY THE RUNNER at submit
+     * (from the def's Universe node / mirror default) so the tick-budget and
+     * credit math have a mint bound; requests don't set it. Legacy kinds
+     * carried it on the wire.
      */
     max_mints?: number;
     /**
@@ -1687,19 +1703,19 @@ export type PulsightInternalCoreUsecasesBacktestTokenScope = {
      */
     pool?: string;
     /**
-     * TraderTraded only.
+     * Legacy TraderTraded only.
      */
     trader?: string;
     /**
-     * Standalone only — the point-in-time selection window + the
-     * include / exclude ("unselect") predicate filters.
+     * Legacy Standalone only — kept so old rows round-trip and the
+     * pick-tokens legacy form parses.
      */
     window?: PulsightInternalCoreUsecasesBacktestTimeRange;
 };
 
-export type PulsightInternalCoreUsecasesBacktestTokenScopeKind = 'single_mint' | 'mints' | 'mirrors_traded' | 'standalone' | 'trader_traded';
+export type PulsightInternalCoreUsecasesBacktestTokenScopeKind = 'strategy' | 'single_mint' | 'mints' | 'mirrors_traded' | 'standalone' | 'trader_traded';
 
-export type PulsightInternalCoreUsecasesBacktestTradeSource = 'copy_buy' | 'copy_sell' | 'emit_buy' | 'emit_sell';
+export type PulsightInternalCoreUsecasesBacktestTradeSource = 'copy_buy' | 'copy_sell' | 'emit_buy' | 'emit_sell' | 'scope_exit';
 
 export type PulsightInternalCoreUsecasesTraderDailyProfitEntry = {
     date?: string;
@@ -1978,7 +1994,7 @@ export type GetBacktestsLimitsResponse = GetBacktestsLimitsResponses[keyof GetBa
 
 export type PostBacktestsPickTokensData = {
     /**
-     * By-criteria scope + resolution window
+     * Token-selection source (def | strategy_id | legacy scope) + resolution window
      */
     body: InternalAdaptersPrimaryHttpHandlerPickTokensRequest;
     path?: never;
@@ -1991,6 +2007,10 @@ export type PostBacktestsPickTokensErrors = {
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
 export type PostBacktestsPickTokensError = PostBacktestsPickTokensErrors[keyof PostBacktestsPickTokensErrors];
@@ -2925,6 +2945,31 @@ export type GetOhlcvResponses = {
 };
 
 export type GetOhlcvResponse = GetOhlcvResponses[keyof GetOhlcvResponses];
+
+export type GetSolPriceData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/sol-price';
+};
+
+export type GetSolPriceErrors = {
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetSolPriceError = GetSolPriceErrors[keyof GetSolPriceErrors];
+
+export type GetSolPriceResponses = {
+    /**
+     * OK
+     */
+    200: InternalAdaptersPrimaryHttpHandlerSolPriceResponse;
+};
+
+export type GetSolPriceResponse = GetSolPriceResponses[keyof GetSolPriceResponses];
 
 export type GetStrategiesData = {
     body?: never;
