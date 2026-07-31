@@ -230,8 +230,26 @@ export type InternalAdaptersPrimaryHttpHandlerSwapEventRow = {
 };
 
 export type InternalAdaptersPrimaryHttpHandlerTokensRow = {
+    /**
+     * Distinct is_arb transactions on this (trader, mint). Shown alongside
+     * buy/sell, never subtracted from them -- an arb still emits a buy row,
+     * a sell row or both. It exists because those counts otherwise read as
+     * broken on arbitrage wallets: a multi-hop arb bridging through a
+     * non-quote token has its target buy leg quoted in that token, which is
+     * not a registry quote, so only the quote-anchored sell reaches `swaps`.
+     * 0 on the legacy Pnl path, which has no arb data -- the frontend hides
+     * the segment at 0.
+     */
+    arb_tx_count?: number;
     buy_tx_count?: number;
     cost_basis_lamports?: string;
+    /**
+     * Disjoint from ArbTxCount: these EXCLUDE arbitrage rows, so the UI shows
+     * directional buys / directional sells / arb txs without the three
+     * overlapping. 0 on the legacy Pnl path.
+     */
+    directional_buy_tx_count?: number;
+    directional_sell_tx_count?: number;
     first_buy_ts?: string;
     holding_pnl_lamports?: number;
     last_active_ts?: string;
@@ -713,8 +731,28 @@ export type PulsightInternalCoreDomainAggregatorMintStatsByWindow = {
 };
 
 export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
+    /**
+     * Distinct is_arb transactions for this (trader, mint). Same rationale
+     * as TraderTokenPosition.ArbTxCount: shown alongside buy/sell, never
+     * subtracted, so lopsided counts on arbitrage wallets are legible.
+     */
+    arb_tx_count?: number;
     buy_tx_count?: number;
     cost_basis_lamports?: string;
+    /**
+     * Directional counts EXCLUDE arbitrage rows, so the three numbers the UI
+     * shows are disjoint: directional buys / directional sells / arb txs.
+     * Overlapping them is what made an arb wallet read "11 buys / 2 sells /
+     * 11 arb" -- every one of those buys WAS one of the arbs. A pure
+     * arbitrageur now reads 0 / 0 / N, which is the truth: it never took a
+     * directional position in the token.
+     *
+     * buy_tx_count / sell_tx_count keep their original meaning (all rows,
+     * matching the trader_token_stats rollup that the leaderboard and its
+     * `f=` filters read) so nothing downstream shifts under them.
+     */
+    directional_buy_tx_count?: number;
+    directional_sell_tx_count?: number;
     first_buy_ts?: string;
     holding_pnl_lamports?: number;
     is_bundler?: boolean;
@@ -3253,7 +3291,7 @@ export type GetSwapsData = {
          */
         trader?: string;
         /**
-         * Market (pool pubkey) to scope swaps to (optional)
+         * Market (pool pubkey) to scope swaps to; repeatable or comma-separated, OR-combined (optional)
          */
         pool?: string;
         /**
