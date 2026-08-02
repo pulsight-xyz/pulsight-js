@@ -258,6 +258,15 @@ export type InternalAdaptersPrimaryHttpHandlerTokensRow = {
     mint_logo_uri?: string;
     mint_name?: string;
     mint_symbol?: string;
+    pool_liquidity?: string;
+    /**
+     * Rug-aware effective quote reserves of the mint's pool (lamports) and the
+     * exitability tier derived from them server-side. Together they let the row
+     * explain WHY a bag marks at ~0. null / "" mean unknown -- which is what
+     * the legacy Pnl fallback path below always reports, since it has no pool
+     * data; the frontend renders no badge rather than a false rug.
+     */
+    pool_quote_reserves?: number;
     realized_profit?: number;
     sell_tx_count?: number;
     token_balance?: string;
@@ -1053,6 +1062,26 @@ export type PulsightInternalCoreDomainStrategyGlobalConstraints = {
     max_buys_per_open_position?: number;
     max_buys_per_token_per_hour?: number;
     max_buys_per_token_per_minute?: number;
+    /**
+     * MaxConcurrentTokens caps how many tokens the strategy may hold at
+     * once, OVERRIDING the Token Selection root's MaxMints when set. Three
+     * states, because "not set" and "unlimited" are different answers:
+     *
+     * nil       ⇒ inherit — the Token Selection cap, or
+     * DefaultUniverseMaxMints for a def with no selection
+     * plane. Every def written before this field existed reads
+     * this way, so adding it changed no existing strategy.
+     * &0        ⇒ unlimited.
+     * &n        ⇒ n, whatever the Token Selection root says.
+     *
+     * Resolve it through StrategyDef.ConcurrencyCap — inheritance needs the
+     * selection plane, so the constraint alone cannot answer.
+     *
+     * It is a POINTER on purpose: `uint32` + omitempty serializes an explicit
+     * 0 as absent, which would silently turn "unlimited" back into "inherit"
+     * (the tightest cap) on every round-trip through the JSONB column.
+     */
+    max_concurrent_tokens?: number;
     /**
      * MaxPositionExposureSol caps the cumulative cost basis (SOL spent) of a
      * single open position. 0 ⇒ unlimited. An add that would push the open
@@ -4346,10 +4375,6 @@ export type GetTradersByWalletAddressTokensErrors = {
      * Unauthorized
      */
     401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Not Found
-     */
-    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
 export type GetTradersByWalletAddressTokensError = GetTradersByWalletAddressTokensErrors[keyof GetTradersByWalletAddressTokensErrors];
