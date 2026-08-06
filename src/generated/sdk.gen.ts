@@ -43,7 +43,7 @@ export const postBacktests = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * Get Backtest Limits
  *
- * Returns the per-run backtest cost ceiling (max credits per run) so clients can show and pre-check it.
+ * Returns the per-run backtest cost ceiling (max credits per run) and the per-timeframe maximum run window in seconds, so clients can show and pre-check them. An absent timeframe is unlimited; admins are exempt.
  */
 export const getBacktestsLimits = <ThrowOnError extends boolean = false>(options?: Options<GetBacktestsLimitsData, ThrowOnError>) => (options?.client ?? client).get<GetBacktestsLimitsResponses, GetBacktestsLimitsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],

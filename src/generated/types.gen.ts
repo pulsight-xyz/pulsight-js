@@ -88,6 +88,9 @@ export type InternalAdaptersPrimaryHttpHandlerApiKeyRenameRequest = {
 
 export type InternalAdaptersPrimaryHttpHandlerBacktestSettingsResponse = {
     max_tick_budget?: number;
+    max_window_secs?: {
+        [key: string]: number;
+    };
 };
 
 export type InternalAdaptersPrimaryHttpHandlerBestRunRef = {
@@ -1612,6 +1615,20 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     our_avg_price_impact_pct?: number;
     our_median_price_impact_pct?: number;
+    /**
+     * PerPool records whether the run simulated each market as an INDEPENDENT
+     * instrument (req.PerPool). It is persisted because it is the LEDGER
+     * BOUNDARY, and a reader cannot recover it from the trades: per-pool
+     * fidelity stamps every fill with the pool it priced against in EVERY mode,
+     * so a token that graduates mid-window (bonding curve → PumpSwap) carries
+     * two pools on ONE merged ledger and looks exactly like two independent
+     * instruments. The result page's per-token rollup used to guess from that
+     * stamp and split a graduating token in two — the buys on a row reading
+     * 0.000, the realizing sells and all of the profit on another. Additive
+     * JSONB field; pre-existing rows decode as false, which is what all but an
+     * opt-in run was.
+     */
+    per_pool?: boolean;
     realized_pnl_sol?: number;
     roi_pct?: number;
     /**
