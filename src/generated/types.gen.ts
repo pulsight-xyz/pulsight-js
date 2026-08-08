@@ -104,6 +104,47 @@ export type InternalAdaptersPrimaryHttpHandlerErrorResponse = {
     error?: string;
 };
 
+export type InternalAdaptersPrimaryHttpHandlerNeighborRowResponse = {
+    follow_rate?: number;
+    hits?: number;
+    med_slot_delta?: number;
+    mutual_rate?: number;
+    neighbor_entries?: number;
+    /**
+     * Stats is the neighbour's own 30d record. Omitted entirely when unknown
+     * — a wallet with no activity in the window, or a failed stats read. The
+     * client renders that as "—", never as zeroes.
+     */
+    stats?: InternalAdaptersPrimaryHttpHandlerNeighborStatsResponse;
+    wallet?: string;
+};
+
+export type InternalAdaptersPrimaryHttpHandlerNeighborStatsResponse = {
+    /**
+     * LAMPORTS — named for the unit, unlike the TraderStats field it comes from.
+     */
+    realized_pnl_lamports?: number;
+    realized_roi_pct?: number;
+    winrate?: number;
+};
+
+export type InternalAdaptersPrimaryHttpHandlerOhlcvRow = {
+    buy_volume_sol?: number;
+    close?: number;
+    high?: number;
+    low?: number;
+    open?: number;
+    pool_sol?: number;
+    sell_volume_sol?: number;
+    swap_count?: number;
+    time?: number;
+    token_volume?: number;
+    /**
+     * buy + sell
+     */
+    volume_sol?: number;
+};
+
 export type InternalAdaptersPrimaryHttpHandlerPickTokensRequest = {
     def?: PulsightInternalCoreDomainStrategyStrategyDef;
     strategy_id?: string;
@@ -277,6 +318,16 @@ export type InternalAdaptersPrimaryHttpHandlerTokensRow = {
     total_invested?: number;
     trader?: string;
     updated_at?: string;
+};
+
+export type InternalAdaptersPrimaryHttpHandlerTraderNeighborsResponse = {
+    neighbors?: Array<InternalAdaptersPrimaryHttpHandlerNeighborRowResponse>;
+    plane?: string;
+    relation?: string;
+    source?: string;
+    subject_entries?: number;
+    trader?: string;
+    window_days?: number;
 };
 
 export type InternalAdaptersPrimaryHttpHandlerTraderTipStatsResponse = {
@@ -826,20 +877,6 @@ export type PulsightInternalCoreDomainAggregatorMintWindowStatsBundle = {
     as_of?: string;
     mint?: string;
     stats?: PulsightInternalCoreDomainAggregatorMintStatsByWindow;
-};
-
-export type PulsightInternalCoreDomainAggregatorOhlcvCandle = {
-    bucket?: string;
-    buy_volume_sol?: number;
-    c?: number;
-    h?: number;
-    l?: number;
-    mint?: string;
-    o?: number;
-    pool_sol?: number;
-    sell_volume_sol?: number;
-    swap_count?: number;
-    token_volume?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorRiskCohort = {
@@ -1629,6 +1666,30 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      * opt-in run was.
      */
     per_pool?: boolean;
+    /**
+     * PositionsOpenedUnmarked counts positions the run opened while it had NO
+     * price to mark them with — so for as long as that lasted, every
+     * price-based exit rule (take-profit, stop, trailing stop, max-drawdown)
+     * evaluated as undefined and could not fire.
+     *
+     * It happens because a copy fills at the price the TARGET left behind, on
+     * the pool THEY traded, while the position is marked against the run's own
+     * candle stream. Normally those are the same market. They are not when the
+     * fill lands somewhere the stream does not cover — a parallel venue, or a
+     * market whose candles simply have not started yet.
+     *
+     * Like CopiesSkippedUnpriced this is a COVERAGE number, not a result: an
+     * exit rule that could not be evaluated did not decline to fire, it never
+     * ran, and the position rode on until something else closed it. A non-zero
+     * value means the run UNDER-represents its own exit rules — read the ROI
+     * with that in mind.
+     *
+     * Mid-window graduations used to dominate this and no longer do: the
+     * candle stream now merges a token's whole migration lineage, so a
+     * bonding-curve entry is marked from the moment it opens. Additive JSONB
+     * field — old rows decode as 0.
+     */
+    positions_opened_unmarked?: number;
     realized_pnl_sol?: number;
     roi_pct?: number;
     /**
@@ -2987,7 +3048,7 @@ export type GetOhlcvResponses = {
     /**
      * OK
      */
-    200: Array<PulsightInternalCoreDomainAggregatorOhlcvCandle>;
+    200: Array<InternalAdaptersPrimaryHttpHandlerOhlcvRow>;
 };
 
 export type GetOhlcvResponse = GetOhlcvResponses[keyof GetOhlcvResponses];
@@ -4228,6 +4289,44 @@ export type GetTradersByWalletAddressCreatedTokensResponses = {
 };
 
 export type GetTradersByWalletAddressCreatedTokensResponse = GetTradersByWalletAddressCreatedTokensResponses[keyof GetTradersByWalletAddressCreatedTokensResponses];
+
+export type GetTradersByWalletAddressNeighboursData = {
+    body?: never;
+    path: {
+        /**
+         * Wallet address
+         */
+        walletAddress: string;
+    };
+    query?: {
+        /**
+         * before|same_slot|after
+         */
+        rel?: string;
+        /**
+         * buy|sell
+         */
+        plane?: string;
+        /**
+         * Lookback in days (1-14)
+         */
+        window?: number;
+        /**
+         * Max rows (1-50)
+         */
+        limit?: number;
+    };
+    url: '/api/traders/{walletAddress}/neighbours';
+};
+
+export type GetTradersByWalletAddressNeighboursResponses = {
+    /**
+     * OK
+     */
+    200: InternalAdaptersPrimaryHttpHandlerTraderNeighborsResponse;
+};
+
+export type GetTradersByWalletAddressNeighboursResponse = GetTradersByWalletAddressNeighboursResponses[keyof GetTradersByWalletAddressNeighboursResponses];
 
 export type GetTradersByWalletAddressPnlSeriesData = {
     body?: never;
