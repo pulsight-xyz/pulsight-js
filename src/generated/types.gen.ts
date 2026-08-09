@@ -1022,40 +1022,28 @@ export type PulsightInternalCoreDomainAggregatorTraderBehavioralStats = {
     active_hours_count?: number;
     avg_buy_count_per_token?: number;
     avg_holding_time_secs?: number;
-    /**
-     * Mean price impact of the wallet's own fills, in basis points.
-     */
-    avg_price_impact_bps?: number;
     avg_reactivity_secs?: number;
     avg_sell_count_per_token?: number;
     /**
      * AvgTradeSizeLamports is TotalVolumeLamports over the window's swap
      * count — the wallet's typical clip. It is what makes the price-impact
-     * figures below legible: impact is size against pool depth, so the two
-     * are read together.
+     * figures legible: impact is size against pool depth, so the two are
+     * read together.
      */
     avg_trade_size_lamports?: number;
     median_buy_count_per_token?: number;
     median_holding_time_secs?: number;
-    /**
-     * Median price impact of the wallet's own fills, in basis points.
-     */
-    median_price_impact_bps?: number;
     median_reactivity_secs?: number;
     median_sell_count_per_token?: number;
     oldest_trade_at?: string;
-    /**
-     * Swap legs the two impact figures were measured over. 0 = not measured.
-     */
-    price_impact_swaps?: number;
     profit_per_trade_lamports?: number;
     pubkey?: string;
     rebalancing_ratio?: number;
     /**
-     * TotalVolumeLamports is the window's traded value in lamports, both
-     * sides. It reads the QUOTE side of each row (with non-WSOL quotes
-     * projected through `swaps.quote_lamports`) — see the adapter's
-     * swapQuoteLamportsExpr for why a plain `sum(amount_in)` is not that.
+     * TotalVolumeLamports is the window's traded value, both sides, read as
+     * the QUOTE side of each row — see the adapter's swapQuoteSideExpr for
+     * why a plain `sum(amount_in)` is not that, and for the one case it is
+     * still approximate (non-WSOL quotes count in their own units).
      */
     total_volume_lamports?: number;
     window?: PulsightInternalCoreDomainAggregatorWindow;
@@ -1097,6 +1085,29 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     win_sells?: number;
     window_label?: string;
     winrate?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorTraderPriceImpactStats = {
+    /**
+     * AvgBps is the mean and MedianBps the p50 over the window's measurable
+     * legs. Both are reported because the population is heavy-tailed — a
+     * handful of large fills into thin curves dominate the mean while the
+     * median describes the wallet's ordinary fill.
+     *
+     * POINTERS, because 0 bps is a REAL answer (a wallet trading tiny size
+     * into deep pools) and "we could not measure it" must not read as it.
+     * Nil when Swaps is 0 — most often a wallet trading only concentrated
+     * liquidity, whose vault balances are not a curve.
+     */
+    avg_price_impact_bps?: number;
+    median_price_impact_bps?: number;
+    /**
+     * Swaps is how many legs were measurable, and is what tells "measured 0"
+     * apart from "not measured" on the wire.
+     */
+    price_impact_swaps?: number;
+    pubkey?: string;
+    window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
 export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all';
@@ -4575,6 +4586,41 @@ export type GetTradersByWalletAddressPnlSeriesResponses = {
 };
 
 export type GetTradersByWalletAddressPnlSeriesResponse = GetTradersByWalletAddressPnlSeriesResponses[keyof GetTradersByWalletAddressPnlSeriesResponses];
+
+export type GetTradersByWalletAddressPriceImpactData = {
+    body?: never;
+    path: {
+        /**
+         * Wallet address
+         */
+        walletAddress: string;
+    };
+    query?: {
+        /**
+         * 1d|7d|30d|all (default 7d)
+         */
+        window?: string;
+    };
+    url: '/api/traders/{walletAddress}/price-impact';
+};
+
+export type GetTradersByWalletAddressPriceImpactErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTradersByWalletAddressPriceImpactError = GetTradersByWalletAddressPriceImpactErrors[keyof GetTradersByWalletAddressPriceImpactErrors];
+
+export type GetTradersByWalletAddressPriceImpactResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorTraderPriceImpactStats;
+};
+
+export type GetTradersByWalletAddressPriceImpactResponse = GetTradersByWalletAddressPriceImpactResponses[keyof GetTradersByWalletAddressPriceImpactResponses];
 
 export type GetTradersByWalletAddressTipsData = {
     body?: never;
