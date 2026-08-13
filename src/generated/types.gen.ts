@@ -645,6 +645,15 @@ export type PulsightInternalCoreDomainAggregatorMintInsiders = {
 
 export type PulsightInternalCoreDomainAggregatorMintMarket = {
     dex?: string;
+    /**
+     * IsDefault marks the mint's default market — the pool an unpinned
+     * /api/ohlcv chart resolves to (lifetime-dominant, recency-aware; one
+     * definition, server-side: defaultMarketPool). Resolved independently
+     * of the requested window, so a listing may carry no flagged row when
+     * the default market is idle (short windows) or older than swap
+     * retention. Resolve defaults from `window=all`.
+     */
+    is_default?: boolean;
     last_swap_ts?: string;
     pool?: string;
     sol_volume_lamports?: number;
@@ -3184,7 +3193,7 @@ export type GetOhlcvData = {
          */
         tf: string;
         /**
-         * Market (pool pubkey) to chart; defaults to the most active pool
+         * Market (pool pubkey) to chart; defaults to the mint's default market (lifetime-dominant pool, preferring the currently-active one on a genuine market rotation) — so tokens idle past 24h still chart. The default pool carries is_default on /api/mints/{pubkey}/markets
          */
         pool?: string;
         /**

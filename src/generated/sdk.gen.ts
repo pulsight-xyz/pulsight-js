@@ -209,7 +209,7 @@ export const getMintsByPubkeyLpEvents = <ThrowOnError extends boolean = false>(o
 /**
  * List Mint Markets
  *
- * Returns per-(pool, dex) rollup with SOL-volume share (0..1) for a single mint over the requested window. `window=all` lists every market the mint ever traded on — use it to resolve markets for tokens with no recent activity.
+ * Returns per-(pool, dex) rollup with SOL-volume share (0..1) for a single mint over the requested window. `window=all` lists every market the mint ever traded on — use it to resolve markets for tokens with no recent activity. At most one pool carries `is_default: true` (window-independent): the mint's default market, the same pool an unpinned `/api/ohlcv` chart resolves to. An idle default market may be absent from short-window listings, so resolve defaults from `window=all`.
  */
 export const getMintsByPubkeyMarkets = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyMarketsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyMarketsResponses, GetMintsByPubkeyMarketsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
