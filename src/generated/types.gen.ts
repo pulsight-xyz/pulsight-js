@@ -82,10 +82,6 @@ export type InternalAdaptersPrimaryHttpHandlerWebhookNotifierUpdateRequest = {
     webhook_url?: string;
 };
 
-export type InternalAdaptersPrimaryHttpHandlerApiKeyRenameRequest = {
-    name?: string;
-};
-
 export type InternalAdaptersPrimaryHttpHandlerBacktestSettingsResponse = {
     max_tick_budget?: number;
     max_window_secs?: {
@@ -1134,27 +1130,6 @@ export type PulsightInternalCoreDomainAggregatorTraderPriceImpactStats = {
 
 export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all';
 
-export type PulsightInternalCoreDomainApikeyKey = {
-    created_at?: string;
-    expires_at?: string;
-    id?: string;
-    /**
-     * Kind is user for self-minted api tokens, bot for admin-minted bot
-     * service keys. Empty (pre-076 rows) reads as user.
-     */
-    kind?: PulsightInternalCoreDomainApikeyKind;
-    last_used_at?: string;
-    name?: string;
-    prefix?: string;
-    revoked_at?: string;
-    scopes?: Array<PulsightInternalCoreDomainApikeyScope>;
-    user_id?: string;
-};
-
-export type PulsightInternalCoreDomainApikeyKind = 'user' | 'bot';
-
-export type PulsightInternalCoreDomainApikeyScope = 'data:read' | 'backtest:read' | 'backtest:run' | 'strategy:read' | 'strategy:write' | 'workspace:read' | 'workspace:write';
-
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
 export type PulsightInternalCoreDomainCreditReason = 'grant' | 'consume' | 'refund' | 'adjust' | 'referral_bonus';
@@ -1661,17 +1636,6 @@ export type PulsightInternalCoreDomainWebhookNotifier = {
 };
 
 export type PulsightInternalCoreDomainWebhookType = 'discord' | 'telegram';
-
-export type PulsightInternalCorePortsInputApiKeyCreateRequest = {
-    expires_at?: string;
-    name?: string;
-    scopes?: Array<PulsightInternalCoreDomainApikeyScope>;
-};
-
-export type PulsightInternalCorePortsInputCreatedApiKey = {
-    key?: PulsightInternalCoreDomainApikeyKey;
-    plaintext?: string;
-};
 
 export type PulsightInternalCorePortsInputFilterCreateRequest = {
     filters?: Array<number>;
@@ -2465,162 +2429,6 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
-
-export type GetMeApiKeysData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/me/api-keys';
-};
-
-export type GetMeApiKeysErrors = {
-    /**
-     * Unauthorized
-     */
-    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Internal Server Error
-     */
-    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetMeApiKeysError = GetMeApiKeysErrors[keyof GetMeApiKeysErrors];
-
-export type GetMeApiKeysResponses = {
-    /**
-     * OK
-     */
-    200: Array<PulsightInternalCoreDomainApikeyKey>;
-};
-
-export type GetMeApiKeysResponse = GetMeApiKeysResponses[keyof GetMeApiKeysResponses];
-
-export type PostMeApiKeysData = {
-    /**
-     * Key name, scopes, optional expiry
-     */
-    body: PulsightInternalCorePortsInputApiKeyCreateRequest;
-    path?: never;
-    query?: never;
-    url: '/api/me/api-keys';
-};
-
-export type PostMeApiKeysErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Unauthorized
-     */
-    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * api key limit reached for the tier
-     */
-    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Internal Server Error
-     */
-    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type PostMeApiKeysError = PostMeApiKeysErrors[keyof PostMeApiKeysErrors];
-
-export type PostMeApiKeysResponses = {
-    /**
-     * Created
-     */
-    201: PulsightInternalCorePortsInputCreatedApiKey;
-};
-
-export type PostMeApiKeysResponse = PostMeApiKeysResponses[keyof PostMeApiKeysResponses];
-
-export type DeleteMeApiKeysByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Key ID (UUID)
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/api/me/api-keys/{id}';
-};
-
-export type DeleteMeApiKeysByIdErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Unauthorized
-     */
-    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Not Found
-     */
-    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Internal Server Error
-     */
-    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type DeleteMeApiKeysByIdError = DeleteMeApiKeysByIdErrors[keyof DeleteMeApiKeysByIdErrors];
-
-export type DeleteMeApiKeysByIdResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type DeleteMeApiKeysByIdResponse = DeleteMeApiKeysByIdResponses[keyof DeleteMeApiKeysByIdResponses];
-
-export type PatchMeApiKeysByIdData = {
-    /**
-     * New name
-     */
-    body: InternalAdaptersPrimaryHttpHandlerApiKeyRenameRequest;
-    path: {
-        /**
-         * Key ID (UUID)
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/api/me/api-keys/{id}';
-};
-
-export type PatchMeApiKeysByIdErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Unauthorized
-     */
-    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Not Found
-     */
-    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Internal Server Error
-     */
-    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type PatchMeApiKeysByIdError = PatchMeApiKeysByIdErrors[keyof PatchMeApiKeysByIdErrors];
-
-export type PatchMeApiKeysByIdResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type PatchMeApiKeysByIdResponse = PatchMeApiKeysByIdResponses[keyof PatchMeApiKeysByIdResponses];
 
 export type GetMeCreditsData = {
     body?: never;
