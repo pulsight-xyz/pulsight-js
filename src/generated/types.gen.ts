@@ -761,6 +761,19 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     mint_authority?: string;
     name?: string;
     /**
+     * PriceSparkline is the mint's last-24h price shape: WSOL-quoted closes
+     * bucketed at priceSparklineBucketMin, oldest→newest, at most
+     * priceSparklineMaxPoints values. It rides the SAME scan as PriceUsd, so
+     * it carries the same denomination caveat: WSOL-quoted only, which is why
+     * a USDC-only mint has none rather than a series in another unit (mixing
+     * quotes would draw a step that never happened). Values are raw SOL per
+     * whole token — the client normalises to its own min/max, so the unit only
+     * has to be CONSISTENT within the series. Omitted below 2 points: one
+     * point is not a line, and a listing-wide 24h span is what makes the shape
+     * comparable row to row (a mint minutes old legitimately has none yet).
+     */
+    price_sparkline?: Array<number>;
+    /**
      * PriceUsd is the latest price per WHOLE token in USD, derived from the
      * dominant WSOL-quoted OHLCV close × the SOL/USD reference rate. nil
      * when there's no WSOL pool, decimals are unknown, or no SOL/USD ref.
@@ -1676,6 +1689,12 @@ export type PulsightInternalCorePortsInputPlanLimitsRead = {
     can_use_tag_event_filters?: boolean;
     can_view_full_data?: boolean;
     max_filters?: number;
+    /**
+     * MaxStrategies is the strategy cap, 0 meaning UNLIMITED (see
+     * subscription.PlanLimits.MaxStrategies). It carries the admin's
+     * `tier_plan_limits` override, not the compiled-in default.
+     */
+    max_strategies?: number;
     max_webhooks?: number;
     mcp_access?: boolean;
 };
@@ -3328,6 +3347,10 @@ export type PostStrategiesErrors = {
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
 export type PostStrategiesError = PostStrategiesErrors[keyof PostStrategiesErrors];
