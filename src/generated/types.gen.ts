@@ -544,20 +544,6 @@ export type PulsightInternalCoreDomainAggregatorHolderEntry = {
     pct_of_supply?: number;
 };
 
-export type PulsightInternalCoreDomainAggregatorJitoEfficiencyRow = {
-    efficiency_score?: number;
-    /**
-     * Label/LabelType identify a known wallet (CEX/fee/KOL/...) from the
-     * known_addresses registry; empty when the trader isn't labelled.
-     */
-    label?: string;
-    label_type?: string;
-    tip_swaps?: number;
-    total_tip_sum?: number;
-    total_volume_in?: number;
-    trader?: string;
-};
-
 export type PulsightInternalCoreDomainAggregatorLpEvent = {
     base_amount?: string;
     base_mint?: string;
@@ -1673,6 +1659,12 @@ export type PulsightInternalCorePortsInputStrategyValidation = {
 };
 
 export type PulsightInternalCorePortsInputSubscriptionInfo = {
+    /**
+     * CancelAt is set while the provider-linked subscription is scheduled to
+     * cancel at the end of the paid period (status stays "active"; the user
+     * can resume). Absent when renewing normally or already canceled.
+     */
+    cancel_at?: string;
     expires_at?: string;
     interval?: string;
     is_active?: boolean;
@@ -3550,40 +3542,6 @@ export type GetTipsHeatmapResponses = {
 };
 
 export type GetTipsHeatmapResponse = GetTipsHeatmapResponses[keyof GetTipsHeatmapResponses];
-
-export type GetTipsLeaderboardJitoEfficiencyData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Window (30m|1h|12h|1d|7d|30d|all)
-         */
-        window?: string;
-        /**
-         * Row cap (1..200, default 50)
-         */
-        limit?: number;
-    };
-    url: '/api/tips/leaderboard/jito-efficiency';
-};
-
-export type GetTipsLeaderboardJitoEfficiencyErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetTipsLeaderboardJitoEfficiencyError = GetTipsLeaderboardJitoEfficiencyErrors[keyof GetTipsLeaderboardJitoEfficiencyErrors];
-
-export type GetTipsLeaderboardJitoEfficiencyResponses = {
-    /**
-     * OK
-     */
-    200: Array<PulsightInternalCoreDomainAggregatorJitoEfficiencyRow>;
-};
-
-export type GetTipsLeaderboardJitoEfficiencyResponse = GetTipsLeaderboardJitoEfficiencyResponses[keyof GetTipsLeaderboardJitoEfficiencyResponses];
 
 export type GetTipsMatData = {
     body?: never;
