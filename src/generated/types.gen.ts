@@ -3020,7 +3020,7 @@ export type GetOhlcvData = {
          */
         pool?: string;
         /**
-         * Scope of an unpinned chart (lineage|pool; default lineage). lineage merges a graduated token's bonding curve with the pool it migrated to so it charts as one continuous market; pool reads the single dominant pool. Ignored when `pool` is set.
+         * Market scope (lineage|pool). Unpinned: defaults to lineage, which merges a graduated token's bonding curve with the pool it migrated to so it charts as one continuous market; pool reads the single dominant pool. With `pool` set: defaults to pool (that pool verbatim); pass lineage to expand the pinned pool to its own migration lineage — the market a specific fill happened in.
          */
         market?: string;
         /**
