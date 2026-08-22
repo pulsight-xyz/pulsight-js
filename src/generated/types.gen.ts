@@ -1072,8 +1072,20 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
      * migration 000018_remove_phantom_tracking).
      */
     didnt_buy_sells?: number;
+    /**
+     * FailedCostLamports — fees burned on failed venue-mentioning txs plus
+     * the fees+tips of landed no-CPI arb probes, from the failed-tx rollups
+     * (CA 000094). 0 when the ledger isn't populated for the window.
+     */
+    failed_cost_lamports?: number;
     loss_profit?: number;
     loss_sells?: number;
+    /**
+     * NetRealizedProfit = RealizedProfit − TotalFees − TotalTips −
+     * FailedCostLamports: what the wallet actually kept. This is the
+     * HEADLINE PnL; RealizedProfit stays as the flat/gross component.
+     */
+    net_realized_profit?: number;
     realized_profit?: number;
     sell_amount_lamports?: number;
     sold_gt_bought_sells?: number;
@@ -1086,8 +1098,20 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
      * serialisation is identical either way.
      */
     total_buys?: number;
+    /**
+     * TotalFees is the window's tx fees (base + priority) counted ONCE PER
+     * TRANSACTION: sum(priority_fee_lamports) + 5000 × uniq(signature).
+     * `swaps.fee` itself is stamped on every trade row of a tx, so the old
+     * sumIf(fee) double-counted multi-trade (arb) txs; priority/tips are
+     * first-row-only stamped, so their plain sums are exact and only the
+     * 5000-lamport base rides the (near-exact) uniq count.
+     */
     total_fees?: number;
     total_sells?: number;
+    /**
+     * TotalTips — builder/MEV tips paid on the window's successful txs.
+     */
+    total_tips?: number;
     trader?: string;
     win_profit?: number;
     win_sells?: number;
@@ -1115,6 +1139,39 @@ export type PulsightInternalCoreDomainAggregatorTraderPriceImpactStats = {
      */
     price_impact_swaps?: number;
     pubkey?: string;
+    window?: PulsightInternalCoreDomainAggregatorWindow;
+};
+
+export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
+    failed_arbs?: number;
+    /**
+     * Lamports burned on failed txs (base + priority fee) vs on landed
+     * no-CPI probes, plus tips the probes paid.
+     */
+    failed_fee_lamports?: number;
+    failed_other?: number;
+    failed_swaps?: number;
+    /**
+     * = FailedSwaps + FailedArbs + FailedOther
+     */
+    failed_txs?: number;
+    /**
+     * LandedTxs is uniqExact(signature) over the wallet's `swaps` rows in
+     * the window — successful swap TRANSACTIONS, not legs or trades.
+     */
+    landed_txs?: number;
+    no_cpi_fee_lamports?: number;
+    no_cpi_tip_lamports?: number;
+    no_cpi_txs?: number;
+    pubkey?: string;
+    spam_rate?: number;
+    /**
+     * SuccessRate = LandedTxs / (LandedTxs + FailedTxs); SpamRate =
+     * (FailedTxs + NoCpiTxs) / (LandedTxs + FailedTxs + NoCpiTxs).
+     * POINTERS: nil when the denominator is 0 — a wallet with no activity
+     * has no rate, and that must not read as 0%.
+     */
+    success_rate?: number;
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
@@ -1447,10 +1504,6 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     avg_holding_time?: number;
     avg_realized_profit_30d?: number;
-    /**
-     * Realized profit per-mint averages / medians. UNIT: lamports
-     * (frontend FormattedSol divides by 1e9 on display).
-     */
     avg_realized_profit_7d?: number;
     avg_sell_count_per_token?: number;
     buy_30d?: number;
@@ -1475,6 +1528,8 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     didnt_buy_sells_7d?: number;
     dust_tx_ratio?: number;
+    failed_txs_30d?: number;
+    failed_txs_7d?: number;
     id?: string;
     is_favorite?: boolean;
     /**
@@ -1483,6 +1538,8 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     label?: string;
     label_type?: string;
+    landed_txs_30d?: number;
+    landed_txs_7d?: number;
     /**
      * Activity
      */
@@ -1498,6 +1555,18 @@ export type PulsightInternalCoreDomainTraderTrader = {
      * Identifiers / social
      */
     name?: string;
+    net_profit_30d?: number;
+    /**
+     * Realized profit per-mint averages / medians. UNIT: lamports
+     * (frontend FormattedSol divides by 1e9 on display).
+     * Net-of-costs windowed figures (CA migration 000095). NetProfit is
+     * realized PnL minus tips, per-transaction fees and the fees burned on
+     * failed / no-CPI transactions — what the wallet actually kept. The
+     * gross figure stays on RealizedProfit*d so both are readable.
+     * SuccessRate / SpamRate are nil when the window observed no
+     * transactions at all (0 would read as "never lands").
+     */
+    net_profit_7d?: number;
     oldest_trade_at?: number;
     pnl_0x2x_num_30d?: number;
     /**
@@ -1557,12 +1626,18 @@ export type PulsightInternalCoreDomainTraderTrader = {
     sol_balance?: number;
     sold_gt_bought_sells_30d?: number;
     sold_gt_bought_sells_7d?: number;
+    spam_rate_30d?: number;
+    spam_rate_7d?: number;
+    success_rate_30d?: number;
+    success_rate_7d?: number;
     /**
      * Relations (loaded on demand)
      */
     tags?: Array<PulsightInternalCoreDomainTraderTag>;
     token_num_30d?: number;
     token_num_7d?: number;
+    total_costs_30d?: number;
+    total_costs_7d?: number;
     /**
      * Profit stats (all-time). UNIT: lamports (see SolBalance note).
      */
@@ -2030,7 +2105,16 @@ export type PulsightInternalCoreUsecasesTraderDailyProfitsResult = {
 
 export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     day?: string;
+    failed_cost?: number;
+    /**
+     * Costs of the day (lamports): per-tx fees, tips, and failed-tx burn,
+     * with `net = profit - fees - tips - failed_cost`. The charts plot NET
+     * as the headline series; `profit` stays as the flat/gross component.
+     */
+    fees?: number;
+    net?: number;
     profit?: number;
+    tips?: number;
 };
 
 export type PulsightInternalCoreUsecasesTraderPnlSeriesResult = {
@@ -2073,6 +2157,8 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      */
     didnt_buy_sells_7d?: number;
     dust_tx_ratio?: number;
+    failed_txs_30d?: number;
+    failed_txs_7d?: number;
     has_avatar?: boolean;
     /**
      * HoldingPnlLamports is the wallet's current unrealised PnL across
@@ -2088,6 +2174,8 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      */
     label?: string;
     label_type?: string;
+    landed_txs_30d?: number;
+    landed_txs_7d?: number;
     last_active_timestamp?: number;
     median_buy_count_per_token?: number;
     median_first_buy_reactivity?: number;
@@ -2097,6 +2185,11 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     median_sell_count_per_token?: number;
     mm_score?: number;
     name?: string;
+    net_profit_30d?: number;
+    /**
+     * Net-of-costs figures — see trader.Trader for the definitions.
+     */
+    net_profit_7d?: number;
     oldest_trade_at?: number;
     /**
      * Periods is one row per canonical UTC-aligned window (1d, 7d, 30d,
@@ -2141,6 +2234,10 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     sol_balance?: number;
     sold_gt_bought_sells_30d?: number;
     sold_gt_bought_sells_7d?: number;
+    spam_rate_30d?: number;
+    spam_rate_7d?: number;
+    success_rate_30d?: number;
+    success_rate_7d?: number;
     tags?: Array<string>;
     token_num_30d?: number;
     token_num_7d?: number;
@@ -2152,6 +2249,8 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      */
     tokens_created?: number;
     tokens_graduated?: number;
+    total_costs_30d?: number;
+    total_costs_7d?: number;
     total_profit?: number;
     total_profit_30d?: number;
     total_profit_7d?: number;
@@ -4423,6 +4522,41 @@ export type GetTradersByWalletAddressPriceImpactResponses = {
 };
 
 export type GetTradersByWalletAddressPriceImpactResponse = GetTradersByWalletAddressPriceImpactResponses[keyof GetTradersByWalletAddressPriceImpactResponses];
+
+export type GetTradersByWalletAddressReliabilityData = {
+    body?: never;
+    path: {
+        /**
+         * Wallet address
+         */
+        walletAddress: string;
+    };
+    query?: {
+        /**
+         * 1d|7d|30d|all (default 7d)
+         */
+        window?: string;
+    };
+    url: '/api/traders/{walletAddress}/reliability';
+};
+
+export type GetTradersByWalletAddressReliabilityErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTradersByWalletAddressReliabilityError = GetTradersByWalletAddressReliabilityErrors[keyof GetTradersByWalletAddressReliabilityErrors];
+
+export type GetTradersByWalletAddressReliabilityResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorTraderReliabilityStats;
+};
+
+export type GetTradersByWalletAddressReliabilityResponse = GetTradersByWalletAddressReliabilityResponses[keyof GetTradersByWalletAddressReliabilityResponses];
 
 export type GetTradersByWalletAddressTipsData = {
     body?: never;
