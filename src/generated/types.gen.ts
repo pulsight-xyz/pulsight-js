@@ -694,6 +694,25 @@ export type PulsightInternalCoreDomainAggregatorMevTipSharePoint = {
     total_volume_lamports?: number;
 };
 
+export type PulsightInternalCoreDomainAggregatorMintActivityBase = {
+    fees_lamports?: number;
+    swaps?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintActivityPoint = {
+    fees_lamports?: number;
+    swaps?: number;
+    ts?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintActivitySeed = {
+    base?: PulsightInternalCoreDomainAggregatorMintActivityBase;
+    from?: number;
+    mint?: string;
+    points?: Array<PulsightInternalCoreDomainAggregatorMintActivityPoint>;
+    to?: number;
+};
+
 export type PulsightInternalCoreDomainAggregatorMintBundled = {
     initial_pct?: number;
     wallets?: number;
@@ -868,8 +887,10 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     name?: string;
     /**
      * PriceSparkline is the mint's last-24h price shape: WSOL-quoted per-minute
-     * closes, oldest→newest, at most priceSparklineMaxPoints values. A mint
-     * that traded through the whole window is sampled evenly down to that cap
+     * closes of the mint's DOMINANT pool (highest 24h quote volume — one pool,
+     * never a merge, so a dust side-market's prints can't flatten the line),
+     * oldest→newest, at most priceSparklineMaxPoints values. A mint that
+     * traded through the whole window is sampled evenly down to that cap
      * (so the series still spans 24h, just coarser); one that traded for an
      * hour carries all of it. It rides the SAME scan as PriceUsd, so it
      * carries the same denomination caveat: WSOL-quoted only, which is why a
@@ -879,8 +900,9 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      * its own min/max, so the unit only has to be CONSISTENT within the
      * series, and this is a SHAPE, not a price read (use PriceUsd for that).
      * Only minutes that actually traded appear, so the x axis is trade
-     * sequence, not wall clock. Omitted below 2 points: one point is not a
-     * line (a mint minutes old legitimately has none yet).
+     * sequence, not wall clock. Omitted below 2 points — but a mint younger
+     * than ~10 minutes gets its points from 1-SECOND candles instead, so a
+     * fresh row draws a line as soon as it has two seconds of trading.
      */
     price_sparkline?: Array<number>;
     /**
@@ -892,11 +914,12 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     /**
      * RiskScore/RiskVerdict are a fast at-a-glance risk score (0..100 +
      * low|caution|high|critical) computed from the signals already on this row
-     * (authorities, honeypot/copycat/sell-trap, dev %, bundle) via the same
+     * (authorities, honeypot/copycat/sell-trap, dev %, bundle, top-10
+     * concentration, lifetime fees per tx, trader quality) via the same
      * domain ScoreRisk as the per-mint risk card. The listing omits the inputs
-     * that need per-mint queries (top-10 concentration, snipers, insider %,
-     * liquidity), so this is a LOWER BOUND of the card's full score — the token
-     * page is authoritative. nil only if scoring was skipped.
+     * that need per-mint queries (snipers, insider %, liquidity), so this is a
+     * LOWER BOUND of the card's full score — the token page is authoritative.
+     * nil only if scoring was skipped.
      */
     risk_score?: number;
     risk_verdict?: string;
@@ -965,11 +988,20 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      * page decoration read fails.
      */
     total_fees_sol?: number;
+    /**
+     * TotalTxCount — LIFETIME swap count for the mint, from the same
+     * mint_activity_totals seek as TotalFeesSol (and on its same sawtooth
+     * basis). It is the fee figure's denominator: the bot-fee-pattern risk
+     * rule scores fees PER transaction, so the two must share a basis —
+     * the hours-window SwapCount would not. nil whenever TotalFeesSol is.
+     */
+    total_tx_count?: number;
     trader_count?: number;
     /**
      * TraderQuality is the per-mint wallet-class fold (CA 000131) behind the
-     * sybil badge and sort=organic. Best-effort list decoration; nil before
-     * the migration or when the batch read fails.
+     * ORGANIC distribution slot, the low_organic_activity risk rule and
+     * sort=organic. Best-effort list decoration; nil before the migration or
+     * when the batch read fails.
      */
     trader_quality?: PulsightInternalCoreDomainAggregatorMintTraderQuality;
     /**
@@ -1303,6 +1335,13 @@ export type PulsightInternalCoreDomainAggregatorRiskReport = {
      * % of circulating
      */
     top10?: number;
+    /**
+     * TraderQuality echoes the wallet-class fold the low-organic rule
+     * scored (same shape as the listing's trader_quality decoration) so the
+     * risk card can render an organic-share tile even when no rule fired.
+     * nil when the plane is absent.
+     */
+    trader_quality?: PulsightInternalCoreDomainAggregatorMintTraderQuality;
     /**
      * low|caution|high|critical
      */
@@ -3286,6 +3325,53 @@ export type GetMintsByPubkeyResponses = {
 };
 
 export type GetMintsByPubkeyResponse = GetMintsByPubkeyResponses[keyof GetMintsByPubkeyResponses];
+
+export type GetMintsByPubkeyActivityData = {
+    body?: never;
+    path: {
+        /**
+         * Mint pubkey
+         */
+        pubkey: string;
+    };
+    query: {
+        /**
+         * Range start, unix seconds (inclusive)
+         */
+        from: number;
+        /**
+         * Range end, unix seconds (exclusive)
+         */
+        to: number;
+    };
+    url: '/api/mints/{pubkey}/activity';
+};
+
+export type GetMintsByPubkeyActivityErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetMintsByPubkeyActivityError = GetMintsByPubkeyActivityErrors[keyof GetMintsByPubkeyActivityErrors];
+
+export type GetMintsByPubkeyActivityResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorMintActivitySeed;
+};
+
+export type GetMintsByPubkeyActivityResponse = GetMintsByPubkeyActivityResponses[keyof GetMintsByPubkeyActivityResponses];
 
 export type GetMintsByPubkeyLpEventsData = {
     body?: never;
