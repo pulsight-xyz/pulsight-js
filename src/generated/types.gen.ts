@@ -283,6 +283,7 @@ export type InternalAdaptersPrimaryHttpHandlerSwapEventRow = {
     mint?: string;
     pool?: string;
     priority_fee_lamports?: number;
+    quote_lamports?: number;
     quote_mint?: string;
     realized_profit?: number;
     signature?: string;
@@ -439,6 +440,105 @@ export type PulsightInternalCoreDomainAggregatorBundlerStat = {
     total_initial_pct?: number;
     total_pct?: number;
     wallets?: Array<PulsightInternalCoreDomainAggregatorBundlerEntry>;
+};
+
+export type PulsightInternalCoreDomainAggregatorCashbackBoardPage = {
+    items?: Array<PulsightInternalCoreDomainAggregatorCashbackBoardRow>;
+    limit?: number;
+    offset?: number;
+    total?: number;
+    window?: PulsightInternalCoreDomainAggregatorWindow;
+};
+
+export type PulsightInternalCoreDomainAggregatorCashbackBoardRow = {
+    /**
+     * CashbackVolumeLamports over TotalVolumeLamports is VolumeShare — nil
+     * when the window moved no volume (no share, which is not a 0% share).
+     */
+    cashback_volume_lamports?: number;
+    censored?: boolean;
+    claim_count?: number;
+    /**
+     * ClaimedLamports / ClaimCount are nil only before CA 000106 exists. On
+     * the lifetime window they are RETENTION-BOUNDED (the raw claim ledger
+     * carries a 75-day TTL) — they undercount once rows age out rather than
+     * inventing, the trader panel's lifetime_claimed precedent.
+     */
+    claimed_lamports?: number;
+    /**
+     * EarnedLamports — cashback accrued in the window TO THIS WALLET'S OWN
+     * accumulator (since classifier 0cb3f9c, executor-routed fills whose
+     * accumulator belongs to the filler are excluded); the board's primary
+     * measure (claiming is sporadic, earning is the smooth signal).
+     */
+    earned_lamports?: number;
+    first_seen_ms?: number;
+    last_active_ms?: number;
+    pump_image?: string;
+    /**
+     * Pump.fun profile enrichment (server-side, cached): the wallet's pump
+     * username and avatar when it has a profile. Always nil on a censored
+     * row — enrichment runs only on rows whose identity ships.
+     */
+    pump_username?: string;
+    /**
+     * Rank is 1-based within the requested window + filters (offset-aware).
+     */
+    rank?: number;
+    total_volume_lamports?: number;
+    /**
+     * Trader is empty on a censored landing row (Censored true): the figures
+     * stay real, the identity is withheld server-side.
+     */
+    trader?: string;
+    volume_share?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorCashbackBoardSummary = {
+    claim_count?: number;
+    /**
+     * ClaimedLamports / ClaimCount: on the lifetime window these are
+     * RETENTION-BOUNDED sums over the 75-day claim ledger (undercount, never
+     * invented).
+     */
+    claimed_lamports?: number;
+    earned_lamports?: number;
+    /**
+     * Earners / EarnedLamports — wallets with any earned cashback in the
+     * window, and their summed earnings (the "% of pool" denominator).
+     */
+    earners?: number;
+    /**
+     * Population marks.
+     */
+    median_earned_lamports?: number;
+    rank1_earned_lamports?: number;
+    window?: PulsightInternalCoreDomainAggregatorWindow;
+};
+
+export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
+    amount_lamports?: number;
+    program?: string;
+    quote_mint?: string;
+    signature?: string;
+    timestamp?: string;
+};
+
+export type PulsightInternalCoreDomainAggregatorCashbackClaimsPage = {
+    items?: Array<PulsightInternalCoreDomainAggregatorCashbackClaimRow>;
+    limit?: number;
+    offset?: number;
+    pubkey?: string;
+    total?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorCashbackProgramTotals = {
+    /**
+     * "pumpfun" | "pumpswap"
+     */
+    program?: string;
+    total_claimed_lamports?: number;
+    total_earned_lamports?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorCohortStat = {
@@ -611,6 +711,14 @@ export type PulsightInternalCoreDomainAggregatorMintHoneypot = {
      * DuplicateCount backs "copycat": how many mints share this (symbol, name).
      */
     duplicate_count?: number;
+    fee_sell_buy_ratio?: number;
+    /**
+     * FeeTrapBuckets/FeeSellBuyRatio back "fee_trap" (confiscatory sell
+     * tax, CA 000133/r59): distinct 15-minute buckets in the last 7 days
+     * whose sells executed below half that bucket's buy VWAP, and the
+     * window's overall sell/buy exec-price ratio (display only).
+     */
+    fee_trap_buckets?: number;
     /**
      * FreezeCount/ThawCount back the "freezes_holders" reason.
      */
@@ -619,6 +727,12 @@ export type PulsightInternalCoreDomainAggregatorMintHoneypot = {
     sell_count?: number;
     sellers?: number;
     thaw_count?: number;
+    /**
+     * TransferFeeBps backs "transfer_fee" (Token-2022, CA 000134/r61): the
+     * on-chain transfer fee in basis points (max of the current and
+     * scheduled fee).
+     */
+    transfer_fee_bps?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintInsiders = {
@@ -709,6 +823,8 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      * absent when no reason fires. Step 1 populates the "freezes_holders"
      * reason from mint_safety_events (froze many holder accounts, thawed
      * few). Future Token-2022 reasons (transfer_fee/hook/…) accrete here.
+     * The "impersonating" reason (verified ticker reused by a different
+     * mint) also rides here — badge-only, no filter arm.
      */
     honeypot?: PulsightInternalCoreDomainAggregatorMintHoneypot;
     insiders?: PulsightInternalCoreDomainAggregatorMintInsiders;
@@ -720,6 +836,14 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     is_mayhem_mode?: boolean;
     last_trade_ts?: string;
     logo_uri?: string;
+    /**
+     * LpBurned reports whether ANY LP burn is on file for the mint — the same
+     * `lp_events(op='burn')` set the `lp_burned=1` listing filter uses, so the
+     * audit glyph and the filter can never disagree. Page-scoped, so it is a
+     * definite true/false for every returned row (never nil on the list path);
+     * nil on the detail path, where the batch does not run.
+     */
+    lp_burned?: boolean;
     /**
      * MarketCapUsd is PriceUsd × circulating supply. Equivalently
      * close_sol × supply_raw × sol_usd / 1e6 (token decimals cancel), so
@@ -814,7 +938,40 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      */
     swap_count?: number;
     symbol?: string;
+    /**
+     * Top10Pct is the top-10 holder concentration as a PERCENT of circulating
+     * supply (0..100). Already read per page by top10ConcentrationBatch to
+     * score the row — emitting it costs nothing extra and is what the listing's
+     * Distribution column leads with. nil when the accumulator has no row for
+     * the mint (fresh token, or holder balances not yet folded).
+     */
+    top10_pct?: number;
+    /**
+     * TopDex is the venue slug of the mint's DOMINANT pool over the activity
+     * window — the pool with the most quote volume, i.e. the venue the token
+     * actually trades on. Same vocabulary as `?dex=` and `swaps.dex`; look up
+     * the display label via DEX_LABEL. Rides fillMarketsCount's existing scan
+     * (same GROUP BY, one more aggregate), so it is free. nil when the mint had
+     * no dex_swaps row in the window.
+     */
+    top_dex?: string;
+    /**
+     * TotalFeesSol — LIFETIME network fees paid trading the mint, in
+     * lamports: tx fees (base + priority) plus MEV tips summed over its
+     * swaps (CA 000137 on mint_activity_totals; the 000064 sawtooth basis —
+     * lifetime between stats rebuilds, re-synced to the swaps 3-month
+     * retention at each healer finalize). Unlike the counts above it is NOT
+     * hours-window-bound. nil until the migration is applied or when the
+     * page decoration read fails.
+     */
+    total_fees_sol?: number;
     trader_count?: number;
+    /**
+     * TraderQuality is the per-mint wallet-class fold (CA 000131) behind the
+     * sybil badge and sort=organic. Best-effort list decoration; nil before
+     * the migration or when the batch read fails.
+     */
+    trader_quality?: PulsightInternalCoreDomainAggregatorMintTraderQuality;
     /**
      * UniqueTraders is the number of distinct wallets that have EVER traded
      * this mint (all-time count() over trader_token_stats, the same
@@ -826,6 +983,14 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      * read is unavailable.
      */
     unique_traders?: number;
+    /**
+     * Verified marks a mint on the curated verified token list (Jupiter's,
+     * refreshed hourly by the jupverified registry). Also the copycat
+     * CANONICAL exemption: a verified member of a name-dupe farm keeps its
+     * listing spot and loses the copycat badge while the clones stay
+     * flagged. Omitted when false or when no registry is wired.
+     */
+    verified?: boolean;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintStatsByWindow = {
@@ -833,6 +998,14 @@ export type PulsightInternalCoreDomainAggregatorMintStatsByWindow = {
     '1m'?: PulsightInternalCoreDomainAggregatorMintWindowStats;
     '24h'?: PulsightInternalCoreDomainAggregatorMintWindowStats;
     '5m'?: PulsightInternalCoreDomainAggregatorMintWindowStats;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintTraderQuality = {
+    classified?: number;
+    fresh?: number;
+    organic?: number;
+    ruggy?: number;
+    traders?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
@@ -910,6 +1083,13 @@ export type PulsightInternalCoreDomainAggregatorMintWindowStats = {
     sell_volume_sol?: number;
     swap_count?: number;
     /**
+     * Total network fees paid trading the mint in the window, in lamports:
+     * tx fees (base + priority) plus MEV tips, summed over its swaps.
+     * Populated by the per-mint stats endpoint only; the listing endpoint
+     * (/api/mints) leaves it nil (the OHLCV planes carry no fee data).
+     */
+    total_fees_sol?: number;
+    /**
      * Total SOL traded (buy + sell), in lamports.
      */
     volume_sol?: number;
@@ -919,6 +1099,166 @@ export type PulsightInternalCoreDomainAggregatorMintWindowStatsBundle = {
     as_of?: string;
     mint?: string;
     stats?: PulsightInternalCoreDomainAggregatorMintStatsByWindow;
+    /**
+     * TotalFeesLifetimeSol — LIFETIME network fees paid trading the mint,
+     * in lamports (same basis and plane as MintRow.TotalFeesSol on the
+     * listing: CA 000137's `fees` on mint_activity_totals, NOT bound to any
+     * window). Feeds the token detail page's header bar. nil until the
+     * migration is applied or when the best-effort read fails.
+     */
+    total_fees_lifetime_sol?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramBoardCounts = {
+    all?: number;
+    amm?: number;
+    arbitrage?: number;
+    router?: number;
+    unknown?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramBoardPage = {
+    board?: string;
+    categories?: Array<string>;
+    items?: Array<PulsightInternalCoreDomainAggregatorProgramBoardRow>;
+    limit?: number;
+    offset?: number;
+    total?: number;
+    window?: PulsightInternalCoreDomainAggregatorWindow;
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramBoardRow = {
+    arb_txs?: number;
+    /**
+     * Category is the RESOLVED category: admin identity > embedded
+     * program seed > 7d auto-arb rule > "unknown".
+     */
+    category?: string;
+    censored?: boolean;
+    failed_txs?: number;
+    first_seen_ms?: number;
+    /**
+     * Hidden mirrors the admin identity's hide flag. Hidden rows never
+     * reach the public board (dropped before ranking) — only the admin
+     * listing serves them.
+     */
+    hidden?: boolean;
+    last_seen_ms?: number;
+    /**
+     * LogoURI is the admin-assigned identity logo, falling back to the
+     * embedded seed's self-hosted mirror path (/program-logos/…); empty
+     * when the program has none.
+     */
+    logo_uri?: string;
+    /**
+     * Name is the admin-assigned identity name, falling back to the
+     * embedded seed name; empty when unnamed.
+     */
+    name?: string;
+    non_swap_rate?: number;
+    program_id?: string;
+    rank?: number;
+    /**
+     * RevenueLamports is category-gated (ProgramRevenueLamports): net arb
+     * extraction for arbitrage programs (can be negative — an unprofitable
+     * bot), decoded venue fees for amm/dex programs, and 0 ("not measured")
+     * for routers, unknowns and every other category.
+     */
+    revenue_lamports?: number;
+    spam_rate?: number;
+    /**
+     * Spark is the program's daily volume over the trailing 7 days
+     * (lamports, oldest first; role-matched like VolumeLamports). Only
+     * populated on the rows a page actually returns.
+     */
+    spark?: Array<number>;
+    success_rate?: number;
+    /**
+     * Txs is the landed tx count (incl. no-CPI probes).
+     */
+    txs?: number;
+    unique_users?: number;
+    /**
+     * VolumeLamports is venue-executed volume for amm/dex-category
+     * programs (true venue volume incl. routed flow) and tx-level primary
+     * volume for everything else. WSOL-projected lamports; unpriced
+     * quote flow is excluded, never guessed.
+     */
+    volume_lamports?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramBoardSummary = {
+    board?: string;
+    counts?: PulsightInternalCoreDomainAggregatorProgramBoardCounts;
+    earners?: number;
+    failed_total?: number;
+    filters?: {
+        [key: string]: PulsightInternalCoreDomainAggregatorProgramMetricHist;
+    };
+    negative_rev?: number;
+    new_today?: number;
+    programs_total?: number;
+    /**
+     * Rank2 volume anchors the table's magnitude-bar axis — the bar scale
+     * breaks at #2 when #1 is an outlier. Zero below 2 programs.
+     */
+    rank2_volume_lamports?: number;
+    revenue_total_lamports?: number;
+    txs_total?: number;
+    volume_total_lamports?: number;
+    window?: PulsightInternalCoreDomainAggregatorWindow;
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramDailySeries = {
+    days?: Array<PulsightInternalCoreDomainAggregatorProgramDayStat>;
+    program_id?: string;
+    window_days?: number;
+    windows?: {
+        [key: string]: PulsightInternalCoreDomainAggregatorProgramWindowFigures;
+    };
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramDayStat = {
+    arb_no_cpi_txs?: number;
+    arb_revenue_lamports?: number;
+    arb_txs?: number;
+    /**
+     * "2026-08-23" (UTC)
+     */
+    day?: string;
+    failed_arb_txs?: number;
+    failed_fee_lamports?: number;
+    failed_other_txs?: number;
+    failed_swap_txs?: number;
+    fee_revenue_lamports?: number;
+    other_txs?: number;
+    primary_volume_lamports?: number;
+    swap_txs?: number;
+    txs?: number;
+    users?: number;
+    venue_volume_lamports?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramMetricHist = {
+    bins?: Array<number>;
+    hi?: number;
+    lo?: number;
+    log?: boolean;
+};
+
+export type PulsightInternalCoreDomainAggregatorProgramWindowFigures = {
+    failed_txs?: number;
+    non_swap_rate?: number;
+    primary_volume_lamports?: number;
+    revenue_lamports?: number;
+    spam_rate?: number;
+    success_rate?: number;
+    /**
+     * Txs is the landed tx count (incl. no-CPI probes).
+     */
+    txs?: number;
+    unique_users?: number;
+    venue_volume_lamports?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorRiskCohort = {
@@ -1057,6 +1397,80 @@ export type PulsightInternalCoreDomainAggregatorTraderBehavioralStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
+export type PulsightInternalCoreDomainAggregatorTraderCashbackStats = {
+    avg_cashback_bps?: number;
+    /**
+     * CashbackVolumeLamports — the window's quote-side volume on
+     * cashback-enabled coins; TotalVolumeLamports the window's whole
+     * quote-side volume (buy in + sell out). VolumeShare divides the two
+     * (nil when no volume); AvgCashbackBps = earned / cashback volume in
+     * basis points (nil when no cashback volume) — the effective rebate
+     * rate, which is per-coin on-chain (30 and 90 bps both live).
+     */
+    cashback_volume_lamports?: number;
+    /**
+     * Claim cadence, lifetime, all quote denominations.
+     */
+    claim_count?: number;
+    /**
+     * ClaimableLamports is the unclaimed balance sitting in the wallet's
+     * accumulators: cashback accrued SINCE its last claim. A claim sweeps
+     * the accumulator in full, so the balance at that moment is 0 and
+     * everything after it is unclaimed — which makes this immune both to
+     * the claim ledger's TTL and to history that predates our ingest, since
+     * only a timestamp comes from the claim side. Wallets that never claimed
+     * report everything we have observed them earn. Reads LOW, never high
+     * (see cashbackAccruedSince for the two bounded undercounts).
+     */
+    claimable_lamports?: number;
+    /**
+     * ClaimedLamports — WSOL cashback swept by claim_cashback in the window.
+     * This is the cash-basis component net PnL ADDS (page, series, board —
+     * all three fold the same claimed numbers, #c22).
+     */
+    claimed_lamports?: number;
+    /**
+     * EarnedLamports — cashback ACCRUED by the window's swaps (the exact
+     * per-swap amounts from the pump trade events, WSOL-quoted markets
+     * only). Informational: the net-PnL formulas fold CLAIMED, not this.
+     */
+    earned_lamports?: number;
+    last_claim_at?: string;
+    lifetime_claimed_lamports?: number;
+    /**
+     * LifetimeEarnedLamports is exact: it comes from `trader_stats.cashback`,
+     * which is untimed, WSOL-only by construction and rebuildable from
+     * `swaps`. LifetimeClaimedLamports is bounded by the raw claim ledger's
+     * 75-day retention (CA 000098) — the same compromise reliability's "all"
+     * window makes, undercounting rather than inventing. ProgramTotals below
+     * carries the program's own all-time figures beside it.
+     */
+    lifetime_earned_lamports?: number;
+    /**
+     * ProgramTotals — the lifetime running totals the pump program itself
+     * stamped on the wallet's LATEST claim event, one row per program
+     * (pumpfun = bonding curve, pumpswap = AMM), read from
+     * `cashback_claim_anchors` so they outlive the raw ledger's TTL. They
+     * cover history from before our ingest and are surfaced verbatim as
+     * "program-reported" — DISPLAY ONLY. Never fold them into a lamport
+     * figure: the on-chain counter is one u64 per accumulator and cashback
+     * is not SOL-only (~7% of sampled claims carried a USDC quote), so
+     * whether it mixes denominations is not observable from the event.
+     * Empty array when the wallet never claimed.
+     */
+    program_totals?: Array<PulsightInternalCoreDomainAggregatorCashbackProgramTotals>;
+    pubkey?: string;
+    /**
+     * RecentClaims — the wallet's latest claims, newest first (≤10).
+     * AmountLamports is in the claim's quote-mint base units — lamports for
+     * WSOL rows, which is nearly all of them.
+     */
+    recent_claims?: Array<PulsightInternalCoreDomainAggregatorCashbackClaimRow>;
+    total_volume_lamports?: number;
+    volume_share?: number;
+    window?: PulsightInternalCoreDomainAggregatorWindow;
+};
+
 export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     /**
      * ArbTxRatio is the fraction (0..1) of the window's swaps that were
@@ -1065,6 +1479,11 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     arb_tx_ratio?: number;
     buy_amount_lamports?: number;
     buy_sell_ratio?: number;
+    /**
+     * CashbackClaimedLamports — WSOL pump cashback the wallet CLAIMED in the
+     * window (cash basis; CA 000097). The one POSITIVE cost-block component.
+     */
+    cashback_claimed_lamports?: number;
     /**
      * DidntBuySells / SoldGtBoughtSells count the window's uncovered
      * sells: countIf(sold_without_buy) and countIf(sold_more_than_bought)
@@ -1082,8 +1501,9 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     loss_sells?: number;
     /**
      * NetRealizedProfit = RealizedProfit − TotalFees − TotalTips −
-     * FailedCostLamports: what the wallet actually kept. This is the
-     * HEADLINE PnL; RealizedProfit stays as the flat/gross component.
+     * FailedCostLamports + CashbackClaimedLamports: what the wallet actually
+     * kept. This is the HEADLINE PnL; RealizedProfit stays as the flat/gross
+     * component. Mirrors rollupWindowAgg.netPnl and boardWindowExpr (#c22).
      */
     net_realized_profit?: number;
     realized_profit?: number;
@@ -1163,19 +1583,30 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     no_cpi_fee_lamports?: number;
     no_cpi_tip_lamports?: number;
     no_cpi_txs?: number;
+    /**
+     * ObservedLandedTxs is LandedTxs narrowed to the hours the failed-tx
+     * stream was actually running. Failed transactions are only recorded for
+     * those hours — a historical backfill drops them at the fetch layer, and
+     * nothing observed them before the feature shipped — so this is the only
+     * landed count the rates below may divide by. It equals LandedTxs once a
+     * window is fully observed; the gap is how much of the window is
+     * un-scored.
+     */
+    observed_landed_txs?: number;
     pubkey?: string;
     spam_rate?: number;
     /**
-     * SuccessRate = LandedTxs / (LandedTxs + FailedTxs); SpamRate =
-     * (FailedTxs + NoCpiTxs) / (LandedTxs + FailedTxs + NoCpiTxs).
-     * POINTERS: nil when the denominator is 0 — a wallet with no activity
-     * has no rate, and that must not read as 0%.
+     * SuccessRate = ObservedLandedTxs / (ObservedLandedTxs + FailedTxs);
+     * SpamRate = (FailedTxs + NoCpiTxs) / (ObservedLandedTxs + FailedTxs +
+     * NoCpiTxs). POINTERS: nil when the denominator is 0 — a wallet with no
+     * OBSERVED activity has no rate, and that must not read as 0% (or, worse,
+     * as a 100% success score for a window nobody watched).
      */
     success_rate?: number;
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -1514,6 +1945,19 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     buy_sell_ratio_7d?: number;
     buy_size_cv?: number;
+    cashback_30d?: number;
+    /**
+     * Pump cashback, lamports. `Cashback*` is what ACCRUED in the window
+     * (the screening signal); `CashbackClaimed*` is what was swept, and is
+     * the component already folded into NetProfit* — do not add it again.
+     */
+    cashback_7d?: number;
+    cashback_claim_count_30d?: number;
+    cashback_claim_count_7d?: number;
+    cashback_claimed_30d?: number;
+    cashback_claimed_7d?: number;
+    cashback_share_30d?: number;
+    cashback_share_7d?: number;
     /**
      * "sol" | "eth"
      */
@@ -2106,6 +2550,7 @@ export type PulsightInternalCoreUsecasesTraderDailyProfitsResult = {
 export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     day?: string;
     failed_cost?: number;
+    failed_txs?: number;
     /**
      * Costs of the day (lamports): per-tx fees, tips, and failed-tx burn,
      * with `net = profit - fees - tips - failed_cost`. The charts plot NET
@@ -2114,7 +2559,16 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     fees?: number;
     net?: number;
     profit?: number;
+    success_rate?: number;
     tips?: number;
+    /**
+     * Txs is the day's landed transaction count; FailedTxs the failed-tx
+     * ledger's failed swaps+arbs+other. SuccessRate divides the OBSERVED
+     * landed count (failed-tx-watched hours only, CA 000096) by
+     * observed+failed — nil when no hour of the day was observed, so
+     * pre-ledger history reads "not measured" rather than a fake 100%.
+     */
+    txs?: number;
 };
 
 export type PulsightInternalCoreUsecasesTraderPnlSeriesResult = {
@@ -2132,19 +2586,32 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     avg_realized_profit_30d?: number;
     avg_realized_profit_7d?: number;
     avg_sell_count_per_token?: number;
-    behavioral_30d?: PulsightInternalCoreDomainAggregatorTraderBehavioralStats;
     /**
-     * Behavioral7d / Behavioral30d are the two rows the
-     * "Behavioural" panel toggles between (7d and 30d are the only
-     * supported windows). nil → panel renders its empty state for that
+     * Behavioral1d/7d/30d/All are the rows the "Behavioural" panel
+     * toggles between. nil → panel renders its empty state for that
      * window.
      */
+    behavioral_1d?: PulsightInternalCoreDomainAggregatorTraderBehavioralStats;
+    behavioral_30d?: PulsightInternalCoreDomainAggregatorTraderBehavioralStats;
     behavioral_7d?: PulsightInternalCoreDomainAggregatorTraderBehavioralStats;
+    behavioral_all?: PulsightInternalCoreDomainAggregatorTraderBehavioralStats;
     buy_30d?: number;
     buy_7d?: number;
     buy_sell_ratio_30d?: number;
     buy_sell_ratio_7d?: number;
     buy_size_cv?: number;
+    cashback_30d?: number;
+    /**
+     * Pump cashback: accrued in the window (the screening signal) and
+     * swept. Claimed is ALREADY inside NetProfit7d — never add it on top.
+     */
+    cashback_7d?: number;
+    cashback_claim_count_30d?: number;
+    cashback_claim_count_7d?: number;
+    cashback_claimed_30d?: number;
+    cashback_claimed_7d?: number;
+    cashback_share_30d?: number;
+    cashback_share_7d?: number;
     chain?: string;
     created_at?: string;
     daily_profit_30d?: Array<PulsightInternalCoreUsecasesTraderDailyProfitEntry>;
@@ -2207,6 +2674,14 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      * the snapshot wasn't inlined.
      */
     pnl_distribution?: Array<number>;
+    /**
+     * PnlDistributions is one 5-bucket realised-PnL distribution row per
+     * canonical window (1d, 7d, 30d, all), windowed for real — unlike the
+     * list path's snapshot-folded PnlDistribution above, which is the
+     * leaderboard's all-time buckets. Drives the trader-detail "PnL
+     * distribution" chips and their window toggle.
+     */
+    pnl_distributions?: Array<PulsightInternalCoreUsecasesTraderTraderPnlDistributionRow>;
     pnl_gt_5x_num_30d?: number;
     pnl_gt_5x_num_7d?: number;
     pnl_lt_nd5_num_30d?: number;
@@ -2279,6 +2754,16 @@ export type PulsightInternalCoreUsecasesTraderTraderListResult = {
     next_cursor_value?: number;
     offset?: number;
     total?: number;
+};
+
+export type PulsightInternalCoreUsecasesTraderTraderPnlDistributionRow = {
+    pnl_0x_2x?: number;
+    pnl_2x_5x?: number;
+    pnl_gt_5x?: number;
+    pnl_lt_nd5?: number;
+    pnl_nd5_0x?: number;
+    trader?: string;
+    window_label?: string;
 };
 
 export type GetBacktestsData = {
@@ -2496,6 +2981,86 @@ export type GetBacktestsByIdTradesResponses = {
 
 export type GetBacktestsByIdTradesResponse = GetBacktestsByIdTradesResponses[keyof GetBacktestsByIdTradesResponses];
 
+export type GetCashbackLeaderboardData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * 1d|7d|30d|all (default 7d)
+         */
+        window?: string;
+        /**
+         * cashback|cashback_claimed|cashback_share|cashback_claim_count|cashback_volume (default cashback)
+         */
+        sort_by?: string;
+        /**
+         * asc|desc (default desc)
+         */
+        direction?: string;
+        /**
+         * Page size (default 50, max 200)
+         */
+        limit?: number;
+        /**
+         * Page offset
+         */
+        offset?: number;
+        /**
+         * Filter clause key|op|value, repeatable
+         */
+        f?: Array<string>;
+    };
+    url: '/api/cashback/leaderboard';
+};
+
+export type GetCashbackLeaderboardErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetCashbackLeaderboardError = GetCashbackLeaderboardErrors[keyof GetCashbackLeaderboardErrors];
+
+export type GetCashbackLeaderboardResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorCashbackBoardPage;
+};
+
+export type GetCashbackLeaderboardResponse = GetCashbackLeaderboardResponses[keyof GetCashbackLeaderboardResponses];
+
+export type GetCashbackSummaryData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * 1d|7d|30d|all (default 7d)
+         */
+        window?: string;
+    };
+    url: '/api/cashback/summary';
+};
+
+export type GetCashbackSummaryErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetCashbackSummaryError = GetCashbackSummaryErrors[keyof GetCashbackSummaryErrors];
+
+export type GetCashbackSummaryResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorCashbackBoardSummary;
+};
+
+export type GetCashbackSummaryResponse = GetCashbackSummaryResponses[keyof GetCashbackSummaryResponses];
+
 export type GetHealthData = {
     body?: never;
     path?: never;
@@ -2524,6 +3089,24 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type GetHealthLiveData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/health/live';
+};
+
+export type GetHealthLiveResponses = {
+    /**
+     * OK
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type GetHealthLiveResponse = GetHealthLiveResponses[keyof GetHealthLiveResponses];
 
 export type GetMeCreditsData = {
     body?: never;
@@ -2601,7 +3184,7 @@ export type GetMintsData = {
          */
         search?: string;
         /**
-         * trades|traders|recent|volume|buys|sells|net_buy|price_change|liquidity_usdc|age (age = newest first_seen first)
+         * trades|traders|recent|volume|buys|sells|net_buy|price_change|liquidity_usdc|age|organic (age = newest first_seen first, organic = organic-trader count)
          */
         sort?: string;
         /**
@@ -2620,6 +3203,10 @@ export type GetMintsData = {
          * Min market cap in USD (price × circulating supply). Mints with no computable market cap are excluded. Omitted ⇒ no floor.
          */
         min_market_cap_usd?: number;
+        /**
+         * Min LIFETIME total network fees paid trading the mint (tx fees + MEV tips), in lamports — the same basis as each row's total_fees_sol. Omitted ⇒ no floor.
+         */
+        min_fees_sol?: number;
         /**
          * Max rows (default 50, max 500)
          */
@@ -2645,6 +3232,14 @@ export type GetMintsErrors = {
      * Internal Server Error
      */
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_UNAVAILABLE — the analytics store refused the read (concurrency/memory ceiling); retry after backoff
+     */
+    503: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_TIMEOUT — the read exceeded HEAVY_READ_BUDGET; retry with a narrower window or a smaller page
+     */
+    504: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
 export type GetMintsError = GetMintsErrors[keyof GetMintsErrors];
@@ -3171,6 +3766,210 @@ export type GetOhlcvResponses = {
 };
 
 export type GetOhlcvResponse = GetOhlcvResponses[keyof GetOhlcvResponses];
+
+export type GetProgramLogosByProgramIdData = {
+    body?: never;
+    path: {
+        /**
+         * Program ID (base58 pubkey)
+         */
+        programID: string;
+    };
+    query?: never;
+    url: '/api/program-logos/{programID}';
+};
+
+export type GetProgramLogosByProgramIdErrors = {
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetProgramLogosByProgramIdError = GetProgramLogosByProgramIdErrors[keyof GetProgramLogosByProgramIdErrors];
+
+export type GetProgramLogosByProgramIdResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GetProgramLogosByProgramIdResponse = GetProgramLogosByProgramIdResponses[keyof GetProgramLogosByProgramIdResponses];
+
+export type GetProgramsLeaderboardData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * arbitrage|amm|router|unknown|all (default arbitrage; router = router/aggregator programs; unknown = none of the other three)
+         */
+        board?: string;
+        /**
+         * 1d|7d|30d|3m (default 7d)
+         */
+        window?: string;
+        /**
+         * volume|users|txs|revenue|success_rate|spam_rate|non_swap_rate|first_seen|last_seen (default volume)
+         */
+        sort?: string;
+        /**
+         * asc|desc (default desc)
+         */
+        order?: string;
+        /**
+         * Page size (default 50, max 200)
+         */
+        limit?: number;
+        /**
+         * Page offset
+         */
+        offset?: number;
+        /**
+         * Substring match on program id or name
+         */
+        search?: string;
+        /**
+         * Volume floor, whole SOL
+         */
+        min_volume_sol?: number;
+        /**
+         * Volume ceiling, whole SOL
+         */
+        max_volume_sol?: number;
+        /**
+         * Unique-user floor
+         */
+        min_users?: number;
+        /**
+         * Unique-user ceiling
+         */
+        max_users?: number;
+        /**
+         * Landed-tx floor
+         */
+        min_txs?: number;
+        /**
+         * Landed-tx ceiling
+         */
+        max_txs?: number;
+        /**
+         * Revenue floor, whole SOL (may be negative)
+         */
+        min_revenue_sol?: number;
+        /**
+         * Revenue ceiling, whole SOL (may be negative)
+         */
+        max_revenue_sol?: number;
+        /**
+         * Success-rate floor, percent 0-100
+         */
+        min_success_rate?: number;
+        /**
+         * Success-rate ceiling, percent 0-100
+         */
+        max_success_rate?: number;
+        /**
+         * Spam-rate floor, percent 0-100
+         */
+        min_spam_rate?: number;
+        /**
+         * Spam-rate ceiling, percent 0-100
+         */
+        max_spam_rate?: number;
+        /**
+         * Non-swap-rate floor, percent 0-100
+         */
+        min_non_swap_rate?: number;
+        /**
+         * Non-swap-rate ceiling, percent 0-100
+         */
+        max_non_swap_rate?: number;
+    };
+    url: '/api/programs/leaderboard';
+};
+
+export type GetProgramsLeaderboardErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetProgramsLeaderboardError = GetProgramsLeaderboardErrors[keyof GetProgramsLeaderboardErrors];
+
+export type GetProgramsLeaderboardResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorProgramBoardPage;
+};
+
+export type GetProgramsLeaderboardResponse = GetProgramsLeaderboardResponses[keyof GetProgramsLeaderboardResponses];
+
+export type GetProgramsSummaryData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * arbitrage|amm|router|unknown|all (default arbitrage)
+         */
+        board?: string;
+        /**
+         * 1d|7d|30d|3m (default 7d)
+         */
+        window?: string;
+    };
+    url: '/api/programs/summary';
+};
+
+export type GetProgramsSummaryErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetProgramsSummaryError = GetProgramsSummaryErrors[keyof GetProgramsSummaryErrors];
+
+export type GetProgramsSummaryResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorProgramBoardSummary;
+};
+
+export type GetProgramsSummaryResponse = GetProgramsSummaryResponses[keyof GetProgramsSummaryResponses];
+
+export type GetProgramsByProgramIdDailyData = {
+    body?: never;
+    path: {
+        /**
+         * Program id (base58)
+         */
+        program_id: string;
+    };
+    query?: never;
+    url: '/api/programs/{program_id}/daily';
+};
+
+export type GetProgramsByProgramIdDailyErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetProgramsByProgramIdDailyError = GetProgramsByProgramIdDailyErrors[keyof GetProgramsByProgramIdDailyErrors];
+
+export type GetProgramsByProgramIdDailyResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorProgramDailySeries;
+};
+
+export type GetProgramsByProgramIdDailyResponse = GetProgramsByProgramIdDailyResponses[keyof GetProgramsByProgramIdDailyResponses];
 
 export type GetSolPriceData = {
     body?: never;
@@ -4005,6 +4804,14 @@ export type GetTradersErrors = {
      * Internal Server Error
      */
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_UNAVAILABLE — the analytics store refused the read (concurrency/memory ceiling); retry after backoff
+     */
+    503: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_TIMEOUT — the read exceeded HEAVY_READ_BUDGET; retry with a narrower period or a smaller page
+     */
+    504: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
 export type GetTradersError = GetTradersErrors[keyof GetTradersErrors];
@@ -4047,6 +4854,14 @@ export type GetTradersByIdByTraderIdErrors = {
      * Internal Server Error
      */
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_UNAVAILABLE — the analytics store refused the read (concurrency/memory ceiling); retry after backoff
+     */
+    503: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_TIMEOUT — the read exceeded HEAVY_READ_BUDGET
+     */
+    504: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
 export type GetTradersByIdByTraderIdError = GetTradersByIdByTraderIdErrors[keyof GetTradersByIdByTraderIdErrors];
@@ -4085,6 +4900,14 @@ export type GetTradersByWalletByWalletAddressErrors = {
      * Internal Server Error
      */
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_UNAVAILABLE — the analytics store refused the read (concurrency/memory ceiling); retry after backoff
+     */
+    503: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * ANALYTICS_TIMEOUT — the read exceeded HEAVY_READ_BUDGET
+     */
+    504: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
 export type GetTradersByWalletByWalletAddressError = GetTradersByWalletByWalletAddressErrors[keyof GetTradersByWalletByWalletAddressErrors];
@@ -4363,6 +5186,80 @@ export type GetTradersByTraderIdPnlsResponses = {
 };
 
 export type GetTradersByTraderIdPnlsResponse = GetTradersByTraderIdPnlsResponses[keyof GetTradersByTraderIdPnlsResponses];
+
+export type GetTradersByWalletAddressCashbackData = {
+    body?: never;
+    path: {
+        /**
+         * Wallet address
+         */
+        walletAddress: string;
+    };
+    query?: {
+        /**
+         * 1d|7d|30d|all (default 7d)
+         */
+        window?: string;
+    };
+    url: '/api/traders/{walletAddress}/cashback';
+};
+
+export type GetTradersByWalletAddressCashbackErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTradersByWalletAddressCashbackError = GetTradersByWalletAddressCashbackErrors[keyof GetTradersByWalletAddressCashbackErrors];
+
+export type GetTradersByWalletAddressCashbackResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorTraderCashbackStats;
+};
+
+export type GetTradersByWalletAddressCashbackResponse = GetTradersByWalletAddressCashbackResponses[keyof GetTradersByWalletAddressCashbackResponses];
+
+export type GetTradersByWalletAddressCashbackClaimsData = {
+    body?: never;
+    path: {
+        /**
+         * Wallet address
+         */
+        walletAddress: string;
+    };
+    query?: {
+        /**
+         * Page size (default 50, max 200)
+         */
+        limit?: number;
+        /**
+         * Page offset
+         */
+        offset?: number;
+    };
+    url: '/api/traders/{walletAddress}/cashback/claims';
+};
+
+export type GetTradersByWalletAddressCashbackClaimsErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTradersByWalletAddressCashbackClaimsError = GetTradersByWalletAddressCashbackClaimsErrors[keyof GetTradersByWalletAddressCashbackClaimsErrors];
+
+export type GetTradersByWalletAddressCashbackClaimsResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorCashbackClaimsPage;
+};
+
+export type GetTradersByWalletAddressCashbackClaimsResponse = GetTradersByWalletAddressCashbackClaimsResponses[keyof GetTradersByWalletAddressCashbackClaimsResponses];
 
 export type GetTradersByWalletAddressCreatedTokensData = {
     body?: never;
