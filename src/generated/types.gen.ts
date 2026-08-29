@@ -755,6 +755,7 @@ export type PulsightInternalCoreDomainAggregatorMintHoneypot = {
 };
 
 export type PulsightInternalCoreDomainAggregatorMintInsiders = {
+    pct_of_supply?: number;
     wallets?: number;
 };
 
@@ -1645,7 +1646,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
+export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -1764,6 +1765,18 @@ export type PulsightInternalCoreDomainStrategySubGraph = {
 export type PulsightInternalCoreDomainStrategyVenueId = 'solana' | 'hyperliquid' | 'polymarket';
 
 export type PulsightInternalCoreDomainSubscriptionSubscriptionTier = 'free' | 'tier1' | 'tier2' | 'tier3' | 'enterprise';
+
+export type PulsightInternalCoreDomainTokenviewFilter = {
+    created_at?: string;
+    filters?: {
+        [key: string]: unknown;
+    };
+    id?: string;
+    is_default?: boolean;
+    name?: string;
+    updated_at?: string;
+    user_id?: string;
+};
 
 export type PulsightInternalCoreDomainTraderCopyBandPoint = {
     band_bps?: number;
@@ -2805,6 +2818,10 @@ export type PulsightInternalCoreUsecasesTraderTraderPnlDistributionRow = {
     window_label?: string;
 };
 
+export type PulsightInternalCorePortsInputFilterCreateRequest2 = PulsightInternalCorePortsInputFilterCreateRequest;
+
+export type PulsightInternalCorePortsInputFilterUpdateRequest2 = PulsightInternalCorePortsInputFilterUpdateRequest;
+
 export type GetBacktestsData = {
     body?: never;
     path?: never;
@@ -3246,6 +3263,14 @@ export type GetMintsData = {
          * Min LIFETIME total network fees paid trading the mint (tx fees + MEV tips), in lamports — the same basis as each row's total_fees_sol. Omitted ⇒ no floor.
          */
         min_fees_sol?: number;
+        /**
+         * Only mints first seen within the last N seconds (launched < N ago). Mints with no observed first_seen are excluded.
+         */
+        max_age_secs?: number;
+        /**
+         * Only mints first seen at least N seconds ago (launched > N ago). Mints with no observed first_seen are excluded.
+         */
+        min_age_secs?: number;
         /**
          * Max rows (default 50, max 500)
          */
@@ -4647,6 +4672,204 @@ export type GetTipsServicesResponses = {
 
 export type GetTipsServicesResponse = GetTipsServicesResponses[keyof GetTipsServicesResponses];
 
+export type GetTokenFiltersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/token-filters/';
+};
+
+export type GetTokenFiltersErrors = {
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTokenFiltersError = GetTokenFiltersErrors[keyof GetTokenFiltersErrors];
+
+export type GetTokenFiltersResponses = {
+    /**
+     * OK
+     */
+    200: Array<PulsightInternalCoreDomainTokenviewFilter>;
+};
+
+export type GetTokenFiltersResponse = GetTokenFiltersResponses[keyof GetTokenFiltersResponses];
+
+export type PostTokenFiltersData = {
+    /**
+     * Filter preset details
+     */
+    body: PulsightInternalCorePortsInputFilterCreateRequest2;
+    path?: never;
+    query?: never;
+    url: '/api/token-filters/';
+};
+
+export type PostTokenFiltersErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PostTokenFiltersError = PostTokenFiltersErrors[keyof PostTokenFiltersErrors];
+
+export type PostTokenFiltersResponses = {
+    /**
+     * Created
+     */
+    201: PulsightInternalCoreDomainTokenviewFilter;
+};
+
+export type PostTokenFiltersResponse = PostTokenFiltersResponses[keyof PostTokenFiltersResponses];
+
+export type DeleteTokenFiltersByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Filter preset ID (UUID)
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/token-filters/{id}';
+};
+
+export type DeleteTokenFiltersByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type DeleteTokenFiltersByIdError = DeleteTokenFiltersByIdErrors[keyof DeleteTokenFiltersByIdErrors];
+
+export type DeleteTokenFiltersByIdResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type DeleteTokenFiltersByIdResponse = DeleteTokenFiltersByIdResponses[keyof DeleteTokenFiltersByIdResponses];
+
+export type GetTokenFiltersByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Filter preset ID (UUID)
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/token-filters/{id}';
+};
+
+export type GetTokenFiltersByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTokenFiltersByIdError = GetTokenFiltersByIdErrors[keyof GetTokenFiltersByIdErrors];
+
+export type GetTokenFiltersByIdResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainTokenviewFilter;
+};
+
+export type GetTokenFiltersByIdResponse = GetTokenFiltersByIdResponses[keyof GetTokenFiltersByIdResponses];
+
+export type PutTokenFiltersByIdData = {
+    /**
+     * Updated filter preset
+     */
+    body: PulsightInternalCorePortsInputFilterUpdateRequest2;
+    path: {
+        /**
+         * Filter preset ID (UUID)
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/token-filters/{id}';
+};
+
+export type PutTokenFiltersByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PutTokenFiltersByIdError = PutTokenFiltersByIdErrors[keyof PutTokenFiltersByIdErrors];
+
+export type PutTokenFiltersByIdResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainTokenviewFilter;
+};
+
+export type PutTokenFiltersByIdResponse = PutTokenFiltersByIdResponses[keyof PutTokenFiltersByIdResponses];
+
 export type GetTraderFiltersData = {
     body?: never;
     path?: never;
@@ -4680,7 +4903,7 @@ export type PostTraderFiltersData = {
     /**
      * Filter preset details
      */
-    body: PulsightInternalCorePortsInputFilterCreateRequest;
+    body: PulsightInternalCorePortsInputFilterCreateRequest2;
     path?: never;
     query?: never;
     url: '/api/trader-filters/';
@@ -4804,7 +5027,7 @@ export type PutTraderFiltersByIdData = {
     /**
      * Updated filter preset
      */
-    body: PulsightInternalCorePortsInputFilterUpdateRequest;
+    body: PulsightInternalCorePortsInputFilterUpdateRequest2;
     path: {
         /**
          * Filter preset ID (UUID)
