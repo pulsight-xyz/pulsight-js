@@ -1570,6 +1570,12 @@ export type PulsightInternalCoreDomainAggregatorTraderCashbackStats = {
 
 export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     /**
+     * ArbPnlLamports — the window's arbitrage take-home (tx-grain, CA
+     * 000158), ALREADY included in RealizedProfit and NetRealizedProfit.
+     * Exposed so the UI can show the split.
+     */
+    arb_pnl_lamports?: number;
+    /**
      * ArbTxRatio is the fraction (0..1) of the window's swaps that were
      * arbitrage txs (is_arb). 0 when the window has no swaps.
      */
@@ -1598,11 +1604,17 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     loss_sells?: number;
     /**
      * NetRealizedProfit = RealizedProfit − TotalFees − TotalTips −
-     * FailedCostLamports + CashbackClaimedLamports: what the wallet actually
-     * kept. This is the HEADLINE PnL; RealizedProfit stays as the flat/gross
-     * component. Mirrors rollupWindowAgg.netPnl and boardWindowExpr (#c22).
+     * FailedCostLamports + CashbackClaimedLamports: what the wallet
+     * actually kept. This is the HEADLINE PnL; RealizedProfit is the
+     * pre-cost component (accrual + arb take-home). Mirrors
+     * rollupWindowAgg.netPnl and boardWindowExpr (#c22).
      */
     net_realized_profit?: number;
+    /**
+     * RealizedProfit is the window's PnL: accrual realized profit PLUS the
+     * arbitrage take-home (ArbPnlLamports). The two are disjoint upstream
+     * (arb round-trip rows book zero realized, r71), so the sum is exact.
+     */
     realized_profit?: number;
     sell_amount_lamports?: number;
     sold_gt_bought_sells?: number;
@@ -1703,7 +1715,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
+export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -2424,6 +2436,8 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRecord = {
     error?: string;
     finished_at?: string;
     id?: string;
+    latency_slots?: number;
+    per_pool?: boolean;
     progress_note?: string;
     progress_pct?: number;
     scope?: PulsightInternalCoreUsecasesBacktestTokenScope;
@@ -2438,9 +2452,31 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRecord = {
     time_to?: string;
     timeframe?: PulsightInternalCoreDomainAggregatorTimeframe;
     user_id?: string;
+    /**
+     * Venue / PerPool / LatencySlots echo the submitted run parameters. They
+     * are persisted because the NATS worker path REBUILDS the BacktestRequest
+     * from this record — an unpersisted request field silently reverts to its
+     * zero value on that path (which is exactly what happened to Venue and
+     * PerPool before they were added here). Also what the frontend's Re-run
+     * prefill reads.
+     */
+    venue?: PulsightInternalCoreDomainStrategyVenueId;
 };
 
 export type PulsightInternalCoreUsecasesBacktestBacktestRequest = {
+    /**
+     * LatencySlots is the copy-fill landing latency in slots (blocks),
+     * 0..MaxLatencySlots. 0 (default) keeps the zero-latency model: a copy
+     * fills at the target's own post-swap price with slippage charged as a
+     * flat haircut. 1..3 fills at the pool's EMPIRICAL resting price that many
+     * slots after the target's swap, and the exec's slippage_bps becomes a
+     * REVERT GATE instead of a charge — the fill is rejected (tip + priority
+     * fee still paid) when the landing price drifted past the tolerance,
+     * matching how the live executor's min_out floor behaves. Only copy-style
+     * fills (Copy* and Target-signal-driven Emits) are affected; candle-driven
+     * fills already price on the bucket close.
+     */
+    latency_slots?: number;
     /**
      * PerPool, when true, simulates each of a mint's significant markets as an
      * INDEPENDENT instrument — its own candle stream, indicators, ledger and
@@ -2467,6 +2503,24 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRequest = {
 export type PulsightInternalCoreUsecasesBacktestBacktestStatus = 'pending' | 'running' | 'done' | 'failed' | 'cancelled';
 
 export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
+    /**
+     * AvgLandingDriftBps is the mean ADVERSE-signed drift (bps) actually
+     * crossed by the run's FILLED copies — what latency cost on the fills that
+     * went through (reverted ones are excluded; their cost shows as
+     * RevertFeesSol + missed entries). Nil when the run had no landing fills.
+     */
+    avg_landing_drift_bps?: number;
+    /**
+     * CopiesReverted counts copy fills the slippage gate REJECTED: the pool's
+     * landing price had drifted past the exec's slippage_bps between the
+     * target's swap and our simulated landing. Unlike CopiesSkippedUnpriced
+     * this is an EXECUTION OUTCOME, not a coverage gap — the data was fine,
+     * the market moved, and a live bot's tx would have landed and reverted.
+     * Each revert still pays its tip + priority fee (folded into
+     * FeesPaidSol/TipsPaidSol and broken out in RevertFeesSol). Only possible
+     * on latency_slots > 0 runs. Additive JSONB field — old rows decode as 0.
+     */
+    copies_reverted?: number;
     /**
      * CopiesSkippedUnpriced counts mirror trades that passed every rule and
      * would have fired, but whose triggering swap could not be priced honestly
@@ -2497,6 +2551,19 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      * Additive JSONB field — pre-existing rows decode as nil.
      */
     held_positions?: Array<PulsightInternalCoreUsecasesBacktestBacktestPosition>;
+    /**
+     * LandingContestedPct is the share (0-100) of filled copies whose pool saw
+     * at least one other tx inside the latency gap — how often somebody beat
+     * the bot to the pool. Nil when the run had no landing fills.
+     */
+    landing_contested_pct?: number;
+    /**
+     * LatencySlots echoes the run's landing latency (req.LatencySlots) so a
+     * result is readable as which fill model produced it. 0 ⇒ the zero-latency
+     * model. Additive JSONB field — old rows decode as 0, which is what they
+     * ran. When > 0, the four fields below describe the landing plane.
+     */
+    latency_slots?: number;
     losses?: number;
     max_drawdown_sol?: number;
     /**
@@ -2547,6 +2614,15 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     positions_opened_unmarked?: number;
     realized_pnl_sol?: number;
+    /**
+     * RevertFeesSol is the tip + priority-fee total burned by CopiesReverted
+     * fills — money spent on txs that opened or closed nothing. Already
+     * included in FeesPaidSol/TipsPaidSol; broken out so the cost of a
+     * too-tight slippage setting is visible on its own. NOT walked into
+     * MaxDrawdownSol (the drawdown walk only sees trade rows) — a documented
+     * approximation.
+     */
+    revert_fees_sol?: number;
     roi_pct?: number;
     /**
      * SimulationAssumptions is free-text notes about which real-world
@@ -2570,6 +2646,15 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     backtest_id?: string;
     fee_sol?: number;
     idx?: number;
+    /**
+     * LandingDriftBps is the ADVERSE-signed price drift this copy actually
+     * crossed between the target's post-swap price and the landing price it
+     * filled at, in basis points (positive = the gap cost you, for buys and
+     * sells alike). Set only on fills of a latency_slots > 0 run; 0 means
+     * nobody traded the pool inside the gap. Nil on zero-latency runs and
+     * candle-driven fills.
+     */
+    landing_drift_bps?: number;
     mint?: string;
     /**
      * Pool is the AMM market this trade executed in. For a COPY trade it's the
@@ -2594,9 +2679,10 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     source?: PulsightInternalCoreUsecasesBacktestTradeSource;
     /**
      * TargetPriceImpactPct is the MIRRORED trader's own price impact on the
-     * swap we copied — set only on copy trades that executed at the same
-     * timestamp as the target (a true 1:1 mirror), where the target's move is
-     * folded into our fill price. Nil for emit trades and delayed copies.
+     * swap we copied — set on copy trades triggered by a target swap, measured
+     * against the reconstructed pre-swap reserve. It describes THEIR fill, so
+     * it is reported the same under a landing-latency run; it is never folded
+     * into our own price. Nil for candle-driven emit trades.
      */
     target_price_impact_pct?: number;
     tip_sol?: number;
@@ -2709,6 +2795,13 @@ export type PulsightInternalCoreUsecasesTraderDailyProfitsResult = {
 };
 
 export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
+    /**
+     * ArbPnl is the day's arbitrage take-home (tx-grain, CA 000158). It is
+     * ALREADY included in Profit and Net — exposed separately so the UI can
+     * show the split. Arb round-trip rows book zero realized PnL upstream,
+     * so the inclusion never double-counts.
+     */
+    arb_pnl?: number;
     cashback?: number;
     day?: string;
     failed_cost?: number;
@@ -2717,7 +2810,7 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
      * Costs of the day (lamports): per-tx fees, tips, and failed-tx burn,
      * plus the day's CLAIMED pump cashback (cash basis, the one positive
      * component), with `net = profit - fees - tips - failed_cost +
-     * cashback`. The charts plot NET as the headline series; `profit` stays
+     * cashback` (profit already includes the arbitrage take-home). The charts plot NET as the headline series; `profit` stays
      * as the flat/gross component.
      */
     fees?: number;
