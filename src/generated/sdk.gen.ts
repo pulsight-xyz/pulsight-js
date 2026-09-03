@@ -642,9 +642,9 @@ export const getTradersByWalletByWalletAddress = <ThrowOnError extends boolean =
 });
 
 /**
- * Copyability of a wallet set at simulated latencies
+ * What copying a wallet set would have returned, by landing latency
  *
- * For each wallet's fills, the price a copier filling N blocks later would have got — an entry/exit slippage curve and the share of the wallet's edge that survives. The window is a half-open [from_ts, to_ts) in Unix epoch SECONDS. Latency is counted in SLOTS, since the stored swap timestamp resolves only to whole seconds. Measures PRICE TRANSFER, not PnL. Supply size_lamports to also get the EXECUTION half: the slippage band each fill needed (split signal-buy vs follow-on) and what each widening step buys, priced at the target's own exit.
+ * Replays each wallet's most recent positions in the window as a copier would have traded them: an order of size_lamports on every buy, every sell mirrored in proportion, executed against the pool state a copier landing N blocks later found, with pool fees, the wallet's own transaction fees and tips, and unsold tokens valued at the pool's closing price. Per wallet and per latency: the copier's return on deployed capital (return_bps, pnl_lamports), the wallet's own return on the same positions (target_return_bps), and the waterfall between them (entry_cost_bps, exit_cost_bps, fees_bps), plus positions won and lost. The execution profile gives the slippage setting each buy needed and what widening it buys. The window is a half-open [from_ts, to_ts) in Unix epoch SECONDS; latency is counted in BLOCKS because the stored swap timestamp resolves only to whole seconds. An estimate, not a backtest: it prices against observed pool states and books no rent or borrow.
  */
 export const postTradersCopyability = <ThrowOnError extends boolean = false>(options: Options<PostTradersCopyabilityData, ThrowOnError>) => (options.client ?? client).post<PostTradersCopyabilityResponses, PostTradersCopyabilityErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],

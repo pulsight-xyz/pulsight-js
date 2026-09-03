@@ -109,11 +109,8 @@ export type InternalAdaptersPrimaryHttpHandlerCopyabilityRequest = {
      */
     from_ts?: number;
     /**
-     * OPTIONAL copier trade size in lamports. Supplying it attaches the
-     * execution half — what slippage band each fill needed, and what each
-     * widening step buys. Optional because a band is a threshold for a
-     * concrete size against a concrete depth, while the price-transfer curve
-     * above is deliberately unit-free; both come from one read either way.
+     * Size of each mirrored buy in lamports; 1e9 (1 SOL) when omitted. Every
+     * return in the report is on the capital this size deploys.
      */
     size_lamports?: number;
     to_ts?: number;
@@ -126,8 +123,8 @@ export type InternalAdaptersPrimaryHttpHandlerCopyabilityResponse = {
     from_ts?: number;
     reports?: Array<PulsightInternalCoreDomainTraderCopyabilityReport>;
     /**
-     * Echoed only when a size was supplied, alongside the band ladder the
-     * execution half was evaluated on.
+     * The mirrored buy size the reports were replayed at, and the slippage
+     * ladder their execution profile was evaluated on.
      */
     size_lamports?: number;
     to_ts?: number;
@@ -1715,7 +1712,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -1852,21 +1849,21 @@ export type PulsightInternalCoreDomainTraderCopyBandPoint = {
     fill_rate_pct?: number;
     filled?: number;
     /**
-     * Fills this rung adds over the previous (tighter) rung, and what they are
-     * worth priced at the target's own realised exit. This is the number the
-     * band decision turns on: a rung that adds fills at a negative return is
-     * buying losses, however much it improves the fill rate.
+     * Buys this rung adds over the previous, tighter one, and their mean
+     * return priced at the copier's own exit from the position. A rung that
+     * adds buys at a negative return is buying losses, whatever it does to
+     * the fill rate.
      */
     marginal_fills?: number;
     marginal_pnl_pct?: number;
     /**
-     * Mean execution price of the filled trades against the target's own fill
-     * price. Positive is worse for the copier, matching copyability's sign.
+     * Mean price the filled buys execute at against the wallet's own price
+     * for the same buy. Positive is worse for the copier.
      */
     mean_entry_vs_target_bps?: number;
     /**
-     * Expected return over everything filled at this band, same pricing.
-     * NULL when no filled trade has a priceable exit.
+     * Mean return over every buy filled at this setting, same pricing. NULL
+     * when nothing filled.
      */
     mean_pnl_pct?: number;
 };
@@ -1883,32 +1880,43 @@ export type PulsightInternalCoreDomainTraderCopyBandQuantiles = {
 export type PulsightInternalCoreDomainTraderCopyDelayPoint = {
     delay_slots?: number;
     /**
-     * Share of the target's edge left after paying the round-trip cost.
-     * NULL when the target's edge is not positive: you cannot "retain" a
-     * share of an edge that is not there, and reporting 0% would read as
-     * "latency destroyed it" when latency was never the problem.
+     * The copier's outcome at the requested size: one order of size_lamports
+     * mirrored on each of the wallet's buys, every sell mirrored in proportion,
+     * unsold tokens valued at the pool's last price in the window.
      */
-    edge_retained_pct?: number;
+    deployed_lamports?: number;
     /**
-     * Positive is ALWAYS worse for the copier, on both sides: a buy filled
-     * higher than the target's, a sell filled lower.
+     * What copying costs, in order: buying after the wallet at the copier's
+     * size, selling after it, and transaction fees plus tips on every
+     * mirrored transaction.
+     */
+    entry_cost_bps?: number;
+    /**
+     * Price drift alone, independent of size: the pool's worst price in the
+     * landing block against the price the wallet's own trade left, averaged
+     * over positions. Positive is always worse for the copier.
      */
     entry_slippage_bps?: number;
-    /**
-     * Present only when the caller supplied a trade size: what band this
-     * latency needs and what each widening step buys. See copyexecution.go.
-     */
     execution?: PulsightInternalCoreDomainTraderCopyExecutionAtDelay;
+    exit_cost_bps?: number;
     exit_slippage_bps?: number;
+    fees_bps?: number;
     measured_fills?: number;
-    round_trip_cost_bps?: number;
+    pnl_lamports?: number;
     /**
-     * The target's own gross round-trip return over the same fills, so the
-     * comparison below is self-consistent — one price source, one window.
+     * Positions the replay could price at this latency, and how they ended
+     * for the copier after fees.
      */
-    target_edge_bps?: number;
+    positions?: number;
+    positions_lost?: number;
+    positions_won?: number;
+    return_bps?: number;
     /**
-     * Fills with no trade to copy into at this latency.
+     * What the wallet itself made on the same positions, at its own fills.
+     */
+    target_return_bps?: number;
+    /**
+     * Swap legs with and without a pool state to execute into.
      */
     unmeasurable_fills?: number;
 };
@@ -1916,16 +1924,16 @@ export type PulsightInternalCoreDomainTraderCopyDelayPoint = {
 export type PulsightInternalCoreDomainTraderCopyExecutionAtDelay = {
     bands?: Array<PulsightInternalCoreDomainTraderCopyBandPoint>;
     /**
-     * Where the adverse move comes from. `InBlockSharePct` is the share of the
-     * total move that had already happened by the end of the target's OWN
-     * block — i.e. from the copy wave the target's trade set off, not from
-     * latency. Only populated when the ladder includes slot 0.
+     * Where the adverse entry move comes from: the share that had already
+     * happened by the end of the wallet's own block, before any latency of
+     * the copier's. Populated only when the ladder includes block 0.
      */
     in_block_move_bps?: number;
     in_block_share_pct?: number;
     measured_fills?: number;
     /**
-     * Required band, split because the population is bimodal.
+     * Slippage needed, split because the first buy on a token is contested
+     * and later buys rarely are.
      */
     required?: PulsightInternalCoreDomainTraderCopyBandQuantiles;
     required_follow_on?: PulsightInternalCoreDomainTraderCopyBandQuantiles;
@@ -1935,13 +1943,8 @@ export type PulsightInternalCoreDomainTraderCopyExecutionAtDelay = {
 };
 
 export type PulsightInternalCoreDomainTraderCopyExecutionSummary = {
-    exits_unpriced?: number;
     fills?: number;
     follow_ons?: number;
-    /**
-     * Context that explains the numbers: how deep the pools are when this
-     * wallet buys, and how hard its own buy hits them.
-     */
     median_pool_quote_lamports?: number;
     median_target_impact_bps?: number;
     signal_buys?: number;
@@ -1950,18 +1953,42 @@ export type PulsightInternalCoreDomainTraderCopyExecutionSummary = {
 
 export type PulsightInternalCoreDomainTraderCopyabilityReport = {
     /**
-     * Never nil on the wire: an empty curve is [], not null.
+     * Never nil on the wire: an empty ladder is [], not null.
      */
     delays?: Array<PulsightInternalCoreDomainTraderCopyDelayPoint>;
-    /**
-     * Present only when the caller supplied a trade size.
-     */
     execution_summary?: PulsightInternalCoreDomainTraderCopyExecutionSummary;
     /**
-     * Positions (mints) that had BOTH a buy and a sell in the window — the
-     * only ones a round-trip cost can be measured on.
+     * The wallet's median transaction fee plus tip, lamports, charged to the
+     * copier on every mirrored transaction.
+     */
+    fee_per_tx_lamports?: number;
+    /**
+     * Positions the wallet opened in the window that the replay sampled: the
+     * most recent ones, bounded per wallet.
+     */
+    positions?: number;
+    /**
+     * Positions the wallet had sold in full by the end of the window; the
+     * rest are valued at the last price seen.
+     */
+    positions_closed?: number;
+    /**
+     * Positions with at least one sell in the window.
      */
     round_trip_mints?: number;
+    /**
+     * Earliest position open in the sample, Unix seconds; 0 when nothing was
+     * sampled.
+     */
+    sample_from_ts?: number;
+    /**
+     * Size of each mirrored buy, lamports.
+     */
+    size_lamports?: number;
+    /**
+     * Mean number of transactions, buys plus sells, per sampled position.
+     */
+    txs_per_position?: number;
     wallet?: string;
 };
 
