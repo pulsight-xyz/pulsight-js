@@ -805,6 +805,13 @@ export type PulsightInternalCoreDomainAggregatorMintMarket = {
     is_default?: boolean;
     last_swap_ts?: string;
     pool?: string;
+    /**
+     * QuoteMint is the pool's quote side under CA's registry ranking (USDC >
+     * USDT > USD1 > WSOL), so a SOL/USDC pool quotes in USDC. This market's
+     * candle prices and quote volumes are denominated in it, and the live
+     * chart folds only ticks that carry the same quote.
+     */
+    quote_mint?: string;
     sol_volume_lamports?: number;
     sol_volume_share?: number;
     swap_count?: number;
@@ -1046,7 +1053,9 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      * is set on the list path only): UniqueTraders is exact and lifetime, so
      * the list column and the /api/mints/:pubkey detail render the same value.
      * Populated on BOTH paths, best-effort: nil when the trader_token_stats
-     * read is unavailable.
+     * read is unavailable. A quote-registry mint (WSOL, the USD stables) has
+     * no trader_token_stats rows, so its detail counts the distinct wallets of
+     * its last 30 days of per-leg dex_swaps instead.
      */
     unique_traders?: number;
     /**
@@ -1084,6 +1093,7 @@ export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
      * subtracted, so lopsided counts on arbitrage wallets are legible.
      */
     arb_tx_count?: number;
+    bundle_slot?: number;
     buy_tx_count?: number;
     cost_basis_lamports?: string;
     /**
@@ -1102,6 +1112,12 @@ export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
     directional_sell_tx_count?: number;
     first_buy_ts?: string;
     holding_pnl_lamports?: number;
+    /**
+     * InitialPctOfSupply is a bundler's net launch acquisition as % of total
+     * supply, and BundleSlot the first bundle slot it bought in. Both are set
+     * only on the bundlers path.
+     */
+    initial_pct_of_supply?: number;
     is_bundler?: boolean;
     is_insider?: boolean;
     is_sniper?: boolean;
@@ -1114,9 +1130,9 @@ export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
     last_active_ts?: string;
     /**
      * PctOfSupply is the holder's % of circulating supply, set on the
-     * top-holders path (now sourced from on-chain holder_balances). nil on the
-     * top-traders path. IsSniper/IsBundler/IsInsider flag cohort membership
-     * (bundler/insider populate in phase 2 — always false until then).
+     * top-holders and cohort paths (sourced from on-chain holder_balances).
+     * nil on the top-traders path. IsSniper/IsBundler/IsInsider flag cohort
+     * membership on every per-mint trader list.
      */
     pct_of_supply?: number;
     realized_profit?: number;
@@ -3704,6 +3720,108 @@ export type GetMintsByPubkeyActivityResponses = {
 
 export type GetMintsByPubkeyActivityResponse = GetMintsByPubkeyActivityResponses[keyof GetMintsByPubkeyActivityResponses];
 
+export type GetMintsByPubkeyBundlersData = {
+    body?: never;
+    path: {
+        /**
+         * Mint pubkey
+         */
+        pubkey: string;
+    };
+    query?: {
+        /**
+         * Sort key (balance|holding_pnl|pnl|volume|swaps|recent, default balance)
+         */
+        sort?: string;
+        /**
+         * Max rows (default 50, max 500)
+         */
+        limit?: number;
+        /**
+         * Page offset (default 0)
+         */
+        offset?: number;
+    };
+    url: '/api/mints/{pubkey}/bundlers';
+};
+
+export type GetMintsByPubkeyBundlersErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetMintsByPubkeyBundlersError = GetMintsByPubkeyBundlersErrors[keyof GetMintsByPubkeyBundlersErrors];
+
+export type GetMintsByPubkeyBundlersResponses = {
+    /**
+     * OK
+     */
+    200: Array<PulsightInternalCoreDomainAggregatorMintTraderRow>;
+};
+
+export type GetMintsByPubkeyBundlersResponse = GetMintsByPubkeyBundlersResponses[keyof GetMintsByPubkeyBundlersResponses];
+
+export type GetMintsByPubkeyInsidersData = {
+    body?: never;
+    path: {
+        /**
+         * Mint pubkey
+         */
+        pubkey: string;
+    };
+    query?: {
+        /**
+         * Sort key (balance|holding_pnl|pnl|volume|swaps|recent, default balance)
+         */
+        sort?: string;
+        /**
+         * Max rows (default 50, max 500)
+         */
+        limit?: number;
+        /**
+         * Page offset (default 0)
+         */
+        offset?: number;
+    };
+    url: '/api/mints/{pubkey}/insiders';
+};
+
+export type GetMintsByPubkeyInsidersErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetMintsByPubkeyInsidersError = GetMintsByPubkeyInsidersErrors[keyof GetMintsByPubkeyInsidersErrors];
+
+export type GetMintsByPubkeyInsidersResponses = {
+    /**
+     * OK
+     */
+    200: Array<PulsightInternalCoreDomainAggregatorMintTraderRow>;
+};
+
+export type GetMintsByPubkeyInsidersResponse = GetMintsByPubkeyInsidersResponses[keyof GetMintsByPubkeyInsidersResponses];
+
 export type GetMintsByPubkeyLpEventsData = {
     body?: never;
     path: {
@@ -3943,6 +4061,57 @@ export type GetMintsByPubkeySafetyEventsResponses = {
 };
 
 export type GetMintsByPubkeySafetyEventsResponse = GetMintsByPubkeySafetyEventsResponses[keyof GetMintsByPubkeySafetyEventsResponses];
+
+export type GetMintsByPubkeySnipersData = {
+    body?: never;
+    path: {
+        /**
+         * Mint pubkey
+         */
+        pubkey: string;
+    };
+    query?: {
+        /**
+         * Sort key (balance|holding_pnl|pnl|volume|swaps|recent, default balance)
+         */
+        sort?: string;
+        /**
+         * Max rows (default 50, max 500)
+         */
+        limit?: number;
+        /**
+         * Page offset (default 0)
+         */
+        offset?: number;
+    };
+    url: '/api/mints/{pubkey}/snipers';
+};
+
+export type GetMintsByPubkeySnipersErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetMintsByPubkeySnipersError = GetMintsByPubkeySnipersErrors[keyof GetMintsByPubkeySnipersErrors];
+
+export type GetMintsByPubkeySnipersResponses = {
+    /**
+     * OK
+     */
+    200: Array<PulsightInternalCoreDomainAggregatorMintTraderRow>;
+};
+
+export type GetMintsByPubkeySnipersResponse = GetMintsByPubkeySnipersResponses[keyof GetMintsByPubkeySnipersResponses];
 
 export type GetMintsByPubkeyStatsData = {
     body?: never;
