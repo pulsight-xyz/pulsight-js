@@ -1728,7 +1728,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
+export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -1762,9 +1762,12 @@ export type PulsightInternalCoreDomainStrategyGlobalConstraints = {
     max_buy_sol?: number;
     /**
      * MaxBuysPerOpenPosition is the max number of buys (initial open + adds)
-     * allowed within ONE open position. 0 ⇒ 1 — the historical single-buy-
-     * per-position behaviour; read it through EffectiveMaxBuysPerOpenPosition.
-     * Raise it above 1 to enable DCA / pyramiding.
+     * allowed within ONE open position. An explicit value caps every buy exec.
+     * Absent (0) resolves per exec kind — read it through BuyCapFor: an Emit
+     * buy gets 1 (no adds — the historical single-buy-per-position behaviour;
+     * raise it for DCA / pyramiding), a Copy buy gets NO cap, because a
+     * mirror's add cadence is the target's, not ours — refusing their adds
+     * while mirroring their sells pro-rata decays the position to dust.
      */
     max_buys_per_open_position?: number;
     max_buys_per_token_per_hour?: number;
@@ -2448,6 +2451,45 @@ export type PulsightInternalCorePortsInputUserPoolCredits = {
     used?: number;
 };
 
+export type PulsightInternalCoreUsecasesBacktestBacktestDecline = {
+    backtest_id?: string;
+    /**
+     * Detail is a short human-readable specific for the reason (the cap
+     * that was full, the drift that tripped the gate, …).
+     */
+    detail?: string;
+    /**
+     * FeeSol + TipSol are non-zero only on `reverted`: the priority fee and
+     * tip the failed tx still paid (already inside the summary's totals).
+     */
+    fee_sol?: number;
+    idx?: number;
+    /**
+     * LandingDriftBps is the adverse-signed drift that tripped a `reverted`
+     * fill's slippage gate. Nil otherwise.
+     */
+    landing_drift_bps?: number;
+    mint?: string;
+    /**
+     * Pool is the market the triggering swap executed in.
+     */
+    pool?: string;
+    reason?: PulsightInternalCoreUsecasesBacktestDeclineReason;
+    /**
+     * RequestedSol is the SOL the buy would have spent, or the SOL the sell
+     * would have realised, had it filled. 0 when sizing itself failed.
+     */
+    requested_sol?: number;
+    side?: PulsightInternalCoreUsecasesBacktestSide;
+    /**
+     * Source is the exec kind that wanted to fire.
+     */
+    source?: PulsightInternalCoreUsecasesBacktestTradeSource;
+    tip_sol?: number;
+    triggering_swap_sig?: string;
+    ts?: string;
+};
+
 export type PulsightInternalCoreUsecasesBacktestBacktestPosition = {
     cost_basis_sol?: number;
     exit_value_sol?: number;
@@ -2553,6 +2595,17 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      * RevertFeesSol + missed entries). Nil when the run had no landing fills.
      */
     avg_landing_drift_bps?: number;
+    /**
+     * CopiesDeclined counts target swaps a signal-driven exec wanted to act
+     * on but that a RULE refused: cooldown, sizing, max_buys_per_open_position,
+     * exposure cap, bracket placement, rate limit — plus the sells this run sat
+     * out because the target only sold tokens it had never mirrored. Reverts
+     * and unpriced skips have their own counters and are not in here. Every
+     * one is persisted as a `backtest_declines` row with its reason, so the
+     * trade history reads as a complete account of the target's swaps.
+     * Additive JSONB field — old rows decode as 0.
+     */
+    copies_declined?: number;
     /**
      * CopiesReverted counts copy fills the slippage gate REJECTED: the pool's
      * landing price had drifted past the exec's slippage_bps between the
@@ -2733,6 +2786,8 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     triggering_swap_sig?: string;
     ts?: string;
 };
+
+export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored';
 
 export type PulsightInternalCoreUsecasesBacktestPreviewMarker = {
     pool_sol_at_trigger?: number;
@@ -3303,6 +3358,45 @@ export type GetBacktestsByIdResponses = {
 };
 
 export type GetBacktestsByIdResponse = GetBacktestsByIdResponses[keyof GetBacktestsByIdResponses];
+
+export type GetBacktestsByIdDeclinesData = {
+    body?: never;
+    path: {
+        /**
+         * Backtest ID
+         */
+        id: string;
+    };
+    query?: {
+        /**
+         * Page size (default 200, max 2000)
+         */
+        limit?: number;
+        /**
+         * Page offset (default 0)
+         */
+        offset?: number;
+    };
+    url: '/api/backtests/{id}/declines';
+};
+
+export type GetBacktestsByIdDeclinesErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetBacktestsByIdDeclinesError = GetBacktestsByIdDeclinesErrors[keyof GetBacktestsByIdDeclinesErrors];
+
+export type GetBacktestsByIdDeclinesResponses = {
+    /**
+     * OK
+     */
+    200: Array<PulsightInternalCoreUsecasesBacktestBacktestDecline>;
+};
+
+export type GetBacktestsByIdDeclinesResponse = GetBacktestsByIdDeclinesResponses[keyof GetBacktestsByIdDeclinesResponses];
 
 export type GetBacktestsByIdTradesData = {
     body?: never;
