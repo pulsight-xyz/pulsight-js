@@ -93,43 +93,6 @@ export type InternalAdaptersPrimaryHttpHandlerBestRunRef = {
     strategy_name?: string;
 };
 
-export type InternalAdaptersPrimaryHttpHandlerCopyabilityRequest = {
-    /**
-     * Simulated latencies in SLOTS (blocks) behind the target. Omitted ⇒ the
-     * default ladder. Blocks rather than milliseconds because the stored swap
-     * timestamp resolves only to whole seconds, so a sub-second ladder cannot
-     * be answered — see domain/trader/copyability.go.
-     */
-    delays_slots?: Array<number>;
-    /**
-     * Half-open measurement window [from_ts, to_ts) in Unix epoch SECONDS.
-     * Seconds rather than an RFC3339 string because every timestamp this
-     * measurement touches already is one: Solana's blockTime is an i64 of whole
-     * seconds, and the per-leg ledger stores it unchanged.
-     */
-    from_ts?: number;
-    /**
-     * Size of each mirrored buy in lamports; 1e9 (1 SOL) when omitted. Every
-     * return in the report is on the capital this size deploys.
-     */
-    size_lamports?: number;
-    to_ts?: number;
-    wallets?: Array<string>;
-};
-
-export type InternalAdaptersPrimaryHttpHandlerCopyabilityResponse = {
-    bands_bps?: Array<number>;
-    delays_slots?: Array<number>;
-    from_ts?: number;
-    reports?: Array<PulsightInternalCoreDomainTraderCopyabilityReport>;
-    /**
-     * The mirrored buy size the reports were replayed at, and the slippage
-     * ladder their execution profile was evaluated on.
-     */
-    size_lamports?: number;
-    to_ts?: number;
-};
-
 export type InternalAdaptersPrimaryHttpHandlerErrorResponse = {
     error?: string;
 };
@@ -1663,8 +1626,9 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
 
 export type PulsightInternalCoreDomainAggregatorTraderPriceImpactStats = {
     /**
-     * AvgBps is the mean and MedianBps the p50 over the window's measurable
-     * legs. Both are reported because the population is heavy-tailed — a
+     * AvgBps is the mean and MedianBps the p50 over the measurable legs of the
+     * wallet's most recent fills in the window (a bounded sample, up to 3000
+     * fills). Both are reported because the population is heavy-tailed — a
      * handful of large fills into thin curves dominate the mean while the
      * median describes the wallet's ordinary fill.
      *
@@ -1728,7 +1692,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -1861,154 +1825,6 @@ export type PulsightInternalCoreDomainTokenviewFilter = {
     name?: string;
     updated_at?: string;
     user_id?: string;
-};
-
-export type PulsightInternalCoreDomainTraderCopyBandPoint = {
-    band_bps?: number;
-    fill_rate_pct?: number;
-    filled?: number;
-    /**
-     * Buys this rung adds over the previous, tighter one, and their mean
-     * return priced at the copier's own exit from the position. A rung that
-     * adds buys at a negative return is buying losses, whatever it does to
-     * the fill rate.
-     */
-    marginal_fills?: number;
-    marginal_pnl_pct?: number;
-    /**
-     * Mean price the filled buys execute at against the wallet's own price
-     * for the same buy. Positive is worse for the copier.
-     */
-    mean_entry_vs_target_bps?: number;
-    /**
-     * Mean return over every buy filled at this setting, same pricing. NULL
-     * when nothing filled.
-     */
-    mean_pnl_pct?: number;
-};
-
-export type PulsightInternalCoreDomainTraderCopyBandQuantiles = {
-    fills?: number;
-    max_bps?: number;
-    p50_bps?: number;
-    p75_bps?: number;
-    p90_bps?: number;
-    p95_bps?: number;
-};
-
-export type PulsightInternalCoreDomainTraderCopyDelayPoint = {
-    delay_slots?: number;
-    /**
-     * The copier's outcome at the requested size: one order of size_lamports
-     * mirrored on each of the wallet's buys, every sell mirrored in proportion,
-     * unsold tokens valued at the pool's last price in the window.
-     */
-    deployed_lamports?: number;
-    /**
-     * What copying costs, in order: buying after the wallet at the copier's
-     * size, selling after it, and transaction fees plus tips on every
-     * mirrored transaction.
-     */
-    entry_cost_bps?: number;
-    /**
-     * Price drift alone, independent of size: the pool's worst price in the
-     * landing block against the price the wallet's own trade left, averaged
-     * over positions. Positive is always worse for the copier.
-     */
-    entry_slippage_bps?: number;
-    execution?: PulsightInternalCoreDomainTraderCopyExecutionAtDelay;
-    exit_cost_bps?: number;
-    exit_slippage_bps?: number;
-    fees_bps?: number;
-    measured_fills?: number;
-    pnl_lamports?: number;
-    /**
-     * Positions the replay could price at this latency, and how they ended
-     * for the copier after fees.
-     */
-    positions?: number;
-    positions_lost?: number;
-    positions_won?: number;
-    return_bps?: number;
-    /**
-     * What the wallet itself made on the same positions, at its own fills.
-     */
-    target_return_bps?: number;
-    /**
-     * Swap legs with and without a pool state to execute into.
-     */
-    unmeasurable_fills?: number;
-};
-
-export type PulsightInternalCoreDomainTraderCopyExecutionAtDelay = {
-    bands?: Array<PulsightInternalCoreDomainTraderCopyBandPoint>;
-    /**
-     * Where the adverse entry move comes from: the share that had already
-     * happened by the end of the wallet's own block, before any latency of
-     * the copier's. Populated only when the ladder includes block 0.
-     */
-    in_block_move_bps?: number;
-    in_block_share_pct?: number;
-    measured_fills?: number;
-    /**
-     * Slippage needed, split because the first buy on a token is contested
-     * and later buys rarely are.
-     */
-    required?: PulsightInternalCoreDomainTraderCopyBandQuantiles;
-    required_follow_on?: PulsightInternalCoreDomainTraderCopyBandQuantiles;
-    required_signal_buy?: PulsightInternalCoreDomainTraderCopyBandQuantiles;
-    total_move_bps?: number;
-    unmeasurable_fills?: number;
-};
-
-export type PulsightInternalCoreDomainTraderCopyExecutionSummary = {
-    fills?: number;
-    follow_ons?: number;
-    median_pool_quote_lamports?: number;
-    median_target_impact_bps?: number;
-    signal_buys?: number;
-    size_lamports?: number;
-};
-
-export type PulsightInternalCoreDomainTraderCopyabilityReport = {
-    /**
-     * Never nil on the wire: an empty ladder is [], not null.
-     */
-    delays?: Array<PulsightInternalCoreDomainTraderCopyDelayPoint>;
-    execution_summary?: PulsightInternalCoreDomainTraderCopyExecutionSummary;
-    /**
-     * The wallet's median transaction fee plus tip, lamports, charged to the
-     * copier on every mirrored transaction.
-     */
-    fee_per_tx_lamports?: number;
-    /**
-     * Positions the wallet opened in the window that the replay sampled: the
-     * most recent ones, bounded per wallet.
-     */
-    positions?: number;
-    /**
-     * Positions the wallet had sold in full by the end of the window; the
-     * rest are valued at the last price seen.
-     */
-    positions_closed?: number;
-    /**
-     * Positions with at least one sell in the window.
-     */
-    round_trip_mints?: number;
-    /**
-     * Earliest position open in the sample, Unix seconds; 0 when nothing was
-     * sampled.
-     */
-    sample_from_ts?: number;
-    /**
-     * Size of each mirrored buy, lamports.
-     */
-    size_lamports?: number;
-    /**
-     * Mean number of transactions, buys plus sells, per sampled position.
-     */
-    txs_per_position?: number;
-    wallet?: string;
 };
 
 export type PulsightInternalCoreDomainTraderDailyProfit = {
@@ -5802,34 +5618,6 @@ export type GetTradersByWalletByWalletAddressResponses = {
 };
 
 export type GetTradersByWalletByWalletAddressResponse = GetTradersByWalletByWalletAddressResponses[keyof GetTradersByWalletByWalletAddressResponses];
-
-export type PostTradersCopyabilityData = {
-    /**
-     * Wallets, epoch-second window and slot ladder
-     */
-    body: InternalAdaptersPrimaryHttpHandlerCopyabilityRequest;
-    path?: never;
-    query?: never;
-    url: '/api/traders/copyability';
-};
-
-export type PostTradersCopyabilityErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type PostTradersCopyabilityError = PostTradersCopyabilityErrors[keyof PostTradersCopyabilityErrors];
-
-export type PostTradersCopyabilityResponses = {
-    /**
-     * OK
-     */
-    200: InternalAdaptersPrimaryHttpHandlerCopyabilityResponse;
-};
-
-export type PostTradersCopyabilityResponse = PostTradersCopyabilityResponses[keyof PostTradersCopyabilityResponses];
 
 export type GetTradersSearchData = {
     body?: never;
