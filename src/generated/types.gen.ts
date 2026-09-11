@@ -757,8 +757,26 @@ export type PulsightInternalCoreDomainAggregatorMintInsiders = {
 
 export type PulsightInternalCoreDomainAggregatorMintLiveMetrics = {
     as_of?: string;
+    /**
+     * CirculatingSupply is the supply MarketCapUsd was computed against, in
+     * WHOLE tokens (decimals already applied). It rides along so a client
+     * patching the price can carry the market cap with it on the server's own
+     * basis instead of re-deriving the figure from raw supply and decimals.
+     * nil when supply or decimals are unknown, exactly when MarketCapUsd is.
+     */
+    circulating_supply?: number;
     market_cap_usd?: number;
     mint?: string;
+    /**
+     * PriceBasisPool is the pool PriceUsd was read from: the mint's DOMINANT
+     * pool by 24h quote volume, which is the basis the whole price surface
+     * uses so a dust side-market's prints cannot move the displayed number.
+     * A client that patches the price from the live swap stream between reads
+     * must believe prints from THIS pool only — and gets the answer from the
+     * server precisely so it never has to resolve a dominant pool of its own.
+     * nil whenever PriceUsd is.
+     */
+    price_basis_pool?: string;
     /**
      * PriceUsd / MarketCapUsd carry MintRow.PriceUsd and MintRow.MarketCapUsd
      * verbatim, including their nil conditions (no WSOL pool, unknown
