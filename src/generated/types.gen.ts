@@ -1692,7 +1692,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -3094,7 +3094,7 @@ export type GetBacktestsLimitsResponse = GetBacktestsLimitsResponses[keyof GetBa
 
 export type PostBacktestsPickTokensData = {
     /**
-     * Token-selection source (def | strategy_id) + resolution window
+     * Token-selection source (def | strategy_id) + resolution window; the mints returned are the ones matching at the window's END
      */
     body: InternalAdaptersPrimaryHttpHandlerPickTokensRequest;
     path?: never;
@@ -5478,7 +5478,7 @@ export type GetTradersData = {
          */
         favorites_only?: boolean;
         /**
-         * Comma list of DISPLAY-only window families to hydrate: 1d, all. Costs one extra query per page; sorting and f= filters are unaffected (they read 7d/30d board columns).
+         * Comma list of DISPLAY-only window families to hydrate: 1d, all. Costs one extra query per page; sorting is unaffected (it reads 7d/30d board columns) and f= filters read 1d/7d/30d board columns.
          */
         extra_windows?: string;
     };
