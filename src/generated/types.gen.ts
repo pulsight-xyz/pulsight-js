@@ -755,6 +755,27 @@ export type PulsightInternalCoreDomainAggregatorMintInsiders = {
     wallets?: number;
 };
 
+export type PulsightInternalCoreDomainAggregatorMintLiveMetrics = {
+    as_of?: string;
+    market_cap_usd?: number;
+    mint?: string;
+    /**
+     * PriceUsd / MarketCapUsd carry MintRow.PriceUsd and MintRow.MarketCapUsd
+     * verbatim, including their nil conditions (no WSOL pool, unknown
+     * decimals, no SOL/USD reference, absent supply).
+     */
+    price_usd?: number;
+    /**
+     * UniqueTraders is MintRow.UniqueTraders read straight off the insert-time
+     * uniq plane, so it is as fresh as ingest rather than as fresh as the
+     * holder-fold refresh that stamps the identity row. nil without the plane:
+     * this route never falls back to the lifetime position-table fold, which is
+     * the read it exists to stop paying at poll cadence. A quote-registry mint
+     * has no rows on that plane and so never reports a count here.
+     */
+    unique_traders?: number;
+};
+
 export type PulsightInternalCoreDomainAggregatorMintMarket = {
     dex?: string;
     /**
@@ -1010,15 +1031,18 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     trader_quality?: PulsightInternalCoreDomainAggregatorMintTraderQuality;
     /**
      * UniqueTraders is the number of distinct wallets that have EVER traded
-     * this mint (all-time count() over trader_token_stats, the same
-     * projection-served source as HolderCount). Distinct from TraderCount
-     * (which is a WINDOWED, HLL-approximate count over the `?hours` gate and
-     * is set on the list path only): UniqueTraders is exact and lifetime, so
-     * the list column and the /api/mints/:pubkey detail render the same value.
-     * Populated on BOTH paths, best-effort: nil when the trader_token_stats
-     * read is unavailable. A quote-registry mint (WSOL, the USD stables) has
-     * no trader_token_stats rows, so its detail counts the distinct wallets of
-     * its last 30 days of per-leg dex_swaps instead.
+     * this mint, folded from the insert-time uniq plane (`mint_trader_uniq`)
+     * that accumulates one `uniq` state per mint off `swaps`. Distinct from
+     * TraderCount (a WINDOWED count over the `?hours` gate, list path only):
+     * UniqueTraders is LIFETIME, so the list column and the
+     * /api/mints/:pubkey detail render the same value. Exact below ~10k
+     * distinct wallets and HLL-approximate above — a trader set only ever
+     * grows, which is what lets it be an accumulator at all (a holder set does
+     * not, and HolderCount keeps its fold). Populated on BOTH paths,
+     * best-effort: nil when the read is unavailable. A quote-registry mint
+     * (WSOL, the USD stables) never appears as `swaps.mint`, so its detail
+     * counts the distinct wallets of its last 30 days of per-leg dex_swaps
+     * instead.
      */
     unique_traders?: number;
     /**
@@ -3731,6 +3755,40 @@ export type GetMintsByPubkeyInsidersResponses = {
 };
 
 export type GetMintsByPubkeyInsidersResponse = GetMintsByPubkeyInsidersResponses[keyof GetMintsByPubkeyInsidersResponses];
+
+export type GetMintsByPubkeyLiveData = {
+    body?: never;
+    path: {
+        /**
+         * Mint pubkey
+         */
+        pubkey: string;
+    };
+    query?: never;
+    url: '/api/mints/{pubkey}/live';
+};
+
+export type GetMintsByPubkeyLiveErrors = {
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetMintsByPubkeyLiveError = GetMintsByPubkeyLiveErrors[keyof GetMintsByPubkeyLiveErrors];
+
+export type GetMintsByPubkeyLiveResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorMintLiveMetrics;
+};
+
+export type GetMintsByPubkeyLiveResponse = GetMintsByPubkeyLiveResponses[keyof GetMintsByPubkeyLiveResponses];
 
 export type GetMintsByPubkeyLpEventsData = {
     body?: never;
