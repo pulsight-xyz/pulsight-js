@@ -461,6 +461,16 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardRow = {
      */
     earned_lamports?: number;
     first_seen_ms?: number;
+    holder_reward_payouts?: number;
+    /**
+     * HolderRewardsLamports / HolderRewardPayouts — what pump PAID this wallet
+     * in holder rewards in the window (CA 000221), in priced lamports, and the
+     * number of payouts behind it. Holder rewards are pushed, not claimed, so
+     * this one figure is already a receipt. RewardsTotalLamports is the board's
+     * default rank: cashback CLAIMED plus holder rewards RECEIVED, both cash
+     * basis — never cashback earned, which is an accrual of the same money.
+     */
+    holder_rewards_lamports?: number;
     last_active_ms?: number;
     pump_image?: string;
     /**
@@ -473,6 +483,7 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardRow = {
      * Rank is 1-based within the requested window + filters (offset-aware).
      */
     rank?: number;
+    rewards_total_lamports?: number;
     /**
      * Tags are the derived classification tags (`deriveTags`), resolved for
      * the whole page in one round trip so a row states what the wallet is
@@ -504,16 +515,40 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardSummary = {
      * window, and their summed earnings (the "% of pool" denominator).
      */
     earners?: number;
+    holder_reward_payouts?: number;
+    /**
+     * HolderRewardsLamports / HolderRewardPayouts / RewardsTotalLamports —
+     * the same population's holder-reward side and the merged cash-basis
+     * total the board ranks on by default.
+     */
+    holder_rewards_lamports?: number;
     /**
      * Population marks.
      */
     median_earned_lamports?: number;
     rank1_earned_lamports?: number;
+    rewards_total_lamports?: number;
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
 export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
+    /**
+     * Amount is the raw payout in QuoteMint's base units, and Priced says
+     * whether AmountLamports carries a SOL valuation of it. Both are zero on
+     * a claim, whose AmountLamports is already lamports.
+     */
+    amount?: number;
     amount_lamports?: number;
+    /**
+     * Kind is "cashback_claim" or "holder_reward".
+     */
+    kind?: string;
+    /**
+     * Mint is the coin that paid a holder reward; empty on a claim, which is
+     * per-accumulator rather than per-coin.
+     */
+    mint?: string;
+    priced?: boolean;
     program?: string;
     quote_mint?: string;
     signature?: string;
@@ -1550,6 +1585,17 @@ export type PulsightInternalCoreDomainAggregatorTraderCashbackStats = {
      * only). Informational: the net-PnL formulas fold CLAIMED, not this.
      */
     earned_lamports?: number;
+    holder_reward_payouts?: number;
+    /**
+     * The holder-reward half of the same panel (CA 000220). pump PUSHES
+     * these, so there is no accrued/claimed pair and nothing to claim:
+     * HolderRewardsLamports is already a receipt, and the payout count is
+     * the cadence figure ClaimCount is for cashback. Lifetime is exact —
+     * the receipt ledger carries no TTL — but both lamport figures count
+     * only payouts whose quote could be priced in SOL, because a coin
+     * paired with another token pays in that token (CA r89).
+     */
+    holder_rewards_lamports?: number;
     last_claim_at?: string;
     lifetime_claimed_lamports?: number;
     /**
@@ -1561,6 +1607,8 @@ export type PulsightInternalCoreDomainAggregatorTraderCashbackStats = {
      * carries the program's own all-time figures beside it.
      */
     lifetime_earned_lamports?: number;
+    lifetime_holder_reward_payouts?: number;
+    lifetime_holder_rewards_lamports?: number;
     /**
      * ProgramTotals — the lifetime running totals the pump program itself
      * stamped on the wallet's LATEST claim event, one row per program
@@ -1576,9 +1624,10 @@ export type PulsightInternalCoreDomainAggregatorTraderCashbackStats = {
     program_totals?: Array<PulsightInternalCoreDomainAggregatorCashbackProgramTotals>;
     pubkey?: string;
     /**
-     * RecentClaims — the wallet's latest claims, newest first (≤10).
-     * AmountLamports is in the claim's quote-mint base units — lamports for
-     * WSOL rows, which is nearly all of them.
+     * RecentClaims — the wallet's latest REWARDS, newest first (≤10):
+     * cashback claims and holder-reward payouts interleaved by timestamp,
+     * told apart by Kind. AmountLamports is in the row's quote-mint base
+     * units — lamports for WSOL rows, which is nearly all of the claims.
      */
     recent_claims?: Array<PulsightInternalCoreDomainAggregatorCashbackClaimRow>;
     total_volume_lamports?: number;
@@ -1734,7 +1783,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
+export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -2019,6 +2068,20 @@ export type PulsightInternalCoreDomainTraderTrader = {
     failed_txs_30d?: number;
     failed_txs_7d?: number;
     failed_txs_all?: number;
+    holder_reward_payouts_1d?: number;
+    holder_reward_payouts_30d?: number;
+    holder_reward_payouts_7d?: number;
+    holder_reward_payouts_all?: number;
+    holder_rewards_1d?: number;
+    holder_rewards_30d?: number;
+    /**
+     * Pump holder rewards, lamports. Pushed rather than claimed, so the one
+     * figure is already a receipt and is what net PnL folds; the payout count
+     * counts every payout, including one on a coin whose quote could not be
+     * priced in SOL and therefore adds no lamports.
+     */
+    holder_rewards_7d?: number;
+    holder_rewards_all?: number;
     id?: string;
     is_favorite?: boolean;
     /**
@@ -2866,6 +2929,14 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      */
     failed_txs_all?: number;
     has_avatar?: boolean;
+    holder_reward_payouts_1d?: number;
+    holder_reward_payouts_30d?: number;
+    holder_reward_payouts_7d?: number;
+    holder_reward_payouts_all?: number;
+    holder_rewards_1d?: number;
+    holder_rewards_30d?: number;
+    holder_rewards_7d?: number;
+    holder_rewards_all?: number;
     /**
      * HoldingPnlLamports is the wallet's current unrealised PnL across
      * all open positions, in lamports. Nil when CA has no live price
@@ -3304,7 +3375,7 @@ export type GetCashbackLeaderboardData = {
          */
         window?: string;
         /**
-         * cashback|cashback_claimed|cashback_share|cashback_claim_count|cashback_volume (default cashback)
+         * rewards_total|holder_rewards|holder_reward_payouts|cashback|cashback_claimed|cashback_share|cashback_claim_count|cashback_volume (default rewards_total)
          */
         sort_by?: string;
         /**
@@ -3522,9 +3593,9 @@ export type GetMintsData = {
          */
         dex?: Array<string>;
         /**
-         * Activity-gate lookback hours (1..168, default 24)
+         * Activity-gate lookback hours (1, 6 or 24; default 24)
          */
-        hours?: number;
+        hours?: 1 | 6 | 24;
         /**
          * Min window pool quote-reserves (liquidity), WSOL lamports. Omitted ⇒ a default ~1 SOL floor hides dust on untargeted browse; pass 0 to disable, or any value to override.
          */

@@ -101,9 +101,9 @@ export const getBacktestsByIdTrades = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
- * Pump cashback leaderboard
+ * Pump rewards leaderboard
  *
- * Wallets ranked by pump cashback over a window. Accepts the same composable `f=` filter clauses as /api/traders (repeated `f=key|op|value`), plus cashback-specific sorts. Lifetime claimed figures are retention-bounded sums over the 75-day claim ledger (they undercount once rows age out, never invent).
+ * Wallets ranked by what pump paid them over a window, across both programs: holder rewards received and cashback claimed. The default rank is their sum, both cash basis — never cashback earned, which is an accrual of the same money. Accepts the same composable `f=` filter clauses as /api/traders (repeated `f=key|op|value`), plus the rewards sorts. Lifetime claimed figures are retention-bounded sums over the 75-day claim ledger (they undercount once rows age out, never invent).
  */
 export const getCashbackLeaderboard = <ThrowOnError extends boolean = false>(options?: Options<GetCashbackLeaderboardData, ThrowOnError>) => (options?.client ?? client).get<GetCashbackLeaderboardResponses, GetCashbackLeaderboardErrors, ThrowOnError>({
     querySerializer: { parameters: { f: { array: { explode: false } } } },
@@ -112,9 +112,9 @@ export const getCashbackLeaderboard = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
- * Pump cashback board summary
+ * Pump rewards board summary
  *
- * Pool totals, the median wallet and the top earner for a window. Lifetime claimed figures are retention-bounded sums over the 75-day claim ledger.
+ * Pool totals across both programs, the median wallet and the top earner for a window. Lifetime claimed and received figures are retention-bounded sums over the 75-day ledgers.
  */
 export const getCashbackSummary = <ThrowOnError extends boolean = false>(options?: Options<GetCashbackSummaryData, ThrowOnError>) => (options?.client ?? client).get<GetCashbackSummaryResponses, GetCashbackSummaryErrors, ThrowOnError>({ url: '/api/cashback/summary', ...options });
 
@@ -737,14 +737,14 @@ export const getTradersByTraderIdPnls = <ThrowOnError extends boolean = false>(o
 });
 
 /**
- * Pump cashback rewards of a wallet
+ * Pump rewards of a wallet
  */
 export const getTradersByWalletAddressCashback = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressCashbackData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressCashbackResponses, GetTradersByWalletAddressCashbackErrors, ThrowOnError>({ url: '/api/traders/{walletAddress}/cashback', ...options });
 
 /**
- * Cashback claim history of a wallet
+ * Reward history of a wallet
  *
- * One wallet's claim_cashback executions, newest first, paged. Read from the raw claim ledger (75-day retention): older claims have aged out; the program-reported anchors on the cashback panel carry the true all-time totals. Amounts are in the claim's quote-mint base units (lamports for WSOL rows, which is nearly all of them).
+ * One wallet's reward events, newest first, paged: both its claim_cashback executions and the holder-reward payouts pushed to it, interleaved in one timestamp order and told apart by `kind`. A claim carries the pump program it swept; a payout carries the coin that paid it. Read from the raw ledgers (75-day retention): older events have aged out; the program-reported anchors on the rewards panel carry the true all-time totals. Amounts are in the event's quote-mint base units (lamports for WSOL rows, which is nearly all of them), and `amount_lamports` is zero on a payout whose quote could not be priced in SOL — `priced` says which.
  */
 export const getTradersByWalletAddressCashbackClaims = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressCashbackClaimsData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressCashbackClaimsResponses, GetTradersByWalletAddressCashbackClaimsErrors, ThrowOnError>({ url: '/api/traders/{walletAddress}/cashback/claims', ...options });
 
