@@ -538,9 +538,16 @@ export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
      * a claim, whose AmountLamports is already lamports.
      */
     amount?: number;
+    /**
+     * AmountGross is a cashback claim's RAW swept amount before the part the
+     * wallet immediately re-parked; AmountLamports is what it KEPT. They differ
+     * on a park-resweep, where kept is legitimately zero and only the gross
+     * shows a claim happened at all. Zero on a payout, which cannot be parked.
+     */
+    amount_gross?: number;
     amount_lamports?: number;
     /**
-     * Kind is "cashback_claim" or "holder_reward".
+     * Kind is RewardKindCashbackClaim or RewardKindHolderReward.
      */
     kind?: string;
     logo_uri?: string;
@@ -550,9 +557,28 @@ export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
      */
     mint?: string;
     name?: string;
+    /**
+     * PriceBasis says HOW AmountLamports was arrived at: "exact" when the
+     * payout was already in SOL, "market" when it was valued through the
+     * quote's own SOL market at that minute, "unpriced" when no value could
+     * be stated. A market figure moves with the quote; an exact one is the
+     * amount received. Empty on a cashback claim.
+     */
+    price_basis?: string;
     priced?: boolean;
     program?: string;
+    quote_decimals?: number;
+    quote_logo_uri?: string;
     quote_mint?: string;
+    quote_name?: string;
+    /**
+     * QuoteSymbol / QuoteName / QuoteLogoURI name QuoteMint — the token the
+     * reward was actually paid in, which on a holder-rewards coin is its
+     * pool's quote and only rarely WSOL. QuoteDecimals scales Amount into
+     * whole tokens and is -1 when unknown; it is per-token (PUMP 6, ZEC 8,
+     * XMR 12), so a reader must not assume a default.
+     */
+    quote_symbol?: string;
     signature?: string;
     /**
      * Symbol / Name / LogoURI name the paying coin so a payout renders as a
@@ -565,6 +591,12 @@ export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
 
 export type PulsightInternalCoreDomainAggregatorCashbackClaimsPage = {
     items?: Array<PulsightInternalCoreDomainAggregatorCashbackClaimRow>;
+    /**
+     * Kind is the reward kind this page was filtered to, empty when it carries
+     * both. Total counts the same set the items come from, so a caller never
+     * pages one kind against the other's count.
+     */
+    kind?: string;
     limit?: number;
     offset?: number;
     pubkey?: string;
@@ -6033,6 +6065,10 @@ export type GetTradersByWalletAddressCashbackClaimsData = {
         walletAddress: string;
     };
     query?: {
+        /**
+         * cashback_claim|holder_reward — omit for both
+         */
+        kind?: string;
         /**
          * Page size (default 50, max 200)
          */
