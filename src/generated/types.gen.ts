@@ -543,15 +543,23 @@ export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
      * Kind is "cashback_claim" or "holder_reward".
      */
     kind?: string;
+    logo_uri?: string;
     /**
      * Mint is the coin that paid a holder reward; empty on a claim, which is
      * per-accumulator rather than per-coin.
      */
     mint?: string;
+    name?: string;
     priced?: boolean;
     program?: string;
     quote_mint?: string;
     signature?: string;
+    /**
+     * Symbol / Name / LogoURI name the paying coin so a payout renders as a
+     * token rather than a raw address. Empty on a claim, and on a coin whose
+     * metadata has not been fetched yet.
+     */
+    symbol?: string;
     timestamp?: string;
 };
 
@@ -1783,7 +1791,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -2074,12 +2082,6 @@ export type PulsightInternalCoreDomainTraderTrader = {
     holder_reward_payouts_all?: number;
     holder_rewards_1d?: number;
     holder_rewards_30d?: number;
-    /**
-     * Pump holder rewards, lamports. Pushed rather than claimed, so the one
-     * figure is already a receipt and is what net PnL folds; the payout count
-     * counts every payout, including one on a coin whose quote could not be
-     * priced in SOL and therefore adds no lamports.
-     */
     holder_rewards_7d?: number;
     holder_rewards_all?: number;
     id?: string;
@@ -2174,6 +2176,16 @@ export type PulsightInternalCoreDomainTraderTrader = {
     realized_profit_pnl_30d?: number;
     realized_profit_pnl_7d?: number;
     rebalancing_ratio?: number;
+    rewards_total_1d?: number;
+    rewards_total_30d?: number;
+    /**
+     * Pump holder rewards, lamports. Pushed rather than claimed, so the one
+     * figure is already a receipt and is what net PnL folds; the payout count
+     * counts every payout, including one on a coin whose quote could not be
+     * priced in SOL and therefore adds no lamports.
+     */
+    rewards_total_7d?: number;
+    rewards_total_all?: number;
     risk_level?: string;
     /**
      * Risk assessment
@@ -2827,12 +2839,21 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     failed_txs?: number;
     /**
      * Costs of the day (lamports): per-tx fees, tips, and failed-tx burn,
-     * plus the day's CLAIMED pump cashback (cash basis, the one positive
-     * component), with `net = profit - fees - tips - failed_cost +
-     * cashback` (profit already includes the arbitrage take-home). The charts plot NET as the headline series; `profit` stays
-     * as the flat/gross component.
+     * against what pump paid the wallet that day — cashback CLAIMED and
+     * holder rewards RECEIVED, both cash basis — with `net = profit - fees
+     * - tips - failed_cost + cashback + holder_rewards` (profit already
+     * includes the arbitrage take-home). The charts plot NET as the headline
+     * series; `profit` stays as the flat/gross component.
      */
     fees?: number;
+    holder_reward_payouts?: number;
+    /**
+     * HolderRewards is the day's holder-reward payouts valued in SOL, and
+     * HolderRewardPayouts how many payouts there were. A payout in a quote
+     * we cannot price in SOL adds nothing to the value but still counts, so
+     * a day can carry payouts with zero lamports.
+     */
+    holder_rewards?: number;
     net?: number;
     profit?: number;
     success_rate?: number;
@@ -3024,6 +3045,10 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     realized_profit_pnl_30d?: number;
     realized_profit_pnl_7d?: number;
     rebalancing_ratio?: number;
+    rewards_total_1d?: number;
+    rewards_total_30d?: number;
+    rewards_total_7d?: number;
+    rewards_total_all?: number;
     risk_level?: string;
     risk_score?: number;
     roi_1d?: number;
