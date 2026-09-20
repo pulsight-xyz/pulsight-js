@@ -20,13 +20,6 @@ export type InternalAdaptersPrimaryHttpHandlerPaginatedCreditLedger = {
     total?: number;
 };
 
-export type InternalAdaptersPrimaryHttpHandlerPaginatedPnls = {
-    items?: Array<PulsightInternalCoreDomainTraderPnl>;
-    limit?: number;
-    offset?: number;
-    total?: number;
-};
-
 export type InternalAdaptersPrimaryHttpHandlerStrategyListItem = {
     record?: PulsightInternalCoreDomainStrategyRecord;
     stats?: InternalAdaptersPrimaryHttpHandlerStrategyStats;
@@ -131,20 +124,22 @@ export type InternalAdaptersPrimaryHttpHandlerNeighborStatsResponse = {
 };
 
 export type InternalAdaptersPrimaryHttpHandlerOhlcvRow = {
+    base_reserve?: number;
     buy_volume_sol?: number;
+    buy_volume_usd?: number;
     close?: number;
+    depth_sol?: number;
+    depth_usd?: number;
     high?: number;
     low?: number;
     open?: number;
-    pool_sol?: number;
+    quote_reserve?: number;
     sell_volume_sol?: number;
+    sell_volume_usd?: number;
     swap_count?: number;
     time?: number;
-    token_volume?: number;
-    /**
-     * buy + sell
-     */
     volume_sol?: number;
+    volume_usd?: number;
 };
 
 export type InternalAdaptersPrimaryHttpHandlerPickTokensRequest = {
@@ -178,19 +173,39 @@ export type InternalAdaptersPrimaryHttpHandlerSnapshotRow = {
      */
     avg_rp_1d?: number;
     /**
+     * micro-USD twins of the eight figures above
+     */
+    avg_rp_1d_usd?: number;
+    /**
      * lamports
      */
     avg_rp_30d?: number;
+    /**
+     * micro-USD
+     */
+    avg_rp_30d_usd?: number;
     /**
      * lamports
      */
     avg_rp_7d?: number;
     /**
+     * micro-USD
+     */
+    avg_rp_7d_usd?: number;
+    /**
      * lamports, per-mint over the wallet's life
      */
     avg_rp_all?: number;
+    /**
+     * micro-USD
+     */
+    avg_rp_all_usd?: number;
     avg_sells_per_token?: number;
     holding_pnl_lamports?: number;
+    /**
+     * micro-USD, stamped at execution
+     */
+    holding_pnl_usd?: number;
     med_buys_per_token?: number;
     med_hold_secs?: number;
     med_reactivity_secs?: number;
@@ -199,24 +214,48 @@ export type InternalAdaptersPrimaryHttpHandlerSnapshotRow = {
      */
     med_rp_1d?: number;
     /**
+     * micro-USD
+     */
+    med_rp_1d_usd?: number;
+    /**
      * lamports
      */
     med_rp_30d?: number;
+    /**
+     * micro-USD
+     */
+    med_rp_30d_usd?: number;
     /**
      * lamports
      */
     med_rp_7d?: number;
     /**
+     * micro-USD
+     */
+    med_rp_7d_usd?: number;
+    /**
      * lamports, per-mint over the wallet's life
      */
     med_rp_all?: number;
+    /**
+     * micro-USD
+     */
+    med_rp_all_usd?: number;
     med_sells_per_token?: number;
     oldest_trade_at?: string;
     pnl_distribution?: Array<number>;
     /**
+     * the buckets measured on the USD stamps
+     */
+    pnl_distribution_usd?: Array<number>;
+    /**
      * lamports per day
      */
     pnl_sparkline_7d?: Array<number>;
+    /**
+     * micro-USD per day
+     */
+    pnl_sparkline_7d_usd?: Array<number>;
     tags?: Array<string>;
     /**
      * lifetime mints created
@@ -257,64 +296,30 @@ export type InternalAdaptersPrimaryHttpHandlerStrategyUpdateRequest = {
     name?: string;
 };
 
-export type InternalAdaptersPrimaryHttpHandlerSwapEventRow = {
-    amount_in?: number;
-    amount_out?: number;
-    arb_pnl_lamports?: number;
-    base_decimals?: number;
-    dex?: string;
-    fee?: number;
-    is_arb?: boolean;
-    is_buy?: boolean;
-    label?: string;
-    label_type?: string;
-    mint?: string;
-    pool?: string;
-    priority_fee_lamports?: number;
-    quote_lamports?: number;
-    quote_mint?: string;
-    realized_profit?: number;
-    signature?: string;
-    slot?: number;
-    sold_more_than_bought?: boolean;
-    sold_without_buy?: boolean;
-    tip_lamports?: number;
-    tip_service?: string;
-    trader?: string;
-    ts?: number;
-    /**
-     * null — not in Pulsight SwapRow
-     */
-    virtual_sol?: number;
-    /**
-     * null — not in Pulsight SwapRow
-     */
-    virtual_token?: string;
-};
-
 export type InternalAdaptersPrimaryHttpHandlerTokensRow = {
     /**
-     * Distinct is_arb transactions on this (trader, mint). Shown alongside
-     * buy/sell, never subtracted from them -- an arb still emits a buy row,
-     * a sell row or both. It exists because those counts otherwise read as
-     * broken on arbitrage wallets: a multi-hop arb bridging through a
-     * non-quote token has its target buy leg quoted in that token, which is
-     * not a registry quote, so only the quote-anchored sell reaches `swaps`.
-     * 0 on the legacy Pnl path, which has no arb data -- the frontend hides
-     * the segment at 0.
+     * The position's arbitrage-flagged trade rows. Shown alongside buy/sell,
+     * never subtracted from them: an arbitrage buy or sell is also counted
+     * there. The frontend hides the segment at 0.
      */
     arb_tx_count?: number;
     buy_tx_count?: number;
     cost_basis_lamports?: string;
     /**
-     * Disjoint from ArbTxCount: these EXCLUDE arbitrage rows, so the UI shows
-     * directional buys / directional sells / arb txs without the three
-     * overlapping. 0 on the legacy Pnl path.
+     * micro-USD, stamped at execution
+     */
+    cost_basis_usd?: string;
+    /**
+     * The same position counters as buy_tx_count / sell_tx_count.
      */
     directional_buy_tx_count?: number;
     directional_sell_tx_count?: number;
     first_buy_ts?: string;
     holding_pnl_lamports?: number;
+    /**
+     * micro-USD, the same exit marked in USD
+     */
+    holding_pnl_usd?: number;
     last_active_ts?: string;
     mint?: string;
     mint_decimals?: number;
@@ -325,16 +330,27 @@ export type InternalAdaptersPrimaryHttpHandlerTokensRow = {
     /**
      * Rug-aware effective quote reserves of the mint's pool (lamports) and the
      * exitability tier derived from them server-side. Together they let the row
-     * explain WHY a bag marks at ~0. null / "" mean unknown -- which is what
-     * the legacy Pnl fallback path below always reports, since it has no pool
-     * data; the frontend renders no badge rather than a false rug.
+     * explain WHY a bag marks at ~0. null / "" mean unknown; the frontend
+     * renders no badge rather than a false rug.
      */
     pool_quote_reserves?: number;
     realized_profit?: number;
+    /**
+     * micro-USD
+     */
+    realized_profit_usd?: number;
     sell_tx_count?: number;
     token_balance?: string;
     total_fees?: number;
+    /**
+     * micro-USD
+     */
+    total_fees_usd?: number;
     total_invested?: number;
+    /**
+     * micro-USD
+     */
+    total_invested_usd?: number;
     trader?: string;
     updated_at?: string;
 };
@@ -367,6 +383,16 @@ export type InternalAdaptersPrimaryHttpHandlerValidateStrategyRequest = {
     venue?: PulsightInternalCoreDomainStrategyVenueId;
 };
 
+export type PulsightInternalCoreDomainAggregatorArb = {
+    funding?: PulsightInternalCoreDomainAggregatorMoney;
+    gross?: PulsightInternalCoreDomainAggregatorMoney;
+    kind?: string;
+    notional?: PulsightInternalCoreDomainAggregatorMoney;
+    pools?: number;
+    priced?: boolean;
+    take_home?: PulsightInternalCoreDomainAggregatorMoney;
+};
+
 export type PulsightInternalCoreDomainAggregatorAuthorityStat = {
     freeze?: string;
     freeze_active?: boolean;
@@ -377,7 +403,7 @@ export type PulsightInternalCoreDomainAggregatorAuthorityStat = {
 
 export type PulsightInternalCoreDomainAggregatorBondingCurveState = {
     /**
-     * True iff mint_migrations carries any graduation row for this mint.
+     * True iff a graduation is on file for this mint.
      */
     graduated?: boolean;
     /**
@@ -394,14 +420,13 @@ export type PulsightInternalCoreDomainAggregatorBondingCurveState = {
      */
     progress_pct?: number;
     /**
-     * Most recent observed virtual_sol (= dex_swaps.quote_reserves)
-     * snapshot on the launchpad dex, in lamports. 0 for pre-feature
-     * graduations with no curve swap on file.
+     * Latest observed quote reserve of the launchpad curve, in lamports. 0
+     * for a graduation with no curve trade on file.
      */
     virtual_sol_lamports?: number;
     /**
-     * Most recent observed virtual_token (NUMERIC → decimal string for
-     * JSON safety). "0" when no curve swap is on file.
+     * Latest observed base reserve of the curve (decimal string for JSON
+     * safety). "0" when no curve trade is on file.
      */
     virtual_token?: string;
 };
@@ -435,6 +460,11 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardPage = {
     limit?: number;
     offset?: number;
     total?: number;
+    /**
+     * Unit is the currency the page was ranked and filtered in (sol|usd);
+     * every row carries both.
+     */
+    unit?: string;
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
@@ -444,33 +474,38 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardRow = {
      * when the window moved no volume (no share, which is not a 0% share).
      */
     cashback_volume_lamports?: number;
+    cashback_volume_usd?: number;
     censored?: boolean;
     claim_count?: number;
     /**
-     * ClaimedLamports / ClaimCount are nil only before CA 000106 exists. On
-     * the lifetime window they are RETENTION-BOUNDED (the raw claim ledger
-     * carries a 75-day TTL) — they undercount once rows age out rather than
-     * inventing, the trader panel's lifetime_claimed precedent.
+     * ClaimedLamports / ClaimCount — the cashback the wallet kept from its
+     * claims in the window, and how many claims.
      */
     claimed_lamports?: number;
+    claimed_usd?: number;
     /**
      * EarnedLamports — cashback accrued in the window TO THIS WALLET'S OWN
-     * accumulator (since classifier 0cb3f9c, executor-routed fills whose
-     * accumulator belongs to the filler are excluded); the board's primary
-     * measure (claiming is sporadic, earning is the smooth signal).
+     * accumulator (executor-routed fills whose accumulator belongs to the
+     * filler are excluded).
      */
     earned_lamports?: number;
+    /**
+     * The Usd twins are the same families on the row's USD stamps
+     * (micro-USD).
+     */
+    earned_usd?: number;
     first_seen_ms?: number;
     holder_reward_payouts?: number;
     /**
      * HolderRewardsLamports / HolderRewardPayouts — what pump PAID this wallet
-     * in holder rewards in the window (CA 000221), in priced lamports, and the
+     * in holder rewards in the window, in priced lamports, and the
      * number of payouts behind it. Holder rewards are pushed, not claimed, so
      * this one figure is already a receipt. RewardsTotalLamports is the board's
      * default rank: cashback CLAIMED plus holder rewards RECEIVED, both cash
      * basis — never cashback earned, which is an accrual of the same money.
      */
     holder_rewards_lamports?: number;
+    holder_rewards_usd?: number;
     last_active_ms?: number;
     pump_image?: string;
     /**
@@ -484,6 +519,7 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardRow = {
      */
     rank?: number;
     rewards_total_lamports?: number;
+    rewards_total_usd?: number;
     /**
      * Tags are the derived classification tags (`deriveTags`), resolved for
      * the whole page in one round trip so a row states what the wallet is
@@ -493,6 +529,7 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardRow = {
      */
     tags?: Array<string>;
     total_volume_lamports?: number;
+    total_volume_usd?: number;
     /**
      * Trader is empty on a censored landing row (Censored true): the figures
      * stay real, the identity is withheld server-side.
@@ -504,12 +541,17 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardRow = {
 export type PulsightInternalCoreDomainAggregatorCashbackBoardSummary = {
     claim_count?: number;
     /**
-     * ClaimedLamports / ClaimCount: on the lifetime window these are
-     * RETENTION-BOUNDED sums over the 75-day claim ledger (undercount, never
-     * invented).
+     * ClaimedLamports / ClaimCount: the population's kept claims and their
+     * count.
      */
     claimed_lamports?: number;
+    claimed_usd?: number;
     earned_lamports?: number;
+    /**
+     * The Usd twins are the same population figures on the USD stamps
+     * (micro-USD).
+     */
+    earned_usd?: number;
     /**
      * Earners / EarnedLamports — wallets with any earned cashback in the
      * window, and their summed earnings (the "% of pool" denominator).
@@ -522,30 +564,38 @@ export type PulsightInternalCoreDomainAggregatorCashbackBoardSummary = {
      * total the board ranks on by default.
      */
     holder_rewards_lamports?: number;
+    holder_rewards_usd?: number;
     /**
      * Population marks.
      */
     median_earned_lamports?: number;
+    median_earned_usd?: number;
     rank1_earned_lamports?: number;
+    rank1_earned_usd?: number;
     rewards_total_lamports?: number;
+    rewards_total_usd?: number;
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
 export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
     /**
-     * Amount is the raw payout in QuoteMint's base units, and Priced says
-     * whether AmountLamports carries a SOL valuation of it. Both are zero on
-     * a claim, whose AmountLamports is already lamports.
+     * Amount is the event's raw amount in QuoteMint's base units — a claim's
+     * KEPT amount, a payout's receipt — and Priced says whether
+     * AmountLamports carries a SOL valuation of it.
      */
     amount?: number;
     /**
      * AmountGross is a cashback claim's RAW swept amount before the part the
-     * wallet immediately re-parked; AmountLamports is what it KEPT. They differ
-     * on a park-resweep, where kept is legitimately zero and only the gross
-     * shows a claim happened at all. Zero on a payout, which cannot be parked.
+     * wallet immediately re-parked; Amount is what it KEPT. They differ on a
+     * park-resweep, where kept is legitimately zero and only the gross shows
+     * a claim happened at all. Zero on a payout, which cannot be parked.
      */
     amount_gross?: number;
     amount_lamports?: number;
+    /**
+     * AmountUsd is the event's value on its USD stamp (micro-USD).
+     */
+    amount_usd?: number;
     /**
      * Kind is RewardKindCashbackClaim or RewardKindHolderReward.
      */
@@ -558,11 +608,10 @@ export type PulsightInternalCoreDomainAggregatorCashbackClaimRow = {
     mint?: string;
     name?: string;
     /**
-     * PriceBasis says HOW AmountLamports was arrived at: "exact" when the
-     * payout was already in SOL, "market" when it was valued through the
-     * quote's own SOL market at that minute, "unpriced" when no value could
-     * be stated. A market figure moves with the quote; an exact one is the
-     * amount received. Empty on a cashback claim.
+     * PriceBasis says HOW AmountLamports was arrived at: "money" when the
+     * event was paid in WSOL or a USD stablecoin, "pool" when it was valued
+     * through the quote's own market at execution, "unpriced" when no SOL
+     * value could be stated.
      */
     price_basis?: string;
     priced?: boolean;
@@ -625,11 +674,25 @@ export type PulsightInternalCoreDomainAggregatorCohortStat = {
     wallets?: Array<PulsightInternalCoreDomainAggregatorHolderEntry>;
 };
 
+export type PulsightInternalCoreDomainAggregatorCosts = {
+    base_fee?: PulsightInternalCoreDomainAggregatorMoney;
+    cashback_on_top?: PulsightInternalCoreDomainAggregatorMoney;
+    dex_fee?: PulsightInternalCoreDomainAggregatorMoney;
+    payer?: string;
+    platform?: string;
+    platform_fee?: PulsightInternalCoreDomainAggregatorMoney;
+    priority_fee?: PulsightInternalCoreDomainAggregatorMoney;
+    rent_paid?: PulsightInternalCoreDomainAggregatorMoney;
+    rent_refunded?: PulsightInternalCoreDomainAggregatorMoney;
+    tip?: PulsightInternalCoreDomainAggregatorMoney;
+    tip_service?: string;
+};
+
 export type PulsightInternalCoreDomainAggregatorCreatedMintRow = {
     decimals?: number;
     /**
-     * FirstSeenTS proxies "created at" — the create-tx and first buy land in
-     * the same flush window. nil for fixture-only edge cases.
+     * FirstSeenTS proxies "created at" — the mint's first trade. nil when no
+     * trade is on file.
      */
     first_seen_ts?: string;
     /**
@@ -649,7 +712,7 @@ export type PulsightInternalCoreDomainAggregatorCreatedMintRow = {
 
 export type PulsightInternalCoreDomainAggregatorDevHoldings = {
     /**
-     * Creator's raw token balance (NUMERIC → decimal string).
+     * Creator's raw token balance (decimal string).
      */
     balance_raw?: string;
     /**
@@ -713,6 +776,14 @@ export type PulsightInternalCoreDomainAggregatorHolderEntry = {
      * % of circulating, 0..100
      */
     pct_of_supply?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorHop = {
+    dex?: string;
+    mint_in_id?: number;
+    mint_out_id?: number;
+    pool?: string;
+    pool_id?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorLpEvent = {
@@ -804,7 +875,7 @@ export type PulsightInternalCoreDomainAggregatorMintHoneypot = {
     fee_sell_buy_ratio?: number;
     /**
      * FeeTrapBuckets/FeeSellBuyRatio back "fee_trap" (confiscatory sell
-     * tax, CA 000133/r59): distinct 15-minute buckets in the last 7 days
+     * tax): distinct 15-minute buckets in the last 7 days
      * whose sells executed below half that bucket's buy VWAP, and the
      * window's overall sell/buy exec-price ratio (display only).
      */
@@ -818,9 +889,8 @@ export type PulsightInternalCoreDomainAggregatorMintHoneypot = {
     sellers?: number;
     thaw_count?: number;
     /**
-     * TransferFeeBps backs "transfer_fee" (Token-2022, CA 000134/r61): the
-     * on-chain transfer fee in basis points (max of the current and
-     * scheduled fee).
+     * TransferFeeBps backs "transfer_fee" (Token-2022): the on-chain transfer
+     * fee in basis points (max of the current and scheduled fee).
      */
     transfer_fee_bps?: number;
 };
@@ -843,9 +913,9 @@ export type PulsightInternalCoreDomainAggregatorMintLiveMetrics = {
     market_cap_usd?: number;
     mint?: string;
     /**
-     * PriceBasisPool is the pool PriceUsd was read from: the mint's DOMINANT
-     * pool by 24h quote volume, which is the basis the whole price surface
-     * uses so a dust side-market's prints cannot move the displayed number.
+     * PriceBasisPool is the pool PriceUsd was read from: the mint's reference
+     * pool, which is the basis the whole price surface uses so a dust
+     * side-market's prints cannot move the displayed number.
      * A client that patches the price from the live swap stream between reads
      * must believe prints from THIS pool only — and gets the answer from the
      * server precisely so it never has to resolve a dominant pool of its own.
@@ -854,41 +924,55 @@ export type PulsightInternalCoreDomainAggregatorMintLiveMetrics = {
     price_basis_pool?: string;
     /**
      * PriceUsd / MarketCapUsd carry MintRow.PriceUsd and MintRow.MarketCapUsd
-     * verbatim, including their nil conditions (no WSOL pool, unknown
-     * decimals, no SOL/USD reference, absent supply).
+     * verbatim, including their nil conditions (no priced reference pool,
+     * unknown decimals, absent supply).
      */
     price_usd?: number;
     /**
-     * UniqueTraders is MintRow.UniqueTraders read straight off the insert-time
-     * uniq plane, so it is as fresh as ingest rather than as fresh as the
-     * holder-fold refresh that stamps the identity row. nil without the plane:
-     * this route never falls back to the lifetime position-table fold, which is
-     * the read it exists to stop paying at poll cadence. A quote-registry mint
-     * has no rows on that plane and so never reports a count here.
+     * UniqueTraders is read straight off the insert-time `mint_traders`
+     * plane, so it is as fresh as ingest. nil when the plane has no row: this
+     * route never falls back to a lifetime fold over positions, which is the
+     * read it exists to stop paying at poll cadence. A quote-registry mint has
+     * no rows on that plane and so never reports a count here.
      */
     unique_traders?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintMarket = {
+    /**
+     * BaseMint is the pool's base side as the aggregator oriented it — the
+     * page's own mint except on a money mint's page, where the mint may be
+     * the quote of the pools listed. BaseSymbol is its symbol, empty when
+     * unknown.
+     */
+    base_mint?: string;
+    base_symbol?: string;
     dex?: string;
     /**
      * IsDefault marks the mint's default market — the pool an unpinned
      * /api/ohlcv chart resolves to (lifetime-dominant, recency-aware; one
      * definition, server-side: defaultMarketPool). Resolved independently
      * of the requested window, so a listing may carry no flagged row when
-     * the default market is idle (short windows) or older than swap
-     * retention. Resolve defaults from `window=all`.
+     * the default market is idle in a short window. Resolve defaults from
+     * `window=all`.
      */
     is_default?: boolean;
     last_swap_ts?: string;
     pool?: string;
+    quote_decimals?: number;
     /**
-     * QuoteMint is the pool's quote side under CA's registry ranking (USDC >
-     * USDT > USD1 > WSOL), so a SOL/USDC pool quotes in USDC. This market's
-     * candle prices and quote volumes are denominated in it, and the live
-     * chart folds only ticks that carry the same quote.
+     * QuoteMint is the pool's quote side as the aggregator oriented it: a
+     * registry quote when one side is one (USDC > USDT > USD1 > WSOL), else
+     * the pool's own quote token. This market's native candle prices and
+     * quote amounts are denominated in it, and the live chart folds only
+     * ticks that carry the same quote.
      */
     quote_mint?: string;
+    /**
+     * QuoteSymbol and QuoteDecimals describe the quote mint; the decimals are
+     * omitted when the mint is unknown.
+     */
+    quote_symbol?: string;
     sol_volume_lamports?: number;
     sol_volume_share?: number;
     swap_count?: number;
@@ -900,16 +984,16 @@ export type PulsightInternalCoreDomainAggregatorMintMigration = {
     mint?: string;
     slot?: number;
     /**
-     * Source ∈ {"observed","inferred"} (CHECK constraint).
+     * Source ∈ {"observed","inferred"}.
      */
     source?: string;
     /**
      * SourcePool is the bonding-curve pool the mint traded on BEFORE
      * graduating. Together with DestinationPool it is the mint's market
      * lineage — the pools /api/ohlcv merges into one continuous chart when
-     * no pool is pinned. Empty when unknown (rows predating
-     * carbon-aggregator CH migration 000073, or a venue whose migration ix
-     * doesn't expose the curve); treat '' as "no pre-graduation side".
+     * no pool is pinned. Empty when unknown (a venue whose migration
+     * instruction doesn't expose the curve); treat '' as "no pre-graduation
+     * side".
      */
     source_pool?: string;
     timestamp?: string;
@@ -919,27 +1003,19 @@ export type PulsightInternalCoreDomainAggregatorMintMigration = {
 export type PulsightInternalCoreDomainAggregatorMintRow = {
     authorities_observed_at?: string;
     /**
-     * ── CA mint-catalog enrichment (ported from mint_catalog.rs::find /
-     * list_active). bonding_curve + dev_holdings + supply populate on BOTH
-     * /api/mints (list) and /api/mints/:pubkey (detail); authorities
-     * populate on the detail path only (nil on list rows). All pointer +
-     * omitempty so list rows stay lean. The frontend's CurveBadge/DevPill
-     * already render bonding_curve/dev_holdings.
+     * bonding_curve, dev_holdings, supply and the authorities populate on
+     * BOTH /api/mints (list) and /api/mints/:pubkey (detail); metadata_uri
+     * and fetch_status are detail-only. All pointer + omitempty so list rows
+     * stay lean.
      */
     bonding_curve?: PulsightInternalCoreDomainAggregatorBondingCurveState;
     /**
-     * Bundled/Insiders are the audit-cell cohort flags (best-effort list
-     * decoration; absent when not notable). Bundled = a same-slot launch buy
-     * cluster (swap-derived); Insiders = the creator distributed supply via
-     * launch-window SPL transfers (needs token-program capture). Both are
-     * at-a-glance proxies for the per-mint risk card's full cohorts.
+     * Bundled/Insiders are the audit-cell cohort flags (absent when not
+     * notable). Bundled = the sealed launch bundle cohort; Insiders = the
+     * creator distributed supply via launch-window SPL transfers. Both are
+     * at-a-glance views of the per-mint risk card's cohorts.
      */
     bundled?: PulsightInternalCoreDomainAggregatorMintBundled;
-    /**
-     * BuyCount/SellCount: buy- vs sell-side swap counts over the `?hours`
-     * activity window (countIf(is_buy)). Populated on the list path; 0 on
-     * the detail path.
-     */
     buy_count?: number;
     creator?: string;
     decimals?: number;
@@ -948,44 +1024,35 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     first_seen_ts?: string;
     freeze_authority?: string;
     /**
-     * ── GMGN-style discovery enrichment (list path only, best-effort). ──
-     * HolderCount is the number of distinct wallets currently holding a
-     * positive balance of this mint (uniqExact over trader_token_stats).
-     * nil when the holders batch is unavailable. Best-effort: a holders
-     * hiccup decorates fewer rows, it never fails the listing.
+     * HolderCount is the number of wallets holding a positive balance of
+     * this mint, off the sealed holder-stats family of the mint's row (pool
+     * inventory excluded by token account); nil until the family is sealed.
      */
     holder_count?: number;
     /**
-     * Honeypot flags a likely sell-blocking token. Best-effort decoration;
-     * absent when no reason fires. Step 1 populates the "freezes_holders"
-     * reason from mint_safety_events (froze many holder accounts, thawed
-     * few). Future Token-2022 reasons (transfer_fee/hook/…) accrete here.
-     * The "impersonating" reason (verified ticker reused by a different
+     * Honeypot flags a likely sell-blocking token; absent when no reason
+     * fires. The "impersonating" reason (verified ticker reused by a different
      * mint) also rides here — badge-only, no filter arm.
      */
     honeypot?: PulsightInternalCoreDomainAggregatorMintHoneypot;
     insiders?: PulsightInternalCoreDomainAggregatorMintInsiders;
     /**
      * IsMayhemMode flags a Pump.fun "Mayhem"-mode token (its trades route
-     * through the Mayhem custody program). Populated on BOTH list and detail
-     * from the mint_mayhem table; omitted when false.
+     * through the Mayhem custody program). Populated on BOTH list and detail;
+     * omitted when false.
      */
     is_mayhem_mode?: boolean;
     last_trade_ts?: string;
     logo_uri?: string;
     /**
      * LpBurned reports whether ANY LP burn is on file for the mint — the same
-     * `lp_events(op='burn')` set the `lp_burned=1` listing filter uses, so the
-     * audit glyph and the filter can never disagree. Page-scoped, so it is a
-     * definite true/false for every returned row (never nil on the list path);
-     * nil on the detail path, where the batch does not run.
+     * flag the `lp_burned=1` listing filter uses, so the audit glyph and the
+     * filter can never disagree.
      */
     lp_burned?: boolean;
     /**
-     * MarketCapUsd is PriceUsd × circulating supply. Equivalently
-     * close_sol × supply_raw × sol_usd / 1e6 (token decimals cancel), so
-     * it's populated even when decimals are unknown (unlike PriceUsd). nil
-     * when the WSOL close, supply, or SOL/USD ref is missing.
+     * MarketCapUsd is the stored latest price × supply, in USD; nil when
+     * either is unknown.
      */
     market_cap_usd?: number;
     markets_count?: number;
@@ -1004,29 +1071,17 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     mint_authority?: string;
     name?: string;
     /**
-     * PriceSparkline is the mint's last-24h price shape: WSOL-quoted per-minute
-     * closes of the mint's DOMINANT pool (highest 24h quote volume — one pool,
-     * never a merge, so a dust side-market's prints can't flatten the line),
-     * oldest→newest, at most priceSparklineMaxPoints values. A mint that
-     * traded through the whole window is sampled evenly down to that cap
-     * (so the series still spans 24h, just coarser); one that traded for an
-     * hour carries all of it. It rides the SAME scan as PriceUsd, so it
-     * carries the same denomination caveat: WSOL-quoted only, which is why a
-     * USDC-only mint has none rather than a series in another unit (mixing
-     * quotes would draw a step that never happened). Values are raw SOL per
-     * whole token, rounded to 6 significant digits — the client normalises to
-     * its own min/max, so the unit only has to be CONSISTENT within the
-     * series, and this is a SHAPE, not a price read (use PriceUsd for that).
-     * Only minutes that actually traded appear, so the x axis is trade
-     * sequence, not wall clock. Omitted below 2 points — but a mint younger
-     * than ~10 minutes gets its points from 1-SECOND candles instead, so a
-     * fresh row draws a line as soon as it has two seconds of trading.
+     * PriceSparkline is the mint's last-24h price shape: the USD closes of
+     * its dominant pool at 15-minute buckets, oldest→newest, at most
+     * priceSparklineMaxPoints values rounded to 6 significant digits. Only
+     * buckets that traded appear. It is a SHAPE (the client normalises to
+     * its own min/max), not a price read. Omitted below 2 points.
      */
     price_sparkline?: Array<number>;
     /**
-     * PriceUsd is the latest price per WHOLE token in USD, derived from the
-     * dominant WSOL-quoted OHLCV close × the SOL/USD reference rate. nil
-     * when there's no WSOL pool, decimals are unknown, or no SOL/USD ref.
+     * PriceUsd is the stored latest price per WHOLE token in USD (the
+     * reference pool's per-raw-unit stamp scaled by the mint's decimals);
+     * nil when the mint has no priced reference pool or unknown decimals.
      */
     price_usd?: number;
     /**
@@ -1043,99 +1098,70 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     risk_verdict?: string;
     sell_count?: number;
     /**
-     * Windowed stats bundle keyed by window. Reuses the same
-     * MintStatsByWindow struct that GET /api/mints/:pubkey/stats
-     * returns so the frontend's ActiveMint.stats path consumes both
-     * endpoints identically.
-     *
-     * /api/mints/:pubkey/stats (FindStatsBundle) populates all four
-     * windows in one round-trip.
-     *
-     * /api/mints (ListActive) currently populates ONLY the active
-     * window's bucket — the other three windows in the per-row
-     * MintStatsByWindow stay zero-valued. The frontend's
-     * `m.stats?.[window]?.…` chain renders `—` on null, so this is
-     * safe; an N-row × 4-window fan-out would mean 3× more LATERAL
-     * joins per page and the UI only ever shows one window at a time
-     * (window switch refetches the page). If a future surface needs
-     * all four windows in the list response, extend ListActive to
-     * match FindStatsBundle's four-LATERAL pattern.
+     * Windowed stats bundle keyed by window, the same MintStatsByWindow
+     * struct GET /api/mints/:pubkey/stats returns. /api/mints (ListActive)
+     * fills the requested window and the short 1m/5m/1h windows; the other
+     * windows stay zero-valued.
      */
     stats?: PulsightInternalCoreDomainAggregatorMintStatsByWindow;
     /**
-     * Supply is the on-chain total supply (NUMERIC → decimal string, raw
+     * Supply is the on-chain total supply (decimal string, raw
      * smallest units); nil until the enricher has decoded the mint account.
      * Populated on the list path to back the market-cap column.
      */
     supply?: string;
     /**
-     * Window-bound activity aggregates over the `?hours` lookback,
-     * derived from hourly_mint_trader_activity + hourly_mint_pool_activity.
-     * All non-pointer because GROUP BY in the LATERAL produces a row even
-     * for zero swaps (we go through the activity gate first, so anything
-     * returned has at least one). SwapCount, TraderCount and MarketsCount
-     * default to 0 if the LATERAL came up empty; the frontend's `formatNum`
-     * renders 0 cleanly.
+     * Activity counts. On the listing they count the `?hours` gate the page
+     * was filtered on, off the board row's gate counters; on the detail page
+     * SwapCount, BuyCount and SellCount are lifetime and TraderCount is 0.
+     * MarketsCount is the number of pools the mint trades in.
      */
     swap_count?: number;
     symbol?: string;
     /**
      * Top10Pct is the top-10 holder concentration as a PERCENT of circulating
-     * supply (0..100). Already read per page by top10ConcentrationBatch to
-     * score the row — emitting it costs nothing extra and is what the listing's
-     * Distribution column leads with. nil when the accumulator has no row for
-     * the mint (fresh token, or holder balances not yet folded).
+     * supply (0..100), off the mint's holder-stats plane — the figure the
+     * listing's Distribution column leads with. nil until the plane has
+     * folded the mint's holders.
      */
     top10_pct?: number;
     /**
-     * TopDex is the venue slug of the mint's DOMINANT pool over the activity
-     * window — the pool with the most quote volume, i.e. the venue the token
-     * actually trades on. Same vocabulary as `?dex=` and `swaps.dex`; look up
-     * the display label via DEX_LABEL. Rides fillMarketsCount's existing scan
-     * (same GROUP BY, one more aggregate), so it is free. nil when the mint had
-     * no dex_swaps row in the window.
+     * TopDex is the venue slug the token actually trades on: on the listing
+     * the mint's dominant pool's venue, on the detail page its graduation
+     * target or else its launchpad. Same vocabulary as `?dex=`; look up the
+     * display label via DEX_LABEL. nil when unknown.
      */
     top_dex?: string;
     /**
      * TotalFeesSol — LIFETIME network fees paid trading the mint, in
-     * lamports: tx fees (base + priority) plus MEV tips summed over its
-     * swaps (CA 000137 on mint_activity_totals; the 000064 sawtooth basis —
-     * lifetime between stats rebuilds, re-synced to the swaps 3-month
-     * retention at each healer finalize). Unlike the counts above it is NOT
-     * hours-window-bound. nil until the migration is applied or when the
-     * page decoration read fails.
+     * lamports: tx fees (base + priority) plus MEV tips over its trades.
+     * Unlike the listing's counts above it is NOT hours-window-bound. nil
+     * when the mint has no trades on file.
      */
     total_fees_sol?: number;
     /**
-     * TotalTxCount — LIFETIME swap count for the mint, from the same
-     * mint_activity_totals seek as TotalFeesSol (and on its same sawtooth
-     * basis). It is the fee figure's denominator: the bot-fee-pattern risk
-     * rule scores fees PER transaction, so the two must share a basis —
+     * TotalFeesUsd is the same figure on the USD stamps (micro-USD).
+     */
+    total_fees_usd?: number;
+    /**
+     * TotalTxCount — LIFETIME trade count for the mint, on the same basis as
+     * TotalFeesSol. It is the fee figure's denominator: the bot-fee-pattern
+     * risk rule scores fees PER transaction, so the two must share a basis —
      * the hours-window SwapCount would not. nil whenever TotalFeesSol is.
      */
     total_tx_count?: number;
     trader_count?: number;
     /**
-     * TraderQuality is the per-mint wallet-class fold (CA 000131) behind the
-     * ORGANIC distribution slot, the low_organic_activity risk rule and
-     * sort=organic. Best-effort list decoration; nil before the migration or
-     * when the batch read fails.
+     * TraderQuality is the per-mint wallet-class fold behind the ORGANIC
+     * distribution slot, the low_organic_activity risk rule and sort=organic;
+     * nil until the fold covers the mint.
      */
     trader_quality?: PulsightInternalCoreDomainAggregatorMintTraderQuality;
     /**
-     * UniqueTraders is the number of distinct wallets that have EVER traded
-     * this mint, folded from the insert-time uniq plane (`mint_trader_uniq`)
-     * that accumulates one `uniq` state per mint off `swaps`. Distinct from
-     * TraderCount (a WINDOWED count over the `?hours` gate, list path only):
-     * UniqueTraders is LIFETIME, so the list column and the
-     * /api/mints/:pubkey detail render the same value. Exact below ~10k
-     * distinct wallets and HLL-approximate above — a trader set only ever
-     * grows, which is what lets it be an accumulator at all (a holder set does
-     * not, and HolderCount keeps its fold). Populated on BOTH paths,
-     * best-effort: nil when the read is unavailable. A quote-registry mint
-     * (WSOL, the USD stables) never appears as `swaps.mint`, so its detail
-     * counts the distinct wallets of its last 30 days of per-leg dex_swaps
-     * instead.
+     * UniqueTraders is the LIFETIME number of distinct wallets that traded
+     * this mint (the insert-time `mint_traders` plane on the detail path, the
+     * holder-stats traders on the list path), as opposed to TraderCount, the
+     * count over the `?hours` gate; nil when unavailable.
      */
     unique_traders?: number;
     /**
@@ -1168,34 +1194,30 @@ export type PulsightInternalCoreDomainAggregatorMintTraderQuality = {
 
 export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
     /**
-     * Distinct is_arb transactions for this (trader, mint). Same rationale
-     * as TraderTokenPosition.ArbTxCount: shown alongside buy/sell, never
-     * subtracted, so lopsided counts on arbitrage wallets are legible.
+     * ArbTxCount is the position's arbitrage-flagged trade rows, as on
+     * TraderTokenPosition.ArbTxCount: shown alongside buy/sell, never
+     * subtracted.
      */
     arb_tx_count?: number;
-    bundle_slot?: number;
     buy_tx_count?: number;
     cost_basis_lamports?: string;
     /**
-     * Directional counts EXCLUDE arbitrage rows, so the three numbers the UI
-     * shows are disjoint: directional buys / directional sells / arb txs.
-     * Overlapping them is what made an arb wallet read "11 buys / 2 sells /
-     * 11 arb" -- every one of those buys WAS one of the arbs. A pure
-     * arbitrageur now reads 0 / 0 / N, which is the truth: it never took a
-     * directional position in the token.
-     *
-     * buy_tx_count / sell_tx_count keep their original meaning (all rows,
-     * matching the trader_token_stats rollup that the leaderboard and its
-     * `f=` filters read) so nothing downstream shifts under them.
+     * The Usd twins are the position's figures on its trades' USD stamps
+     * (micro-USD); HoldingPnlUsd is the same realizable exit marked in USD.
+     */
+    cost_basis_usd?: string;
+    /**
+     * DirectionalBuyTxCount / DirectionalSellTxCount carry the same position
+     * counters as buy_tx_count / sell_tx_count.
      */
     directional_buy_tx_count?: number;
     directional_sell_tx_count?: number;
     first_buy_ts?: string;
     holding_pnl_lamports?: number;
+    holding_pnl_usd?: number;
     /**
      * InitialPctOfSupply is a bundler's net launch acquisition as % of total
-     * supply, and BundleSlot the first bundle slot it bought in. Both are set
-     * only on the bundlers path.
+     * supply, set only on the bundlers path.
      */
     initial_pct_of_supply?: number;
     is_bundler?: boolean;
@@ -1210,16 +1232,19 @@ export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
     last_active_ts?: string;
     /**
      * PctOfSupply is the holder's % of circulating supply, set on the
-     * top-holders and cohort paths (sourced from on-chain holder_balances).
+     * top-holders and cohort paths (from the on-chain `holder_accounts`).
      * nil on the top-traders path. IsSniper/IsBundler/IsInsider flag cohort
      * membership on every per-mint trader list.
      */
     pct_of_supply?: number;
     realized_profit?: number;
+    realized_profit_usd?: number;
     sell_tx_count?: number;
     token_balance?: string;
     total_fees?: number;
+    total_fees_usd?: number;
     total_invested?: number;
+    total_invested_usd?: number;
     trader?: string;
 };
 
@@ -1229,14 +1254,17 @@ export type PulsightInternalCoreDomainAggregatorMintWindowStats = {
      * SOL spent buying, in lamports.
      */
     buy_volume_sol?: number;
+    buy_volume_usd?: number;
     /**
      * buy_volume_sol - sell_volume_sol, in lamports.
      */
     net_buy_sol?: number;
+    net_buy_usd?: number;
     /**
-     * Most recent virtual_sol (pool size) observed in the window, in lamports.
+     * The reference pool's latest quote-side depth, in lamports.
      */
     pool_sol?: number;
+    pool_usd?: number;
     /**
      * (close - open) / open × 100 over the window.
      */
@@ -1246,18 +1274,23 @@ export type PulsightInternalCoreDomainAggregatorMintWindowStats = {
      * SOL received from sells, in lamports.
      */
     sell_volume_sol?: number;
+    sell_volume_usd?: number;
     swap_count?: number;
     /**
      * Total network fees paid trading the mint in the window, in lamports:
-     * tx fees (base + priority) plus MEV tips, summed over its swaps.
-     * Populated by the per-mint stats endpoint only; the listing endpoint
-     * (/api/mints) leaves it nil (the OHLCV planes carry no fee data).
+     * tx fees (base + priority) plus MEV tips over its trades.
      */
     total_fees_sol?: number;
+    total_fees_usd?: number;
     /**
      * Total SOL traded (buy + sell), in lamports.
      */
     volume_sol?: number;
+    /**
+     * The Usd twins are the same figures on the trades' USD stamps
+     * (micro-USD), never lamports converted by a later rate.
+     */
+    volume_usd?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintWindowStatsBundle = {
@@ -1266,20 +1299,28 @@ export type PulsightInternalCoreDomainAggregatorMintWindowStatsBundle = {
     stats?: PulsightInternalCoreDomainAggregatorMintStatsByWindow;
     /**
      * TotalFeesLifetimeSol — LIFETIME network fees paid trading the mint,
-     * in lamports (same basis and plane as MintRow.TotalFeesSol on the
-     * listing: CA 000137's `fees` on mint_activity_totals, NOT bound to any
-     * window). Feeds the token detail page's header bar. nil until the
-     * migration is applied or when the best-effort read fails.
+     * in lamports (`mint_activity_totals`, NOT bound to any window). Feeds
+     * the token detail page's header bar. nil when the best-effort read
+     * fails.
      */
     total_fees_lifetime_sol?: number;
     /**
-     * TotalTxCountLifetime — LIFETIME swap count for the mint, from the same
-     * mint_activity_totals seek as TotalFeesLifetimeSol and on its same basis.
+     * TotalFeesLifetimeUsd is the same figure on the USD stamps (micro-USD).
+     */
+    total_fees_lifetime_usd?: number;
+    /**
+     * TotalTxCountLifetime — LIFETIME trade count for the mint, from the same
+     * `mint_activity_totals` read as TotalFeesLifetimeSol.
      * It is the denominator a windowless token-metric gate reads, and pairing
      * the two keeps a per-transaction fee figure on one basis. nil whenever
      * TotalFeesLifetimeSol is.
      */
     total_tx_count_lifetime?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMoney = {
+    sol?: number;
+    usd?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorProgramBoardCounts = {
@@ -1546,6 +1587,52 @@ export type PulsightInternalCoreDomainAggregatorTipPriorityRatioPoint = {
     tip_sum_lamports?: number;
 };
 
+export type PulsightInternalCoreDomainAggregatorTrade = {
+    arb?: PulsightInternalCoreDomainAggregatorArb;
+    attribution?: string;
+    carry_basis?: PulsightInternalCoreDomainAggregatorMoney;
+    carry_from_mint?: string;
+    carry_from_mint_id?: number;
+    carry_to_mint?: string;
+    carry_to_mint_id?: number;
+    cashback_accrued?: PulsightInternalCoreDomainAggregatorMoney;
+    costs?: PulsightInternalCoreDomainAggregatorCosts;
+    counter_amount?: number;
+    counter_decimals?: number;
+    counter_mint?: string;
+    counter_mint_id?: number;
+    counter_symbol?: string;
+    decimals?: number;
+    dex?: string;
+    fees?: PulsightInternalCoreDomainAggregatorMoney;
+    flags?: number;
+    is_arb?: boolean;
+    key?: string;
+    kind?: string;
+    label?: string;
+    label_type?: string;
+    late?: boolean;
+    mint?: string;
+    mint_id?: number;
+    price_age_ms?: number;
+    price_source?: string;
+    primary_pool?: string;
+    primary_pool_id?: number;
+    qty?: string;
+    realized?: PulsightInternalCoreDomainAggregatorMoney;
+    route?: Array<PulsightInternalCoreDomainAggregatorHop>;
+    signature?: string;
+    slot?: number;
+    sol_post_lamports?: number;
+    sol_usd?: number;
+    trader?: string;
+    ts_ms?: number;
+    tx_index?: number;
+    v_source?: string;
+    value?: PulsightInternalCoreDomainAggregatorMoney;
+    wsol_post_lamports?: number;
+};
+
 export type PulsightInternalCoreDomainAggregatorTraderBehavioralStats = {
     active_hours_count?: number;
     avg_buy_count_per_token?: number;
@@ -1560,6 +1647,7 @@ export type PulsightInternalCoreDomainAggregatorTraderBehavioralStats = {
      * per-window twin of the leaderboard's Avg RP / Med RP columns.
      */
     avg_realized_profit_lamports?: number;
+    avg_realized_profit_usd?: number;
     avg_sell_count_per_token?: number;
     /**
      * AvgTradeSizeLamports is TotalVolumeLamports over the window's swap
@@ -1568,22 +1656,28 @@ export type PulsightInternalCoreDomainAggregatorTraderBehavioralStats = {
      * read together.
      */
     avg_trade_size_lamports?: number;
+    avg_trade_size_usd?: number;
     median_buy_count_per_token?: number;
     median_holding_time_secs?: number;
     median_reactivity_secs?: number;
     median_realized_profit_lamports?: number;
+    median_realized_profit_usd?: number;
     median_sell_count_per_token?: number;
     oldest_trade_at?: string;
     profit_per_trade_lamports?: number;
+    profit_per_trade_usd?: number;
     pubkey?: string;
     rebalancing_ratio?: number;
     /**
-     * TotalVolumeLamports is the window's traded value, both sides, read as
-     * the QUOTE side of each row — see the adapter's swapQuoteSideExpr for
-     * why a plain `sum(amount_in)` is not that, and for the one case it is
-     * still approximate (non-WSOL quotes count in their own units).
+     * TotalVolumeLamports is the window's traded value, buys and sells,
+     * stamped in SOL at execution.
      */
     total_volume_lamports?: number;
+    /**
+     * The Usd twins are the same figures on the trades' USD stamps
+     * (micro-USD).
+     */
+    total_volume_usd?: number;
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
@@ -1598,63 +1692,69 @@ export type PulsightInternalCoreDomainAggregatorTraderCashbackStats = {
      * rate, which is per-coin on-chain (30 and 90 bps both live).
      */
     cashback_volume_lamports?: number;
+    cashback_volume_usd?: number;
     /**
      * Claim cadence, lifetime, all quote denominations.
      */
     claim_count?: number;
     /**
      * ClaimableLamports is the unclaimed balance sitting in the wallet's
-     * accumulators: cashback accrued SINCE its last claim. A claim sweeps
-     * the accumulator in full, so the balance at that moment is 0 and
-     * everything after it is unclaimed — which makes this immune both to
-     * the claim ledger's TTL and to history that predates our ingest, since
-     * only a timestamp comes from the claim side. Wallets that never claimed
-     * report everything we have observed them earn. Reads LOW, never high
-     * (see cashbackAccruedSince for the two bounded undercounts).
+     * accumulators: cashback accrued SINCE its last claim. A claim sweeps the
+     * accumulator in full, so the balance at that moment is 0 and everything
+     * after it is unclaimed; the accrual is counted from the hour after the
+     * claim, so the figure reads low, never high. Wallets that never claimed
+     * report everything they have been observed to earn.
      */
     claimable_lamports?: number;
+    claimable_usd?: number;
     /**
      * ClaimedLamports — WSOL cashback swept by claim_cashback in the window.
      * This is the cash-basis component net PnL ADDS (page, series, board —
      * all three fold the same claimed numbers, #c22).
      */
     claimed_lamports?: number;
+    claimed_usd?: number;
     /**
      * EarnedLamports — cashback ACCRUED by the window's swaps (the exact
      * per-swap amounts from the pump trade events, WSOL-quoted markets
      * only). Informational: the net-PnL formulas fold CLAIMED, not this.
      */
     earned_lamports?: number;
+    /**
+     * The Usd twins are the same figures on the events' USD stamps
+     * (micro-USD).
+     */
+    earned_usd?: number;
     holder_reward_payouts?: number;
     /**
-     * The holder-reward half of the same panel (CA 000220). pump PUSHES
-     * these, so there is no accrued/claimed pair and nothing to claim:
-     * HolderRewardsLamports is already a receipt, and the payout count is
-     * the cadence figure ClaimCount is for cashback. Lifetime is exact —
-     * the receipt ledger carries no TTL — but both lamport figures count
-     * only payouts whose quote could be priced in SOL, because a coin
-     * paired with another token pays in that token (CA r89).
+     * The holder-reward half of the same panel. pump PUSHES these, so there
+     * is no accrued/claimed pair and nothing to claim: HolderRewardsLamports
+     * is already a receipt, and the payout count is the cadence figure
+     * ClaimCount is for cashback. Lifetime is exact, but both lamport figures
+     * count only payouts whose quote could be priced in SOL, because a coin
+     * paired with another token pays in that token.
      */
     holder_rewards_lamports?: number;
+    holder_rewards_usd?: number;
     last_claim_at?: string;
     lifetime_claimed_lamports?: number;
+    lifetime_claimed_usd?: number;
     /**
-     * LifetimeEarnedLamports is exact: it comes from `trader_stats.cashback`,
-     * which is untimed, WSOL-only by construction and rebuildable from
-     * `swaps`. LifetimeClaimedLamports is bounded by the raw claim ledger's
-     * 75-day retention (CA 000098) — the same compromise reliability's "all"
-     * window makes, undercounting rather than inventing. ProgramTotals below
-     * carries the program's own all-time figures beside it.
+     * LifetimeEarnedLamports and LifetimeClaimedLamports are the lifetime
+     * families of the wallet's board row. ProgramTotals below carries the
+     * program's own all-time figures beside them.
      */
     lifetime_earned_lamports?: number;
+    lifetime_earned_usd?: number;
     lifetime_holder_reward_payouts?: number;
     lifetime_holder_rewards_lamports?: number;
+    lifetime_holder_rewards_usd?: number;
     /**
      * ProgramTotals — the lifetime running totals the pump program itself
      * stamped on the wallet's LATEST claim event, one row per program
      * (pumpfun = bonding curve, pumpswap = AMM), read from
-     * `cashback_claim_anchors` so they outlive the raw ledger's TTL. They
-     * cover history from before our ingest and are surfaced verbatim as
+     * `cashback_claim_anchors`. They cover history from before the ledger
+     * began and are surfaced verbatim as
      * "program-reported" — DISPLAY ONLY. Never fold them into a lamport
      * figure: the on-chain counter is one u64 per accumulator and cashback
      * is not SOL-only (~7% of sampled claims carried a USDC quote), so
@@ -1671,97 +1771,104 @@ export type PulsightInternalCoreDomainAggregatorTraderCashbackStats = {
      */
     recent_claims?: Array<PulsightInternalCoreDomainAggregatorCashbackClaimRow>;
     total_volume_lamports?: number;
+    total_volume_usd?: number;
     volume_share?: number;
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
 export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     /**
-     * ArbPnlLamports — the window's arbitrage take-home (tx-grain, CA
-     * 000158), ALREADY included in RealizedProfit and NetRealizedProfit.
-     * Exposed so the UI can show the split.
+     * ArbPnlLamports — the window's arbitrage take-home (tx-grain), ALREADY
+     * included in RealizedProfit and NetRealizedProfit. Exposed so the UI can
+     * show the split.
      */
     arb_pnl_lamports?: number;
+    arb_pnl_usd?: number;
     /**
-     * ArbTxRatio is the fraction (0..1) of the window's swaps that were
-     * arbitrage txs (is_arb). 0 when the window has no swaps.
+     * ArbTxRatio is the fraction (0..1) of the window's transactions that
+     * were arbitrage. 0 when the window has no trades.
      */
     arb_tx_ratio?: number;
     buy_amount_lamports?: number;
+    /**
+     * The Usd twins are the same money figures on the trades' USD stamps
+     * (micro-USD), with the win/loss split and winrate measured on them.
+     */
+    buy_amount_usd?: number;
     buy_sell_ratio?: number;
     /**
-     * CashbackClaimedLamports — WSOL pump cashback the wallet CLAIMED in the
-     * window (cash basis; CA 000097). The one POSITIVE cost-block component.
+     * CashbackClaimedLamports — pump cashback the wallet CLAIMED and kept in
+     * the window (cash basis). A POSITIVE cost-block component.
      */
     cashback_claimed_lamports?: number;
+    cashback_claimed_usd?: number;
     /**
-     * DidntBuySells / SoldGtBoughtSells count the window's uncovered
-     * sells: countIf(sold_without_buy) and countIf(sold_more_than_bought)
-     * over `swaps`. Replaces the retired phantom proceeds split (CA
-     * migration 000018_remove_phantom_tracking).
+     * DidntBuySells / SoldGtBoughtSells count the window's uncovered sells:
+     * sells of a mint with no observed buy, and sells that exceeded the
+     * observed bought balance.
      */
     didnt_buy_sells?: number;
     /**
      * FailedCostLamports — fees burned on failed venue-mentioning txs plus
-     * the fees+tips of landed no-CPI arb probes, from the failed-tx rollups
-     * (CA 000094). 0 when the ledger isn't populated for the window.
+     * the fees+tips of landed no-CPI arb probes. 0 when none were recorded.
      */
     failed_cost_lamports?: number;
+    failed_cost_usd?: number;
     loss_profit?: number;
+    loss_profit_usd?: number;
     loss_sells?: number;
+    loss_sells_usd?: number;
     /**
-     * NetRealizedProfit = RealizedProfit − TotalFees − TotalTips −
-     * FailedCostLamports + CashbackClaimedLamports: what the wallet
-     * actually kept. This is the HEADLINE PnL; RealizedProfit is the
-     * pre-cost component (accrual + arb take-home). Mirrors
-     * rollupWindowAgg.netPnl and boardWindowExpr (#c22).
+     * NetRealizedProfit is the board row's net PnL: RealizedProfit minus
+     * TotalFees, TotalTips and FailedCostLamports, plus the kept cashback and
+     * the holder rewards received — what the wallet actually kept. This is the
+     * HEADLINE PnL; RealizedProfit is the pre-cost component (accrual + arb
+     * take-home).
      */
     net_realized_profit?: number;
+    net_realized_profit_usd?: number;
     /**
      * RealizedProfit is the window's PnL: accrual realized profit PLUS the
-     * arbitrage take-home (ArbPnlLamports). The two are disjoint upstream
-     * (arb round-trip rows book zero realized, r71), so the sum is exact.
+     * arbitrage take-home (ArbPnlLamports). The two are disjoint (an arb round
+     * trip books zero realized), so the sum is exact.
      */
     realized_profit?: number;
+    realized_profit_usd?: number;
     sell_amount_lamports?: number;
+    sell_amount_usd?: number;
     sold_gt_bought_sells?: number;
     swap_count?: number;
     token_num?: number;
-    /**
-     * Count fields are int64, not int: periodStatsOne casts them with
-     * toInt64() in SQL, and clickhouse-go scans an Int64 column only into
-     * *int64 (it rejects *int with code-typed "try using *int64"). JSON
-     * serialisation is identical either way.
-     */
     total_buys?: number;
     /**
-     * TotalFees is the window's tx fees (base + priority) counted ONCE PER
-     * TRANSACTION: sum(priority_fee_lamports) + 5000 × uniq(signature).
-     * `swaps.fee` itself is stamped on every trade row of a tx, so the old
-     * sumIf(fee) double-counted multi-trade (arb) txs; priority/tips are
-     * first-row-only stamped, so their plain sums are exact and only the
-     * 5000-lamport base rides the (near-exact) uniq count.
+     * TotalFees is the window's execution costs other than tips: network fees
+     * (base + priority) counted once per transaction, plus venue, platform and
+     * cashback-on-top fees.
      */
     total_fees?: number;
+    total_fees_usd?: number;
     total_sells?: number;
     /**
      * TotalTips — builder/MEV tips paid on the window's successful txs.
      */
     total_tips?: number;
+    total_tips_usd?: number;
     trader?: string;
     win_profit?: number;
+    win_profit_usd?: number;
     win_sells?: number;
+    win_sells_usd?: number;
     window_label?: string;
     winrate?: number;
+    winrate_usd?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorTraderPriceImpactStats = {
     /**
-     * AvgBps is the mean and MedianBps the p50 over the measurable legs of the
-     * wallet's most recent fills in the window (a bounded sample, up to 3000
-     * fills). Both are reported because the population is heavy-tailed — a
-     * handful of large fills into thin curves dominate the mean while the
-     * median describes the wallet's ordinary fill.
+     * AvgBps is the mean and MedianBps the p50 over the wallet's measurable
+     * legs in the window. Both are reported because the population is
+     * heavy-tailed — a handful of large fills into thin curves dominate the
+     * mean while the median describes the wallet's ordinary fill.
      *
      * POINTERS, because 0 bps is a REAL answer (a wallet trading tiny size
      * into deep pools) and "we could not measure it" must not read as it.
@@ -1782,10 +1889,18 @@ export type PulsightInternalCoreDomainAggregatorTraderPriceImpactStats = {
 export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     failed_arbs?: number;
     /**
-     * Lamports burned on failed txs (base + priority fee) vs on landed
-     * no-CPI probes, plus tips the probes paid.
+     * FailedFeeLamports is the network fee (base plus priority) the wallet
+     * burned on its reverted transactions and landed no-CPI arb probes in the
+     * window; NoCpiTipLamports is the tips those transactions paid;
+     * NoCpiFeeLamports is unused (the fee of a no-CPI probe is in
+     * FailedFeeLamports).
      */
     failed_fee_lamports?: number;
+    /**
+     * FailedFeeUsd / NoCpiTipUsd are the two cost lines on their USD
+     * stamps (micro-USD).
+     */
+    failed_fee_usd?: number;
     failed_other?: number;
     failed_swaps?: number;
     /**
@@ -1793,21 +1908,20 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
      */
     failed_txs?: number;
     /**
-     * LandedTxs is uniqExact(signature) over the wallet's `swaps` rows in
-     * the window — successful swap TRANSACTIONS, not legs or trades.
+     * LandedTxs counts the wallet's distinct landed transactions in the
+     * window — transactions, not legs or trades.
      */
     landed_txs?: number;
     no_cpi_fee_lamports?: number;
     no_cpi_tip_lamports?: number;
+    no_cpi_tip_usd?: number;
     no_cpi_txs?: number;
     /**
-     * ObservedLandedTxs is LandedTxs narrowed to the hours the failed-tx
-     * stream was actually running. Failed transactions are only recorded for
-     * those hours — a historical backfill drops them at the fetch layer, and
-     * nothing observed them before the feature shipped — so this is the only
-     * landed count the rates below may divide by. It equals LandedTxs once a
-     * window is fully observed; the gap is how much of the window is
-     * un-scored.
+     * ObservedLandedTxs is LandedTxs narrowed to the hours in which failed
+     * transactions were recorded (`observed_hours`). Failed transactions exist
+     * only for those hours, so this is the only landed count the rates below
+     * may divide by. It equals LandedTxs once a window is fully observed; the
+     * gap is how much of the window is un-scored.
      */
     observed_landed_txs?: number;
     pubkey?: string;
@@ -1958,22 +2072,6 @@ export type PulsightInternalCoreDomainTokenviewFilter = {
     user_id?: string;
 };
 
-export type PulsightInternalCoreDomainTraderDailyProfit = {
-    buy_amount_usd?: number;
-    created_at?: string;
-    date?: string;
-    id?: string;
-    loss_profit?: number;
-    loss_sells?: number;
-    sell_amount_usd?: number;
-    total_buys?: number;
-    total_profit?: number;
-    total_sells?: number;
-    trader_id?: string;
-    win_profit?: number;
-    win_sells?: number;
-};
-
 export type PulsightInternalCoreDomainTraderFilter = {
     created_at?: string;
     filters?: {
@@ -1986,58 +2084,11 @@ export type PulsightInternalCoreDomainTraderFilter = {
     user_id?: string;
 };
 
-export type PulsightInternalCoreDomainTraderPnl = {
-    /**
-     * Position
-     */
-    balance?: number;
-    /**
-     * Activity
-     */
-    buy_tx_count?: number;
-    created_at?: string;
-    id?: string;
-    last_active_timestamp?: number;
-    /**
-     * Timing
-     */
-    open_timestamp?: number;
-    realized_profit?: number;
-    sell_tx_count?: number;
-    start_holding_at?: number;
-    /**
-     * Token info
-     */
-    token_address?: string;
-    token_logo?: string;
-    token_name?: string;
-    token_price?: number;
-    token_symbol?: string;
-    total_profit?: number;
-    total_profit_pnl?: number;
-    trader_id?: string;
-    unrealized_profit?: number;
-    updated_at?: string;
-    usd_value?: number;
-};
-
-export type PulsightInternalCoreDomainTraderTag = {
-    created_at?: string;
-    description?: string;
-    id?: string;
-    name?: string;
-    source?: PulsightInternalCoreDomainTraderTagSource;
-};
-
-export type PulsightInternalCoreDomainTraderTagSource = 'computed' | 'manual' | 'aggregator';
-
 export type PulsightInternalCoreDomainTraderTrader = {
-    active_hours_count?: number;
     arb_tx_ratio_1d?: number;
     arb_tx_ratio_30d?: number;
     arb_tx_ratio_7d?: number;
     arb_tx_ratio_all?: number;
-    avatar?: string;
     /**
      * Per-token buy/sell counts
      */
@@ -2051,9 +2102,13 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     avg_holding_time?: number;
     avg_realized_profit_1d?: number;
+    avg_realized_profit_1d_usd?: number;
     avg_realized_profit_30d?: number;
+    avg_realized_profit_30d_usd?: number;
     avg_realized_profit_7d?: number;
+    avg_realized_profit_7d_usd?: number;
     avg_realized_profit_all?: number;
+    avg_realized_profit_all_usd?: number;
     avg_sell_count_per_token?: number;
     buy_1d?: number;
     buy_30d?: number;
@@ -2066,24 +2121,31 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     buy_sell_ratio_7d?: number;
     buy_sell_ratio_all?: number;
-    buy_size_cv?: number;
     cashback_1d?: number;
+    cashback_1d_usd?: number;
     cashback_30d?: number;
+    cashback_30d_usd?: number;
     /**
      * Pump cashback, lamports. `Cashback*` is what ACCRUED in the window
      * (the screening signal); `CashbackClaimed*` is what was swept, and is
      * the component already folded into NetProfit* — do not add it again.
      */
     cashback_7d?: number;
+    cashback_7d_usd?: number;
     cashback_all?: number;
+    cashback_all_usd?: number;
     cashback_claim_count_1d?: number;
     cashback_claim_count_30d?: number;
     cashback_claim_count_7d?: number;
     cashback_claim_count_all?: number;
     cashback_claimed_1d?: number;
+    cashback_claimed_1d_usd?: number;
     cashback_claimed_30d?: number;
+    cashback_claimed_30d_usd?: number;
     cashback_claimed_7d?: number;
+    cashback_claimed_7d_usd?: number;
     cashback_claimed_all?: number;
+    cashback_claimed_all_usd?: number;
     cashback_share_1d?: number;
     cashback_share_30d?: number;
     cashback_share_7d?: number;
@@ -2093,17 +2155,14 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     chain?: string;
     created_at?: string;
-    daily_profits?: Array<PulsightInternalCoreDomainTraderDailyProfit>;
     didnt_buy_sells_1d?: number;
     didnt_buy_sells_30d?: number;
     /**
-     * Uncovered-sell counters for the window (CA migration 000018):
-     * sells with no observed buy of the mint / sells exceeding the
-     * observed bought balance.
+     * Uncovered-sell counters for the window: sells with no observed buy of
+     * the mint / sells exceeding the observed bought balance.
      */
     didnt_buy_sells_7d?: number;
     didnt_buy_sells_all?: number;
-    dust_tx_ratio?: number;
     failed_txs_1d?: number;
     failed_txs_30d?: number;
     failed_txs_7d?: number;
@@ -2113,11 +2172,14 @@ export type PulsightInternalCoreDomainTraderTrader = {
     holder_reward_payouts_7d?: number;
     holder_reward_payouts_all?: number;
     holder_rewards_1d?: number;
+    holder_rewards_1d_usd?: number;
     holder_rewards_30d?: number;
+    holder_rewards_30d_usd?: number;
     holder_rewards_7d?: number;
+    holder_rewards_7d_usd?: number;
     holder_rewards_all?: number;
+    holder_rewards_all_usd?: number;
     id?: string;
-    is_favorite?: boolean;
     /**
      * Label/LabelType identify a known wallet (CEX/fee/KOL/...) from the
      * known_addresses registry; empty when the wallet isn't labelled.
@@ -2136,60 +2198,34 @@ export type PulsightInternalCoreDomainTraderTrader = {
     median_first_buy_reactivity?: number;
     median_holding_time?: number;
     median_realized_profit_1d?: number;
+    median_realized_profit_1d_usd?: number;
     median_realized_profit_30d?: number;
+    median_realized_profit_30d_usd?: number;
     median_realized_profit_7d?: number;
+    median_realized_profit_7d_usd?: number;
     median_realized_profit_all?: number;
+    median_realized_profit_all_usd?: number;
     median_sell_count_per_token?: number;
-    mm_score?: number;
-    /**
-     * Identifiers / social
-     */
-    name?: string;
     net_profit_1d?: number;
+    net_profit_1d_usd?: number;
     net_profit_30d?: number;
+    net_profit_30d_usd?: number;
     /**
-     * Realized profit per-mint averages / medians. UNIT: lamports
-     * (frontend FormattedSol divides by 1e9 on display).
-     * Net-of-costs windowed figures (CA migration 000095). NetProfit is
-     * realized PnL minus tips, per-transaction fees and the fees burned on
-     * failed / no-CPI transactions — what the wallet actually kept. The
-     * gross figure stays on RealizedProfit*d so both are readable.
-     * SuccessRate / SpamRate are nil when the window observed no
-     * transactions at all (0 would read as "never lands").
+     * Net-of-costs windowed figures, lamports. NetProfit is realized PnL
+     * minus tips, per-transaction fees and the fees burned on failed / no-CPI
+     * transactions — what the wallet actually kept. The gross figure stays on
+     * RealizedProfit*d so both are readable. SuccessRate / SpamRate are nil
+     * when the window observed no transactions at all (0 would read as
+     * "never lands").
      */
     net_profit_7d?: number;
+    net_profit_7d_usd?: number;
     net_profit_all?: number;
+    net_profit_all_usd?: number;
     oldest_trade_at?: number;
-    pnl_0x2x_num_30d?: number;
     /**
-     * 0x to 2x
+     * RealizedProfit is the lifetime realized PnL in lamports.
      */
-    pnl_0x2x_num_7d?: number;
-    pnl_2x5x_num_30d?: number;
-    /**
-     * 2x to 5x
-     */
-    pnl_2x5x_num_7d?: number;
-    pnl_gt5x_num_30d?: number;
-    /**
-     * > 5x
-     */
-    pnl_gt5x_num_7d?: number;
-    /**
-     * PnL distribution buckets — 30d
-     */
-    pnl_lt_nd5_num_30d?: number;
-    /**
-     * PnL distribution buckets — 7d
-     */
-    pnl_lt_nd5_num_7d?: number;
-    pnl_nd50x_num_30d?: number;
-    /**
-     * -5x to 0x
-     */
-    pnl_nd50x_num_7d?: number;
-    pnls?: Array<PulsightInternalCoreDomainTraderPnl>;
-    profit_per_trade?: number;
     realized_profit?: number;
     /**
      * 1-day window. Same measures and same derivations as the 7d/30d
@@ -2197,19 +2233,25 @@ export type PulsightInternalCoreDomainTraderTrader = {
      * are DISPLAY-only: neither sorting nor an `f=` clause can address them.
      */
     realized_profit_1d?: number;
+    realized_profit_1d_usd?: number;
     /**
      * 30-day period
      */
     realized_profit_30d?: number;
+    realized_profit_30d_usd?: number;
     /**
-     * 7-day period. UNIT for realized_profit_*: lamports.
+     * 7-day period. Money figures are lamports; TotalProfit7d and
+     * TotalProfitPnl7d repeat the realized PnL and ROI.
      */
     realized_profit_7d?: number;
+    realized_profit_7d_usd?: number;
+    realized_profit_all_usd?: number;
     realized_profit_pnl_30d?: number;
     realized_profit_pnl_7d?: number;
-    rebalancing_ratio?: number;
     rewards_total_1d?: number;
+    rewards_total_1d_usd?: number;
     rewards_total_30d?: number;
+    rewards_total_30d_usd?: number;
     /**
      * Pump holder rewards, lamports. Pushed rather than claimed, so the one
      * figure is already a receipt and is what net PnL folds; the payout count
@@ -2217,13 +2259,13 @@ export type PulsightInternalCoreDomainTraderTrader = {
      * priced in SOL and therefore adds no lamports.
      */
     rewards_total_7d?: number;
+    rewards_total_7d_usd?: number;
     rewards_total_all?: number;
-    risk_level?: string;
-    /**
-     * Risk assessment
-     */
-    risk_score?: number;
+    rewards_total_all_usd?: number;
     roi_1d?: number;
+    roi_1d_usd?: number;
+    roi_30d_usd?: number;
+    roi_7d_usd?: number;
     /**
      * Lifetime window, also DISPLAY-only. The gross figure is RealizedProfit
      * above. There is deliberately no lifetime failure record: the failed-tx
@@ -2231,15 +2273,13 @@ export type PulsightInternalCoreDomainTraderTrader = {
      * so a lifetime success or spam rate would be structurally flattering.
      */
     roi_all?: number;
+    roi_all_usd?: number;
     sell_1d?: number;
     sell_30d?: number;
     sell_7d?: number;
     sell_all?: number;
     /**
-     * Balances. UNIT: lamports (BIGINT, held as *float64 for wire
-     * compatibility). The field name says "Sol" for historical reasons;
-     * the wire convention is lamports because the frontend's
-     * FormattedSol component divides by 1e9 itself.
+     * SolBalance is the wallet's SOL balance in lamports.
      */
     sol_balance?: number;
     sold_gt_bought_sells_1d?: number;
@@ -2253,44 +2293,35 @@ export type PulsightInternalCoreDomainTraderTrader = {
     success_rate_30d?: number;
     success_rate_7d?: number;
     /**
-     * Relations (loaded on demand)
+     * Tags are derived from the ledger at read time (deriveTags).
      */
-    tags?: Array<PulsightInternalCoreDomainTraderTag>;
+    tags?: Array<string>;
     token_num_1d?: number;
     token_num_30d?: number;
     token_num_7d?: number;
     token_num_all?: number;
     total_costs_1d?: number;
+    total_costs_1d_usd?: number;
     total_costs_30d?: number;
+    total_costs_30d_usd?: number;
     total_costs_7d?: number;
+    total_costs_7d_usd?: number;
     total_costs_all?: number;
-    /**
-     * Profit stats (all-time). UNIT: lamports (see SolBalance note).
-     */
-    total_profit?: number;
+    total_costs_all_usd?: number;
     total_profit_30d?: number;
     total_profit_7d?: number;
     total_profit_pnl_30d?: number;
     total_profit_pnl_7d?: number;
-    total_value?: number;
-    total_volume_usd?: number;
-    trade_interval_cv?: number;
-    /**
-     * Market-maker detection
-     */
-    trade_interval_mean?: number;
-    twitter_username?: string;
-    unrealized_profit?: number;
-    unrealized_profit_30d?: number;
-    unrealized_profit_7d?: number;
-    unrealized_profit_pnl_30d?: number;
-    unrealized_profit_pnl_7d?: number;
     updated_at?: string;
     wallet_address?: string;
     winrate_1d?: number;
+    winrate_1d_usd?: number;
     winrate_30d?: number;
+    winrate_30d_usd?: number;
     winrate_7d?: number;
+    winrate_7d_usd?: number;
     winrate_all?: number;
+    winrate_all_usd?: number;
 };
 
 export type PulsightInternalCoreDomainWebhookNotifier = {
@@ -2829,45 +2860,20 @@ export type PulsightInternalCoreUsecasesBacktestTokenScopeKind = 'strategy' | 's
 
 export type PulsightInternalCoreUsecasesBacktestTradeSource = 'copy_buy' | 'copy_sell' | 'emit_buy' | 'emit_sell' | 'scope_exit';
 
-export type PulsightInternalCoreUsecasesTraderDailyProfitEntry = {
-    date?: string;
-    total_profit?: number;
-};
-
-export type PulsightInternalCoreUsecasesTraderDailyProfitListItem = {
-    buy_amount_usd?: number;
-    created_at?: string;
-    date?: string;
-    id?: string;
-    loss_profit?: number;
-    loss_sells?: number;
-    sell_amount_usd?: number;
-    total_buys?: number;
-    total_profit?: number;
-    total_sells?: number;
-    trader_id?: string;
-    win_profit?: number;
-    win_sells?: number;
-};
-
-export type PulsightInternalCoreUsecasesTraderDailyProfitsResult = {
-    items?: Array<PulsightInternalCoreUsecasesTraderDailyProfitListItem>;
-    limit?: number;
-    offset?: number;
-    total?: number;
-};
-
 export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     /**
-     * ArbPnl is the day's arbitrage take-home (tx-grain, CA 000158). It is
+     * ArbPnl is the day's arbitrage take-home (tx-grain). It is
      * ALREADY included in Profit and Net — exposed separately so the UI can
      * show the split. Arb round-trip rows book zero realized PnL upstream,
      * so the inclusion never double-counts.
      */
     arb_pnl?: number;
+    arb_pnl_usd?: number;
     cashback?: number;
+    cashback_usd?: number;
     day?: string;
     failed_cost?: number;
+    failed_cost_usd?: number;
     failed_txs?: number;
     /**
      * Costs of the day (lamports): per-tx fees, tips, and failed-tx burn,
@@ -2878,6 +2884,7 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
      * series; `profit` stays as the flat/gross component.
      */
     fees?: number;
+    fees_usd?: number;
     holder_reward_payouts?: number;
     /**
      * HolderRewards is the day's holder-reward payouts valued in SOL, and
@@ -2886,16 +2893,24 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
      * a day can carry payouts with zero lamports.
      */
     holder_rewards?: number;
+    holder_rewards_usd?: number;
     net?: number;
+    net_usd?: number;
     profit?: number;
+    /**
+     * The Usd twins are the same day's figures on the trades' USD stamps
+     * (micro-USD).
+     */
+    profit_usd?: number;
     success_rate?: number;
     tips?: number;
+    tips_usd?: number;
     /**
      * Txs is the day's landed transaction count; FailedTxs the failed-tx
      * ledger's failed swaps+arbs+other. SuccessRate divides the OBSERVED
-     * landed count (failed-tx-watched hours only, CA 000096) by
-     * observed+failed — nil when no hour of the day was observed, so
-     * pre-ledger history reads "not measured" rather than a fake 100%.
+     * landed count (the `observed_hours` only) by observed+failed — nil
+     * when no hour of the day was observed, so unobserved history reads
+     * "not measured" rather than a fake 100%.
      */
     txs?: number;
 };
@@ -2906,7 +2921,6 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesResult = {
 };
 
 export type PulsightInternalCoreUsecasesTraderTraderListItem = {
-    active_hours_count?: number;
     arb_tx_ratio_1d?: number;
     arb_tx_ratio_30d?: number;
     arb_tx_ratio_7d?: number;
@@ -2915,9 +2929,13 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     avg_first_buy_reactivity?: number;
     avg_holding_time?: number;
     avg_realized_profit_1d?: number;
+    avg_realized_profit_1d_usd?: number;
     avg_realized_profit_30d?: number;
+    avg_realized_profit_30d_usd?: number;
     avg_realized_profit_7d?: number;
+    avg_realized_profit_7d_usd?: number;
     avg_realized_profit_all?: number;
+    avg_realized_profit_all_usd?: number;
     avg_sell_count_per_token?: number;
     /**
      * Behavioral1d/7d/30d/All are the rows the "Behavioural" panel
@@ -2936,41 +2954,44 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     buy_sell_ratio_30d?: number;
     buy_sell_ratio_7d?: number;
     buy_sell_ratio_all?: number;
-    buy_size_cv?: number;
     cashback_1d?: number;
+    cashback_1d_usd?: number;
     cashback_30d?: number;
+    cashback_30d_usd?: number;
     /**
      * Pump cashback: accrued in the window (the screening signal) and
      * swept. Claimed is ALREADY inside NetProfit7d — never add it on top.
      */
     cashback_7d?: number;
+    cashback_7d_usd?: number;
     cashback_all?: number;
+    cashback_all_usd?: number;
     cashback_claim_count_1d?: number;
     cashback_claim_count_30d?: number;
     cashback_claim_count_7d?: number;
     cashback_claim_count_all?: number;
     cashback_claimed_1d?: number;
+    cashback_claimed_1d_usd?: number;
     cashback_claimed_30d?: number;
+    cashback_claimed_30d_usd?: number;
     cashback_claimed_7d?: number;
+    cashback_claimed_7d_usd?: number;
     cashback_claimed_all?: number;
+    cashback_claimed_all_usd?: number;
     cashback_share_1d?: number;
     cashback_share_30d?: number;
     cashback_share_7d?: number;
     cashback_share_all?: number;
     chain?: string;
     created_at?: string;
-    daily_profit_30d?: Array<PulsightInternalCoreUsecasesTraderDailyProfitEntry>;
-    daily_profit_7d?: Array<PulsightInternalCoreUsecasesTraderDailyProfitEntry>;
     didnt_buy_sells_1d?: number;
     didnt_buy_sells_30d?: number;
     /**
-     * Uncovered-sell counters (CA migration 000018): sells with no
-     * observed buy of the mint / sells exceeding the observed bought
-     * balance, scoped to the window.
+     * Uncovered-sell counters: sells with no observed buy of the mint /
+     * sells exceeding the observed bought balance, scoped to the window.
      */
     didnt_buy_sells_7d?: number;
     didnt_buy_sells_all?: number;
-    dust_tx_ratio?: number;
     failed_txs_1d?: number;
     failed_txs_30d?: number;
     failed_txs_7d?: number;
@@ -2981,23 +3002,32 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      * them per wallet.
      */
     failed_txs_all?: number;
-    has_avatar?: boolean;
     holder_reward_payouts_1d?: number;
     holder_reward_payouts_30d?: number;
     holder_reward_payouts_7d?: number;
     holder_reward_payouts_all?: number;
     holder_rewards_1d?: number;
+    holder_rewards_1d_usd?: number;
     holder_rewards_30d?: number;
+    holder_rewards_30d_usd?: number;
     holder_rewards_7d?: number;
+    holder_rewards_7d_usd?: number;
     holder_rewards_all?: number;
+    holder_rewards_all_usd?: number;
     /**
      * HoldingPnlLamports is the wallet's current unrealised PnL across
-     * all open positions, in lamports. Nil when CA has no live price
-     * quote for any of the held mints.
+     * all open positions, in lamports, off its board row. Nil when no held
+     * position carries a mark.
      */
     holding_pnl_lamports?: number;
+    /**
+     * HoldingPnlUsd, PnlDistributionUsd and PnlSparkline7dUsd are the USD
+     * twins of the three snapshot figures below (micro-USD, stamped at
+     * execution), and TraderUsd carries the twin of every windowed money
+     * figure on the row.
+     */
+    holding_pnl_usd?: number;
     id?: string;
-    is_favorite?: boolean;
     /**
      * Label/LabelType identify a known wallet (CEX/fee/KOL/...) from the
      * known_addresses registry; empty when the wallet isn't labelled.
@@ -3013,36 +3043,39 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     median_first_buy_reactivity?: number;
     median_holding_time?: number;
     median_realized_profit_1d?: number;
+    median_realized_profit_1d_usd?: number;
     median_realized_profit_30d?: number;
+    median_realized_profit_30d_usd?: number;
     median_realized_profit_7d?: number;
+    median_realized_profit_7d_usd?: number;
     median_realized_profit_all?: number;
+    median_realized_profit_all_usd?: number;
     median_sell_count_per_token?: number;
-    mm_score?: number;
-    name?: string;
     net_profit_1d?: number;
+    net_profit_1d_usd?: number;
     net_profit_30d?: number;
+    net_profit_30d_usd?: number;
     /**
      * Net-of-costs figures — see trader.Trader for the definitions.
      */
     net_profit_7d?: number;
+    net_profit_7d_usd?: number;
     net_profit_all?: number;
+    net_profit_all_usd?: number;
     oldest_trade_at?: number;
     /**
-     * Periods is one row per canonical UTC-aligned window (1d, 7d, 30d,
-     * all) from CA's `trader_period_stats_for`. Drives the
-     * "Calendar-based UTC windows" panel on the trader-detail page.
+     * Periods is one row per canonical window (1d, 7d, 30d, all) off the
+     * wallet's board row. Drives the period stats panel on the
+     * trader-detail page.
      */
     periods?: Array<PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow>;
-    pnl_0x_2x_num_30d?: number;
-    pnl_0x_2x_num_7d?: number;
-    pnl_2x_5x_num_30d?: number;
-    pnl_2x_5x_num_7d?: number;
     /**
      * PnlDistribution is the 5-bucket realised-PnL distribution for
      * the request window: [<-50%, -50–0%, 0–2×, 2–5×, >5×]. Nil when
      * the snapshot wasn't inlined.
      */
     pnl_distribution?: Array<number>;
+    pnl_distribution_usd?: Array<number>;
     /**
      * PnlDistributions is one 5-bucket realised-PnL distribution row per
      * canonical window (1d, 7d, 30d, all), windowed for real — unlike the
@@ -3051,20 +3084,13 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      * distribution" chips and their window toggle.
      */
     pnl_distributions?: Array<PulsightInternalCoreUsecasesTraderTraderPnlDistributionRow>;
-    pnl_gt_5x_num_30d?: number;
-    pnl_gt_5x_num_7d?: number;
-    pnl_lt_nd5_num_30d?: number;
-    pnl_lt_nd5_num_7d?: number;
-    pnl_nd5_0x_num_30d?: number;
-    pnl_nd5_0x_num_7d?: number;
     /**
      * PnlSparkline7d is the 7-day realised-PnL series, oldest first,
-     * expressed in lamports per day on the wire (matches CA's BIGINT
-     * storage and the FormattedSol contract elsewhere). Nil when the
-     * snapshot wasn't inlined.
+     * expressed in lamports per day on the wire (the FormattedSol
+     * contract). Nil when the snapshot wasn't inlined.
      */
     pnl_sparkline_7d?: Array<number>;
-    profit_per_trade?: number;
+    pnl_sparkline_7d_usd?: Array<number>;
     realized_profit?: number;
     /**
      * 1-day window. Same measures and derivations as the 7d/30d blocks,
@@ -3072,18 +3098,26 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      * so neither `sort` nor an `f=` clause can address these.
      */
     realized_profit_1d?: number;
+    realized_profit_1d_usd?: number;
     realized_profit_30d?: number;
+    realized_profit_30d_usd?: number;
     realized_profit_7d?: number;
+    realized_profit_7d_usd?: number;
+    realized_profit_all_usd?: number;
     realized_profit_pnl_30d?: number;
     realized_profit_pnl_7d?: number;
-    rebalancing_ratio?: number;
     rewards_total_1d?: number;
+    rewards_total_1d_usd?: number;
     rewards_total_30d?: number;
+    rewards_total_30d_usd?: number;
     rewards_total_7d?: number;
+    rewards_total_7d_usd?: number;
     rewards_total_all?: number;
-    risk_level?: string;
-    risk_score?: number;
+    rewards_total_all_usd?: number;
     roi_1d?: number;
+    roi_1d_usd?: number;
+    roi_30d_usd?: number;
+    roi_7d_usd?: number;
     /**
      * Lifetime window, also DISPLAY-only; the gross figure is
      * RealizedProfit. No lifetime failure record is served: the failed-tx
@@ -3091,6 +3125,7 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      * so a lifetime success or spam rate would be structurally flattering.
      */
     roi_all?: number;
+    roi_all_usd?: number;
     sell_1d?: number;
     sell_30d?: number;
     sell_7d?: number;
@@ -3120,30 +3155,27 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     tokens_created?: number;
     tokens_graduated?: number;
     total_costs_1d?: number;
+    total_costs_1d_usd?: number;
     total_costs_30d?: number;
+    total_costs_30d_usd?: number;
     total_costs_7d?: number;
+    total_costs_7d_usd?: number;
     total_costs_all?: number;
-    total_profit?: number;
+    total_costs_all_usd?: number;
     total_profit_30d?: number;
     total_profit_7d?: number;
     total_profit_pnl_30d?: number;
     total_profit_pnl_7d?: number;
-    total_value?: number;
-    total_volume_usd?: number;
-    trade_interval_cv?: number;
-    trade_interval_mean?: number;
-    twitter_username?: string;
-    unrealized_profit?: number;
-    unrealized_profit_30d?: number;
-    unrealized_profit_7d?: number;
-    unrealized_profit_pnl_30d?: number;
-    unrealized_profit_pnl_7d?: number;
     updated_at?: string;
     wallet_address?: string;
     winrate_1d?: number;
+    winrate_1d_usd?: number;
     winrate_30d?: number;
+    winrate_30d_usd?: number;
     winrate_7d?: number;
+    winrate_7d_usd?: number;
     winrate_all?: number;
+    winrate_all_usd?: number;
 };
 
 export type PulsightInternalCoreUsecasesTraderTraderListResult = {
@@ -3153,6 +3185,11 @@ export type PulsightInternalCoreUsecasesTraderTraderListResult = {
     next_cursor_value?: number;
     offset?: number;
     total?: number;
+    /**
+     * Unit is the currency the page was ranked, filtered and cursored in
+     * (sol|usd); every row carries both currencies regardless.
+     */
+    unit?: string;
 };
 
 export type PulsightInternalCoreUsecasesTraderTraderPnlDistributionRow = {
@@ -3432,6 +3469,10 @@ export type GetCashbackLeaderboardData = {
          */
         window?: string;
         /**
+         * Currency the board is ranked and filtered in: sol (lamports) or usd (micro-USD stamped at execution); money clause values are whole units of it. Every row carries both currencies (`_usd` twins).
+         */
+        unit?: string;
+        /**
          * rewards_total|holder_rewards|holder_reward_payouts|cashback|cashback_claimed|cashback_share|cashback_claim_count|cashback_volume (default rewards_total)
          */
         sort_by?: string;
@@ -3654,7 +3695,35 @@ export type GetMintsData = {
          */
         hours?: 1 | 6 | 24;
         /**
-         * Min window pool quote-reserves (liquidity), WSOL lamports. Omitted ⇒ a default ~1 SOL floor hides dust on untargeted browse; pass 0 to disable, or any value to override.
+         * Currency every money floor and money sort is read in: sol or usd. Each row carries both currencies (`_usd` twins) whatever the unit.
+         */
+        unit?: string;
+        /**
+         * Min window volume, in whole units of `unit` (SOL or USD, the row's stored figure).
+         */
+        min_volume?: number;
+        /**
+         * Min window buy volume, whole units of `unit`.
+         */
+        min_buy_volume?: number;
+        /**
+         * Min window sell volume, whole units of `unit`.
+         */
+        min_sell_volume?: number;
+        /**
+         * Min window net buy (buys − sells), whole units of `unit`.
+         */
+        min_net_buy?: number;
+        /**
+         * Min reference-pool depth (liquidity), whole units of `unit`. Omitted ⇒ a default dust floor (1 SOL / 200 USD) on untargeted browse; pass 0 to disable.
+         */
+        min_pool?: number;
+        /**
+         * Min LIFETIME network fees paid trading the mint (tx fees + tips), whole units of `unit` — the basis of each row's total_fees.
+         */
+        min_fees?: number;
+        /**
+         * Lamport alias of min_pool, accepted only with unit=sol.
          */
         min_pool_sol?: number;
         /**
@@ -3662,7 +3731,7 @@ export type GetMintsData = {
          */
         min_market_cap_usd?: number;
         /**
-         * Min LIFETIME total network fees paid trading the mint (tx fees + MEV tips), in lamports — the same basis as each row's total_fees_sol. Omitted ⇒ no floor.
+         * Lamport alias of min_fees, accepted only with unit=sol.
          */
         min_fees_sol?: number;
         /**
@@ -5020,7 +5089,7 @@ export type GetSwapsData = {
          */
         trader?: string;
         /**
-         * Market (pool pubkey) to scope swaps to; repeatable or comma-separated, OR-combined (optional)
+         * Market (pool pubkey) to scope trades to; repeatable or comma-separated, OR-combined (optional)
          */
         pool?: string;
         /**
@@ -5040,7 +5109,7 @@ export type GetSwapsData = {
          */
         to_ts?: number;
         /**
-         * Cursor: return the latest swaps strictly before this Unix epoch timestamp (no lower bound)
+         * Cursor: return the latest rows strictly before this Unix epoch timestamp (no lower bound)
          */
         before_ts?: number;
         /**
@@ -5072,7 +5141,7 @@ export type GetSwapsResponses = {
     /**
      * OK
      */
-    200: Array<InternalAdaptersPrimaryHttpHandlerSwapEventRow>;
+    200: Array<PulsightInternalCoreDomainAggregatorTrade>;
 };
 
 export type GetSwapsResponse = GetSwapsResponses[keyof GetSwapsResponses];
@@ -5670,7 +5739,7 @@ export type GetTradersData = {
          */
         offset?: number;
         /**
-         * Sort By field
+         * Sort key: realized_profit, winrate or last_active_ts
          */
         sort_by?: string;
         /**
@@ -5682,9 +5751,13 @@ export type GetTradersData = {
          */
         favorites_only?: boolean;
         /**
-         * Comma list of DISPLAY-only window families to hydrate: 1d, all. Costs one extra query per page; sorting is unaffected (it reads 7d/30d board columns) and f= filters read 1d/7d/30d board columns.
+         * Comma list of DISPLAY-only window families to include: 1d, all. They ride the same board row; sorting is unaffected (it reads 7d/30d board columns) and f= filters read 1d/7d/30d board columns.
          */
         extra_windows?: string;
+        /**
+         * Currency the page is ranked, filtered and cursored in: sol (lamports) or usd (micro-USD stamped at execution). Money clause values are whole units of that currency. Every row carries both currencies (`_usd` twins) whatever the unit.
+         */
+        unit?: string;
     };
     url: '/api/traders';
 };
@@ -5726,56 +5799,6 @@ export type GetTradersResponses = {
 };
 
 export type GetTradersResponse = GetTradersResponses[keyof GetTradersResponses];
-
-export type GetTradersByIdByTraderIdData = {
-    body?: never;
-    path: {
-        /**
-         * Trader ID
-         */
-        traderID: string;
-    };
-    query?: never;
-    url: '/api/traders/by-id/{traderID}';
-};
-
-export type GetTradersByIdByTraderIdErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Unauthorized
-     */
-    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Not Found
-     */
-    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Internal Server Error
-     */
-    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * ANALYTICS_UNAVAILABLE — the analytics store refused the read (concurrency/memory ceiling); retry after backoff
-     */
-    503: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * ANALYTICS_TIMEOUT — the read exceeded HEAVY_READ_BUDGET
-     */
-    504: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetTradersByIdByTraderIdError = GetTradersByIdByTraderIdErrors[keyof GetTradersByIdByTraderIdErrors];
-
-export type GetTradersByIdByTraderIdResponses = {
-    /**
-     * OK
-     */
-    200: PulsightInternalCoreUsecasesTraderTraderListItem;
-};
-
-export type GetTradersByIdByTraderIdResponse = GetTradersByIdByTraderIdResponses[keyof GetTradersByIdByTraderIdResponses];
 
 export type GetTradersByWalletByWalletAddressData = {
     body?: never;
@@ -5832,7 +5855,7 @@ export type GetTradersSearchData = {
          */
         q?: string;
         /**
-         * Blockchain filter — only 'sol' is accepted post roadmap subtask 2.6 (BSC removed). Empty defaults to 'sol'.
+         * Blockchain filter — only 'sol' is accepted. Empty defaults to 'sol'.
          */
         chain?: string;
         /**
@@ -5902,124 +5925,6 @@ export type GetTradersSnapshotResponses = {
 };
 
 export type GetTradersSnapshotResponse = GetTradersSnapshotResponses[keyof GetTradersSnapshotResponses];
-
-export type GetTradersByTraderIdDailyProfitsData = {
-    body?: never;
-    path: {
-        /**
-         * Trader ID
-         */
-        traderID: string;
-    };
-    query?: {
-        /**
-         * Limit (1..200)
-         */
-        limit?: number;
-        /**
-         * Offset
-         */
-        offset?: number;
-        /**
-         * Inclusive lower bound, YYYY-MM-DD
-         */
-        from_date?: string;
-        /**
-         * Inclusive upper bound, YYYY-MM-DD
-         */
-        to_date?: string;
-        /**
-         * Sort column
-         */
-        sort_by?: string;
-        /**
-         * asc | desc
-         */
-        direction?: string;
-    };
-    url: '/api/traders/{traderID}/daily-profits';
-};
-
-export type GetTradersByTraderIdDailyProfitsErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Not Found
-     */
-    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Internal Server Error
-     */
-    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetTradersByTraderIdDailyProfitsError = GetTradersByTraderIdDailyProfitsErrors[keyof GetTradersByTraderIdDailyProfitsErrors];
-
-export type GetTradersByTraderIdDailyProfitsResponses = {
-    /**
-     * OK
-     */
-    200: PulsightInternalCoreUsecasesTraderDailyProfitsResult;
-};
-
-export type GetTradersByTraderIdDailyProfitsResponse = GetTradersByTraderIdDailyProfitsResponses[keyof GetTradersByTraderIdDailyProfitsResponses];
-
-export type GetTradersByTraderIdPnlsData = {
-    body?: never;
-    path: {
-        /**
-         * Trader ID
-         */
-        traderID: string;
-    };
-    query?: {
-        /**
-         * Search by token address or symbol
-         */
-        token_search?: string;
-        /**
-         * Limit
-         */
-        limit?: number;
-        /**
-         * Offset
-         */
-        offset?: number;
-        /**
-         * Sort By field
-         */
-        sort_by?: string;
-        /**
-         * Sort Direction
-         */
-        direction?: string;
-    };
-    url: '/api/traders/{traderID}/pnls';
-};
-
-export type GetTradersByTraderIdPnlsErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-    /**
-     * Internal Server Error
-     */
-    500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetTradersByTraderIdPnlsError = GetTradersByTraderIdPnlsErrors[keyof GetTradersByTraderIdPnlsErrors];
-
-export type GetTradersByTraderIdPnlsResponses = {
-    /**
-     * OK
-     */
-    200: InternalAdaptersPrimaryHttpHandlerPaginatedPnls;
-};
-
-export type GetTradersByTraderIdPnlsResponse = GetTradersByTraderIdPnlsResponses[keyof GetTradersByTraderIdPnlsResponses];
 
 export type GetTradersByWalletAddressCashbackData = {
     body?: never;

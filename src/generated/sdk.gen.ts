@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteBacktestsByIdData, DeleteBacktestsByIdResponses, DeleteStrategiesByIdData, DeleteStrategiesByIdErrors, DeleteStrategiesByIdResponses, DeleteTokenFiltersByIdData, DeleteTokenFiltersByIdErrors, DeleteTokenFiltersByIdResponses, DeleteTraderFiltersByIdData, DeleteTraderFiltersByIdErrors, DeleteTraderFiltersByIdResponses, DeleteWebhookNotifiersByIdData, DeleteWebhookNotifiersByIdErrors, DeleteWebhookNotifiersByIdResponses, GetBacktestsByIdData, GetBacktestsByIdDeclinesData, GetBacktestsByIdDeclinesErrors, GetBacktestsByIdDeclinesResponses, GetBacktestsByIdErrors, GetBacktestsByIdResponses, GetBacktestsByIdTradesData, GetBacktestsByIdTradesErrors, GetBacktestsByIdTradesResponses, GetBacktestsData, GetBacktestsErrors, GetBacktestsLimitsData, GetBacktestsLimitsErrors, GetBacktestsLimitsResponses, GetBacktestsResponses, GetCashbackLeaderboardData, GetCashbackLeaderboardErrors, GetCashbackLeaderboardResponses, GetCashbackSummaryData, GetCashbackSummaryErrors, GetCashbackSummaryResponses, GetHealthData, GetHealthErrors, GetHealthLiveData, GetHealthLiveResponses, GetHealthResponses, GetMeCreditsData, GetMeCreditsErrors, GetMeCreditsLedgerData, GetMeCreditsLedgerErrors, GetMeCreditsLedgerResponses, GetMeCreditsResponses, GetMintsByPubkeyActivityData, GetMintsByPubkeyActivityErrors, GetMintsByPubkeyActivityResponses, GetMintsByPubkeyBundlersData, GetMintsByPubkeyBundlersErrors, GetMintsByPubkeyBundlersResponses, GetMintsByPubkeyData, GetMintsByPubkeyErrors, GetMintsByPubkeyInsidersData, GetMintsByPubkeyInsidersErrors, GetMintsByPubkeyInsidersResponses, GetMintsByPubkeyLiveData, GetMintsByPubkeyLiveErrors, GetMintsByPubkeyLiveResponses, GetMintsByPubkeyLpEventsData, GetMintsByPubkeyLpEventsErrors, GetMintsByPubkeyLpEventsResponses, GetMintsByPubkeyMarketsData, GetMintsByPubkeyMarketsErrors, GetMintsByPubkeyMarketsResponses, GetMintsByPubkeyMigrationsData, GetMintsByPubkeyMigrationsErrors, GetMintsByPubkeyMigrationsResponses, GetMintsByPubkeyResponses, GetMintsByPubkeyRiskCohortsData, GetMintsByPubkeyRiskCohortsErrors, GetMintsByPubkeyRiskCohortsResponses, GetMintsByPubkeyRiskData, GetMintsByPubkeyRiskErrors, GetMintsByPubkeyRiskResponses, GetMintsByPubkeySafetyEventsData, GetMintsByPubkeySafetyEventsErrors, GetMintsByPubkeySafetyEventsResponses, GetMintsByPubkeySnipersData, GetMintsByPubkeySnipersErrors, GetMintsByPubkeySnipersResponses, GetMintsByPubkeyStatsData, GetMintsByPubkeyStatsErrors, GetMintsByPubkeyStatsResponses, GetMintsByPubkeyTopHoldersData, GetMintsByPubkeyTopHoldersErrors, GetMintsByPubkeyTopHoldersResponses, GetMintsByPubkeyTopTradersData, GetMintsByPubkeyTopTradersErrors, GetMintsByPubkeyTopTradersResponses, GetMintsByPubkeyTradersByTraderData, GetMintsByPubkeyTradersByTraderErrors, GetMintsByPubkeyTradersByTraderResponses, GetMintsData, GetMintsErrors, GetMintsResponses, GetOhlcvData, GetOhlcvErrors, GetOhlcvResponses, GetProgramLogosByProgramIdData, GetProgramLogosByProgramIdErrors, GetProgramLogosByProgramIdResponses, GetProgramsByProgramIdDailyData, GetProgramsByProgramIdDailyErrors, GetProgramsByProgramIdDailyResponses, GetProgramsLeaderboardData, GetProgramsLeaderboardErrors, GetProgramsLeaderboardResponses, GetProgramsSummaryData, GetProgramsSummaryErrors, GetProgramsSummaryResponses, GetSolPriceData, GetSolPriceErrors, GetSolPriceResponses, GetStrategiesByIdData, GetStrategiesByIdErrors, GetStrategiesByIdResponses, GetStrategiesDashboardData, GetStrategiesDashboardErrors, GetStrategiesDashboardResponses, GetStrategiesData, GetStrategiesErrors, GetStrategiesResponses, GetStrategiesWithStatsData, GetStrategiesWithStatsErrors, GetStrategiesWithStatsResponses, GetSubscriptionsMeData, GetSubscriptionsMeErrors, GetSubscriptionsMeResponses, GetSwapsData, GetSwapsErrors, GetSwapsResponses, GetTipsGlobalData, GetTipsGlobalErrors, GetTipsGlobalResponses, GetTipsHeatmapData, GetTipsHeatmapErrors, GetTipsHeatmapResponses, GetTipsMatData, GetTipsMatErrors, GetTipsMatResponses, GetTipsMevShareData, GetTipsMevShareErrors, GetTipsMevShareResponses, GetTipsPriorityRatioData, GetTipsPriorityRatioErrors, GetTipsPriorityRatioResponses, GetTipsServicesData, GetTipsServicesErrors, GetTipsServicesResponses, GetTokenFiltersByIdData, GetTokenFiltersByIdErrors, GetTokenFiltersByIdResponses, GetTokenFiltersData, GetTokenFiltersErrors, GetTokenFiltersResponses, GetTraderFiltersByIdData, GetTraderFiltersByIdErrors, GetTraderFiltersByIdResponses, GetTraderFiltersData, GetTraderFiltersErrors, GetTraderFiltersResponses, GetTradersByIdByTraderIdData, GetTradersByIdByTraderIdErrors, GetTradersByIdByTraderIdResponses, GetTradersByTraderIdDailyProfitsData, GetTradersByTraderIdDailyProfitsErrors, GetTradersByTraderIdDailyProfitsResponses, GetTradersByTraderIdPnlsData, GetTradersByTraderIdPnlsErrors, GetTradersByTraderIdPnlsResponses, GetTradersByWalletAddressCashbackClaimsData, GetTradersByWalletAddressCashbackClaimsErrors, GetTradersByWalletAddressCashbackClaimsResponses, GetTradersByWalletAddressCashbackData, GetTradersByWalletAddressCashbackErrors, GetTradersByWalletAddressCashbackResponses, GetTradersByWalletAddressCreatedTokensData, GetTradersByWalletAddressCreatedTokensErrors, GetTradersByWalletAddressCreatedTokensResponses, GetTradersByWalletAddressNeighboursData, GetTradersByWalletAddressNeighboursResponses, GetTradersByWalletAddressPnlSeriesData, GetTradersByWalletAddressPnlSeriesErrors, GetTradersByWalletAddressPnlSeriesResponses, GetTradersByWalletAddressPriceImpactData, GetTradersByWalletAddressPriceImpactErrors, GetTradersByWalletAddressPriceImpactResponses, GetTradersByWalletAddressReliabilityData, GetTradersByWalletAddressReliabilityErrors, GetTradersByWalletAddressReliabilityResponses, GetTradersByWalletAddressTipsData, GetTradersByWalletAddressTipsErrors, GetTradersByWalletAddressTipsResponses, GetTradersByWalletAddressTipsServicesData, GetTradersByWalletAddressTipsServicesErrors, GetTradersByWalletAddressTipsServicesResponses, GetTradersByWalletAddressTokensData, GetTradersByWalletAddressTokensErrors, GetTradersByWalletAddressTokensResponses, GetTradersByWalletByWalletAddressData, GetTradersByWalletByWalletAddressErrors, GetTradersByWalletByWalletAddressResponses, GetTradersData, GetTradersErrors, GetTradersResponses, GetTradersSearchData, GetTradersSearchErrors, GetTradersSearchResponses, GetTradersSnapshotData, GetTradersSnapshotErrors, GetTradersSnapshotResponses, GetWebhookNotifiersByIdData, GetWebhookNotifiersByIdErrors, GetWebhookNotifiersByIdResponses, GetWebhookNotifiersData, GetWebhookNotifiersErrors, GetWebhookNotifiersResponses, PatchWebhookNotifiersByIdData, PatchWebhookNotifiersByIdErrors, PatchWebhookNotifiersByIdResponses, PostBacktestsData, PostBacktestsErrors, PostBacktestsPickTokensData, PostBacktestsPickTokensErrors, PostBacktestsPickTokensResponses, PostBacktestsResponses, PostStrategiesData, PostStrategiesErrors, PostStrategiesPreviewData, PostStrategiesPreviewErrors, PostStrategiesPreviewResponses, PostStrategiesResponses, PostStrategiesValidateData, PostStrategiesValidateErrors, PostStrategiesValidateResponses, PostTokenFiltersData, PostTokenFiltersErrors, PostTokenFiltersResponses, PostTraderFiltersData, PostTraderFiltersErrors, PostTraderFiltersResponses, PostWebhookNotifiersData, PostWebhookNotifiersErrors, PostWebhookNotifiersResponses, PutStrategiesByIdData, PutStrategiesByIdErrors, PutStrategiesByIdResponses, PutTokenFiltersByIdData, PutTokenFiltersByIdErrors, PutTokenFiltersByIdResponses, PutTraderFiltersByIdData, PutTraderFiltersByIdErrors, PutTraderFiltersByIdResponses } from './types.gen';
+import type { DeleteBacktestsByIdData, DeleteBacktestsByIdResponses, DeleteStrategiesByIdData, DeleteStrategiesByIdErrors, DeleteStrategiesByIdResponses, DeleteTokenFiltersByIdData, DeleteTokenFiltersByIdErrors, DeleteTokenFiltersByIdResponses, DeleteTraderFiltersByIdData, DeleteTraderFiltersByIdErrors, DeleteTraderFiltersByIdResponses, DeleteWebhookNotifiersByIdData, DeleteWebhookNotifiersByIdErrors, DeleteWebhookNotifiersByIdResponses, GetBacktestsByIdData, GetBacktestsByIdDeclinesData, GetBacktestsByIdDeclinesErrors, GetBacktestsByIdDeclinesResponses, GetBacktestsByIdErrors, GetBacktestsByIdResponses, GetBacktestsByIdTradesData, GetBacktestsByIdTradesErrors, GetBacktestsByIdTradesResponses, GetBacktestsData, GetBacktestsErrors, GetBacktestsLimitsData, GetBacktestsLimitsErrors, GetBacktestsLimitsResponses, GetBacktestsResponses, GetCashbackLeaderboardData, GetCashbackLeaderboardErrors, GetCashbackLeaderboardResponses, GetCashbackSummaryData, GetCashbackSummaryErrors, GetCashbackSummaryResponses, GetHealthData, GetHealthErrors, GetHealthLiveData, GetHealthLiveResponses, GetHealthResponses, GetMeCreditsData, GetMeCreditsErrors, GetMeCreditsLedgerData, GetMeCreditsLedgerErrors, GetMeCreditsLedgerResponses, GetMeCreditsResponses, GetMintsByPubkeyActivityData, GetMintsByPubkeyActivityErrors, GetMintsByPubkeyActivityResponses, GetMintsByPubkeyBundlersData, GetMintsByPubkeyBundlersErrors, GetMintsByPubkeyBundlersResponses, GetMintsByPubkeyData, GetMintsByPubkeyErrors, GetMintsByPubkeyInsidersData, GetMintsByPubkeyInsidersErrors, GetMintsByPubkeyInsidersResponses, GetMintsByPubkeyLiveData, GetMintsByPubkeyLiveErrors, GetMintsByPubkeyLiveResponses, GetMintsByPubkeyLpEventsData, GetMintsByPubkeyLpEventsErrors, GetMintsByPubkeyLpEventsResponses, GetMintsByPubkeyMarketsData, GetMintsByPubkeyMarketsErrors, GetMintsByPubkeyMarketsResponses, GetMintsByPubkeyMigrationsData, GetMintsByPubkeyMigrationsErrors, GetMintsByPubkeyMigrationsResponses, GetMintsByPubkeyResponses, GetMintsByPubkeyRiskCohortsData, GetMintsByPubkeyRiskCohortsErrors, GetMintsByPubkeyRiskCohortsResponses, GetMintsByPubkeyRiskData, GetMintsByPubkeyRiskErrors, GetMintsByPubkeyRiskResponses, GetMintsByPubkeySafetyEventsData, GetMintsByPubkeySafetyEventsErrors, GetMintsByPubkeySafetyEventsResponses, GetMintsByPubkeySnipersData, GetMintsByPubkeySnipersErrors, GetMintsByPubkeySnipersResponses, GetMintsByPubkeyStatsData, GetMintsByPubkeyStatsErrors, GetMintsByPubkeyStatsResponses, GetMintsByPubkeyTopHoldersData, GetMintsByPubkeyTopHoldersErrors, GetMintsByPubkeyTopHoldersResponses, GetMintsByPubkeyTopTradersData, GetMintsByPubkeyTopTradersErrors, GetMintsByPubkeyTopTradersResponses, GetMintsByPubkeyTradersByTraderData, GetMintsByPubkeyTradersByTraderErrors, GetMintsByPubkeyTradersByTraderResponses, GetMintsData, GetMintsErrors, GetMintsResponses, GetOhlcvData, GetOhlcvErrors, GetOhlcvResponses, GetProgramLogosByProgramIdData, GetProgramLogosByProgramIdErrors, GetProgramLogosByProgramIdResponses, GetProgramsByProgramIdDailyData, GetProgramsByProgramIdDailyErrors, GetProgramsByProgramIdDailyResponses, GetProgramsLeaderboardData, GetProgramsLeaderboardErrors, GetProgramsLeaderboardResponses, GetProgramsSummaryData, GetProgramsSummaryErrors, GetProgramsSummaryResponses, GetSolPriceData, GetSolPriceErrors, GetSolPriceResponses, GetStrategiesByIdData, GetStrategiesByIdErrors, GetStrategiesByIdResponses, GetStrategiesDashboardData, GetStrategiesDashboardErrors, GetStrategiesDashboardResponses, GetStrategiesData, GetStrategiesErrors, GetStrategiesResponses, GetStrategiesWithStatsData, GetStrategiesWithStatsErrors, GetStrategiesWithStatsResponses, GetSubscriptionsMeData, GetSubscriptionsMeErrors, GetSubscriptionsMeResponses, GetSwapsData, GetSwapsErrors, GetSwapsResponses, GetTipsGlobalData, GetTipsGlobalErrors, GetTipsGlobalResponses, GetTipsHeatmapData, GetTipsHeatmapErrors, GetTipsHeatmapResponses, GetTipsMatData, GetTipsMatErrors, GetTipsMatResponses, GetTipsMevShareData, GetTipsMevShareErrors, GetTipsMevShareResponses, GetTipsPriorityRatioData, GetTipsPriorityRatioErrors, GetTipsPriorityRatioResponses, GetTipsServicesData, GetTipsServicesErrors, GetTipsServicesResponses, GetTokenFiltersByIdData, GetTokenFiltersByIdErrors, GetTokenFiltersByIdResponses, GetTokenFiltersData, GetTokenFiltersErrors, GetTokenFiltersResponses, GetTraderFiltersByIdData, GetTraderFiltersByIdErrors, GetTraderFiltersByIdResponses, GetTraderFiltersData, GetTraderFiltersErrors, GetTraderFiltersResponses, GetTradersByWalletAddressCashbackClaimsData, GetTradersByWalletAddressCashbackClaimsErrors, GetTradersByWalletAddressCashbackClaimsResponses, GetTradersByWalletAddressCashbackData, GetTradersByWalletAddressCashbackErrors, GetTradersByWalletAddressCashbackResponses, GetTradersByWalletAddressCreatedTokensData, GetTradersByWalletAddressCreatedTokensErrors, GetTradersByWalletAddressCreatedTokensResponses, GetTradersByWalletAddressNeighboursData, GetTradersByWalletAddressNeighboursResponses, GetTradersByWalletAddressPnlSeriesData, GetTradersByWalletAddressPnlSeriesErrors, GetTradersByWalletAddressPnlSeriesResponses, GetTradersByWalletAddressPriceImpactData, GetTradersByWalletAddressPriceImpactErrors, GetTradersByWalletAddressPriceImpactResponses, GetTradersByWalletAddressReliabilityData, GetTradersByWalletAddressReliabilityErrors, GetTradersByWalletAddressReliabilityResponses, GetTradersByWalletAddressTipsData, GetTradersByWalletAddressTipsErrors, GetTradersByWalletAddressTipsResponses, GetTradersByWalletAddressTipsServicesData, GetTradersByWalletAddressTipsServicesErrors, GetTradersByWalletAddressTipsServicesResponses, GetTradersByWalletAddressTokensData, GetTradersByWalletAddressTokensErrors, GetTradersByWalletAddressTokensResponses, GetTradersByWalletByWalletAddressData, GetTradersByWalletByWalletAddressErrors, GetTradersByWalletByWalletAddressResponses, GetTradersData, GetTradersErrors, GetTradersResponses, GetTradersSearchData, GetTradersSearchErrors, GetTradersSearchResponses, GetTradersSnapshotData, GetTradersSnapshotErrors, GetTradersSnapshotResponses, GetWebhookNotifiersByIdData, GetWebhookNotifiersByIdErrors, GetWebhookNotifiersByIdResponses, GetWebhookNotifiersData, GetWebhookNotifiersErrors, GetWebhookNotifiersResponses, PatchWebhookNotifiersByIdData, PatchWebhookNotifiersByIdErrors, PatchWebhookNotifiersByIdResponses, PostBacktestsData, PostBacktestsErrors, PostBacktestsPickTokensData, PostBacktestsPickTokensErrors, PostBacktestsPickTokensResponses, PostBacktestsResponses, PostStrategiesData, PostStrategiesErrors, PostStrategiesPreviewData, PostStrategiesPreviewErrors, PostStrategiesPreviewResponses, PostStrategiesResponses, PostStrategiesValidateData, PostStrategiesValidateErrors, PostStrategiesValidateResponses, PostTokenFiltersData, PostTokenFiltersErrors, PostTokenFiltersResponses, PostTraderFiltersData, PostTraderFiltersErrors, PostTraderFiltersResponses, PostWebhookNotifiersData, PostWebhookNotifiersErrors, PostWebhookNotifiersResponses, PutStrategiesByIdData, PutStrategiesByIdErrors, PutStrategiesByIdResponses, PutTokenFiltersByIdData, PutTokenFiltersByIdErrors, PutTokenFiltersByIdResponses, PutTraderFiltersByIdData, PutTraderFiltersByIdErrors, PutTraderFiltersByIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -103,7 +103,7 @@ export const getBacktestsByIdTrades = <ThrowOnError extends boolean = false>(opt
 /**
  * Pump rewards leaderboard
  *
- * Wallets ranked by what pump paid them over a window, across both programs: holder rewards received and cashback claimed. The default rank is their sum, both cash basis — never cashback earned, which is an accrual of the same money. Accepts the same composable `f=` filter clauses as /api/traders (repeated `f=key|op|value`), plus the rewards sorts. Lifetime claimed figures are retention-bounded sums over the 75-day claim ledger (they undercount once rows age out, never invent).
+ * Wallets ranked by what pump paid them over a window, across both programs: holder rewards received and cashback claimed. The default rank is their sum, both cash basis — never cashback earned, which is an accrual of the same money. Accepts the same composable `f=` filter clauses as /api/traders (repeated `f=key|op|value`), plus the rewards sorts.
  */
 export const getCashbackLeaderboard = <ThrowOnError extends boolean = false>(options?: Options<GetCashbackLeaderboardData, ThrowOnError>) => (options?.client ?? client).get<GetCashbackLeaderboardResponses, GetCashbackLeaderboardErrors, ThrowOnError>({
     querySerializer: { parameters: { f: { array: { explode: false } } } },
@@ -114,7 +114,7 @@ export const getCashbackLeaderboard = <ThrowOnError extends boolean = false>(opt
 /**
  * Pump rewards board summary
  *
- * Pool totals across both programs, the median wallet and the top earner for a window. Lifetime claimed and received figures are retention-bounded sums over the 75-day ledgers.
+ * Pool totals across both programs, the median wallet and the top earner for a window.
  */
 export const getCashbackSummary = <ThrowOnError extends boolean = false>(options?: Options<GetCashbackSummaryData, ThrowOnError>) => (options?.client ?? client).get<GetCashbackSummaryResponses, GetCashbackSummaryErrors, ThrowOnError>({ url: '/api/cashback/summary', ...options });
 
@@ -157,7 +157,7 @@ export const getMeCreditsLedger = <ThrowOnError extends boolean = false>(options
 /**
  * List Active Mints
  *
- * Returns the active-mint catalog with windowed stats. The activity gate is `hourly_mint_trader_activity`; rows ordered by distinct traders desc (the wash-resistant default — pass `sort=trades` for raw swap-count order). By default the list hides low-liquidity (dust / drained-pool) mints — see `min_pool_sol`.
+ * Returns the active-mint catalog with windowed stats: one page of the `mint_board` rows that traded inside the `hours` activity gate, ordered by distinct traders desc (the wash-resistant default — pass `sort=trades` for raw swap-count order). By default the list hides low-liquidity (dust / drained-pool) mints — see `min_pool`. Money floors and money sorts are read in `unit`; every row carries both currencies.
  */
 export const getMints = <ThrowOnError extends boolean = false>(options: Options<GetMintsData, ThrowOnError>) => (options.client ?? client).get<GetMintsResponses, GetMintsErrors, ThrowOnError>({
     querySerializer: { parameters: { dex: { array: { explode: false } } } },
@@ -169,7 +169,7 @@ export const getMints = <ThrowOnError extends boolean = false>(options: Options<
 /**
  * Get Mint
  *
- * Returns the mint's identity row (symbol, name, logo_uri, decimals, creator) from the CA catalog. 404 when the pubkey is not present — the enricher may not have seen this mint yet.
+ * Returns the mint's identity row (symbol, name, logo_uri, decimals, creator) with its `mint_wide` decorations. 404 when the mint is in neither the mint catalog nor the metadata catalog.
  */
 export const getMintsByPubkey = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyResponses, GetMintsByPubkeyErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -191,7 +191,7 @@ export const getMintsByPubkeyActivity = <ThrowOnError extends boolean = false>(o
 /**
  * List Mint Bundlers
  *
- * Launch bundlers of one mint (wallets that bought in a same-slot cluster of ≥3 buyers taking ≥5% of supply within 300s of the first observed swap) — the SAME set `/risk` counts — in the top-traders row shape plus `initial_pct_of_supply` (net launch acquisition as % of total supply) and `bundle_slot`. sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
+ * Launch bundlers of one mint (wallets that bought in a same-slot cluster of ≥3 buyers taking ≥5% of supply within 300s of the first observed swap) — the SAME set `/risk` counts — in the top-traders row shape plus `initial_pct_of_supply` (net launch acquisition as % of total supply). sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
  */
 export const getMintsByPubkeyBundlers = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyBundlersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyBundlersResponses, GetMintsByPubkeyBundlersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -202,7 +202,7 @@ export const getMintsByPubkeyBundlers = <ThrowOnError extends boolean = false>(o
 /**
  * List Mint Insiders
  *
- * Insiders of one mint (wallets reached from the creator over launch-window token transfers, custodial hops excluded) — the SAME set `/risk` counts — in the top-traders row shape. Empty until the mint's first fold when token-program capture has no transfers for it. sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
+ * Insiders of one mint (wallets reached from the creator over launch-window token transfers, custodial hops excluded) — the SAME set `/risk` counts — in the top-traders row shape. Empty until the insider-stats fold has stored the mint's set. sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
  */
 export const getMintsByPubkeyInsiders = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyInsidersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyInsidersResponses, GetMintsByPubkeyInsidersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -290,7 +290,7 @@ export const getMintsByPubkeySafetyEvents = <ThrowOnError extends boolean = fals
 /**
  * List Mint Snipers
  *
- * Launch snipers of one mint (wallets whose first buy is within 30s of the mint's first observed swap) — the SAME set `/risk` counts — in the top-traders row shape: on-chain balance and % of circulating supply, `trader_token_stats` PnL columns, swaps-derived first buy. sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
+ * Launch snipers of one mint (wallets whose first buy is within 30s of the mint's first observed swap) — the SAME set `/risk` counts — in the top-traders row shape: on-chain balance and % of circulating supply, and the position's PnL and first buy. sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
  */
 export const getMintsByPubkeySnipers = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeySnipersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeySnipersResponses, GetMintsByPubkeySnipersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -301,7 +301,7 @@ export const getMintsByPubkeySnipers = <ThrowOnError extends boolean = false>(op
 /**
  * Find Mint Stats Bundle
  *
- * Returns per-mint windowed stats (volume, price_change, swap_count, buy/sell split) for all four windows (1m/5m/1h/24h) in one response.
+ * Returns per-mint windowed stats (volume, price_change, swap_count, buy/sell split) for every window (1m/5m/30m/1h/6h/12h/24h) in one response.
  */
 export const getMintsByPubkeyStats = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyStatsData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyStatsResponses, GetMintsByPubkeyStatsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -312,7 +312,7 @@ export const getMintsByPubkeyStats = <ThrowOnError extends boolean = false>(opti
 /**
  * List Mint Top Holders
  *
- * Current holders (token_balance > 0) of one mint from `trader_token_stats`. sort ∈ {balance,holding_pnl,recent} (default balance). Paged via offset.
+ * Current holders of one mint by on-chain balance (`holder_accounts`, pool inventory excluded), each with its position figures. sort ∈ {balance,holding_pnl,recent} (default balance). Paged via offset.
  */
 export const getMintsByPubkeyTopHolders = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyTopHoldersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyTopHoldersResponses, GetMintsByPubkeyTopHoldersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -323,7 +323,7 @@ export const getMintsByPubkeyTopHolders = <ThrowOnError extends boolean = false>
 /**
  * List Mint Top Traders
  *
- * Per-(trader) leaderboard for one mint from `trader_token_stats` (all positions). sort ∈ {pnl,volume,swaps,recent} (default pnl). Paged via offset.
+ * Per-(trader) leaderboard for one mint off its `trader_positions` rows (all positions, closed ones included). sort ∈ {pnl,volume,swaps,recent} (default pnl). Paged via offset.
  */
 export const getMintsByPubkeyTopTraders = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyTopTradersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyTopTradersResponses, GetMintsByPubkeyTopTradersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -334,7 +334,7 @@ export const getMintsByPubkeyTopTraders = <ThrowOnError extends boolean = false>
 /**
  * Get Mint Trader Stats
  *
- * Single per-(trader, mint) stats row (same shape as a top-traders row) from `trader_token_stats`. 404 when the trader never traded the mint.
+ * Single per-(trader, mint) stats row (same shape as a top-traders row). 404 when the trader neither traded nor holds the mint.
  */
 export const getMintsByPubkeyTradersByTrader = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyTradersByTraderData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyTradersByTraderResponses, GetMintsByPubkeyTradersByTraderErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -497,7 +497,7 @@ export const getSubscriptionsMe = <ThrowOnError extends boolean = false>(options
 /**
  * List Swaps
  *
- * Returns swaps filtered by `mint` and/or one-or-more `trader` params (AND-combined; at least one required). `trader` may be repeated (trader=a&trader=b) or comma-separated. `pool` narrows to one or more markets and accepts the same repeated/comma-separated forms, OR-combined — pass the whole set when a token's market spans several pools (a graduated token's bonding curve plus the pool it migrated to). All time params are optional; with none supplied the latest swaps are returned regardless of age. Supports RFC3339 from/to, Unix epoch from_ts/to_ts, and cursor-based before_ts (returns the latest swaps strictly older than the cursor — no lower bound, so pagination crosses activity gaps).
+ * Returns the ledger's trade rows filtered by `mint` and/or one-or-more `trader` params (AND-combined; at least one required). `trader` may be repeated (trader=a&trader=b) or comma-separated. `pool` narrows to one or more markets by the trade's primary pool and accepts the same repeated/comma-separated forms, OR-combined — pass the whole set when a token's market spans several pools (a graduated token's bonding curve plus the pool it migrated to). Every money field is a `{sol, usd}` pair fixed at execution (lamports and micro-USD; null = unpriced). A quote-registry mint (SOL, USDC, USDT, USD1) lists the legs whose base it is, keyed by the leg, with no realized PnL. All time params are optional; with none supplied the latest rows are returned regardless of age. Supports RFC3339 from/to, Unix epoch from_ts/to_ts, and cursor-based before_ts (returns the latest rows strictly older than the cursor — no lower bound, so pagination crosses activity gaps).
  */
 export const getSwaps = <ThrowOnError extends boolean = false>(options?: Options<GetSwapsData, ThrowOnError>) => (options?.client ?? client).get<GetSwapsResponses, GetSwapsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -673,17 +673,6 @@ export const getTraders = <ThrowOnError extends boolean = false>(options?: Optio
 });
 
 /**
- * Get Trader by ID
- *
- * Retrieves a trader's aggregated statistics by internal UUID.
- */
-export const getTradersByIdByTraderId = <ThrowOnError extends boolean = false>(options: Options<GetTradersByIdByTraderIdData, ThrowOnError>) => (options.client ?? client).get<GetTradersByIdByTraderIdResponses, GetTradersByIdByTraderIdErrors, ThrowOnError>({
-    security: [{ name: 'Authorization', type: 'apiKey' }],
-    url: '/api/traders/by-id/{traderID}',
-    ...options
-});
-
-/**
  * Get Trader by Wallet
  *
  * Retrieves a trader's aggregated statistics by their wallet address.
@@ -715,28 +704,6 @@ export const getTradersSnapshot = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * List Trader Daily Profits
- *
- * Retrieves aggregated daily profits for a specific trader.
- */
-export const getTradersByTraderIdDailyProfits = <ThrowOnError extends boolean = false>(options: Options<GetTradersByTraderIdDailyProfitsData, ThrowOnError>) => (options.client ?? client).get<GetTradersByTraderIdDailyProfitsResponses, GetTradersByTraderIdDailyProfitsErrors, ThrowOnError>({
-    security: [{ name: 'Authorization', type: 'apiKey' }],
-    url: '/api/traders/{traderID}/daily-profits',
-    ...options
-});
-
-/**
- * List Trader PnLs
- *
- * Retrieves per-token PnL statistics for a specific trader.
- */
-export const getTradersByTraderIdPnls = <ThrowOnError extends boolean = false>(options: Options<GetTradersByTraderIdPnlsData, ThrowOnError>) => (options.client ?? client).get<GetTradersByTraderIdPnlsResponses, GetTradersByTraderIdPnlsErrors, ThrowOnError>({
-    security: [{ name: 'Authorization', type: 'apiKey' }],
-    url: '/api/traders/{traderID}/pnls',
-    ...options
-});
-
-/**
  * Pump rewards of a wallet
  */
 export const getTradersByWalletAddressCashback = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressCashbackData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressCashbackResponses, GetTradersByWalletAddressCashbackErrors, ThrowOnError>({ url: '/api/traders/{walletAddress}/cashback', ...options });
@@ -744,7 +711,7 @@ export const getTradersByWalletAddressCashback = <ThrowOnError extends boolean =
 /**
  * Reward history of a wallet
  *
- * One wallet's reward events, newest first, paged: both its claim_cashback executions and the holder-reward payouts pushed to it, interleaved in one timestamp order and told apart by `kind`. A claim carries the pump program it swept; a payout carries the coin that paid it. Read from the raw ledgers (75-day retention): older events have aged out; the program-reported anchors on the rewards panel carry the true all-time totals. Amounts are in the event's quote-mint base units (lamports for WSOL rows, which is nearly all of them), and `amount_lamports` is zero on a payout whose quote could not be priced in SOL — `priced` says which.
+ * One wallet's reward events, newest first, paged: both its claim_cashback executions and the holder-reward payouts pushed to it, interleaved in one timestamp order and told apart by `kind`. A claim carries the pump program it swept; a payout carries the coin that paid it. Read from the `cashback_claims` and `holder_reward_payouts` ledgers. `amount` is in the event's quote-mint base units, `amount_lamports` and `amount_usd` are its value stamped at execution, and `amount_lamports` is zero on an event whose quote could not be priced in SOL — `priced` says which.
  */
 export const getTradersByWalletAddressCashbackClaims = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressCashbackClaimsData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressCashbackClaimsResponses, GetTradersByWalletAddressCashbackClaimsErrors, ThrowOnError>({ url: '/api/traders/{walletAddress}/cashback/claims', ...options });
 
@@ -767,7 +734,7 @@ export const getTradersByWalletAddressNeighbours = <ThrowOnError extends boolean
 /**
  * Get Trader Daily PnL Series
  *
- * Returns daily realised PnL points (oldest first) for a trader, sourced from the aggregator's `trader_daily_pnl_series` SQL function.
+ * Returns daily realised PnL points (oldest first) for a trader, folded from its `trader_hourly` rows: realized PnL with the arb take-home, the cost lines, the rewards, net PnL and the transaction record, in both currencies.
  */
 export const getTradersByWalletAddressPnlSeries = <ThrowOnError extends boolean = false>(options: Options<GetTradersByWalletAddressPnlSeriesData, ThrowOnError>) => (options.client ?? client).get<GetTradersByWalletAddressPnlSeriesResponses, GetTradersByWalletAddressPnlSeriesErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
