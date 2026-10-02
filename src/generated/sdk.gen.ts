@@ -180,7 +180,7 @@ export const getMintsByPubkey = <ThrowOnError extends boolean = false>(options: 
 /**
  * Mint Activity Seed
  *
- * Returns the mint's per-minute swap count + network fees (tx fee + MEV tip, lamports) over [from, to), plus the lifetime totals strictly before `from`. Range capped at 25 hours.
+ * Returns the mint's per-minute swap count + network fees (tx fee + MEV tip, in lamports and in micro-USD as stamped at execution) over [from, to), plus the lifetime totals strictly before `from`. Range capped at 25 hours.
  */
 export const getMintsByPubkeyActivity = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyActivityData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyActivityResponses, GetMintsByPubkeyActivityErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -202,7 +202,7 @@ export const getMintsByPubkeyBundlers = <ThrowOnError extends boolean = false>(o
 /**
  * List Mint Insiders
  *
- * Insiders of one mint (wallets reached from the creator over launch-window token transfers, custodial hops excluded) — the SAME set `/risk` counts — in the top-traders row shape. Empty until the insider-stats fold has stored the mint's set. sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
+ * Insiders of one mint (wallets reached from the creator over token transfers, pool inventory and the burn address excluded, up to 500 closest to the creator first) — the SAME set `/risk` counts — in the top-traders row shape. A wallet joins within about a minute of the transfer that reaches it and never leaves. sort ∈ {balance,holding_pnl,pnl,volume,swaps,recent} (default balance). Paged via offset. Login required (reveals wallet addresses).
  */
 export const getMintsByPubkeyInsiders = <ThrowOnError extends boolean = false>(options: Options<GetMintsByPubkeyInsidersData, ThrowOnError>) => (options.client ?? client).get<GetMintsByPubkeyInsidersResponses, GetMintsByPubkeyInsidersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -382,7 +382,7 @@ export const getProgramsByProgramIdDaily = <ThrowOnError extends boolean = false
 /**
  * Get the SOL/USD reference rate
  *
- * Returns USD per 1 SOL — the same volume-weighted WSOL/USDC reference the token catalog prices market caps and USD candles with, so displayed figures agree with computed ones. `sol_usd` is `null` when the reference is unavailable (cold analytics store, or no WSOL/USDC trade in the lookback window); it is never `0`.
+ * Returns USD per 1 SOL — the rate the ledger stamped on the newest landed transaction. Every stored USD figure is the stamp of its own row; this rate converts only a figure that has none. `sol_usd` is `null` when no stamped transaction exists yet; it is never `0`.
  */
 export const getSolPrice = <ThrowOnError extends boolean = false>(options?: Options<GetSolPriceData, ThrowOnError>) => (options?.client ?? client).get<GetSolPriceResponses, GetSolPriceErrors, ThrowOnError>({ url: '/api/sol-price', ...options });
 
@@ -497,7 +497,7 @@ export const getSubscriptionsMe = <ThrowOnError extends boolean = false>(options
 /**
  * List Swaps
  *
- * Returns the ledger's trade rows filtered by `mint` and/or one-or-more `trader` params (AND-combined; at least one required). `trader` may be repeated (trader=a&trader=b) or comma-separated. `pool` narrows to one or more markets by the trade's primary pool and accepts the same repeated/comma-separated forms, OR-combined — pass the whole set when a token's market spans several pools (a graduated token's bonding curve plus the pool it migrated to). Every money field is a `{sol, usd}` pair fixed at execution (lamports and micro-USD; null = unpriced). A quote-registry mint (SOL, USDC, USDT, USD1) lists the legs whose base it is, keyed by the leg, with no realized PnL. All time params are optional; with none supplied the latest rows are returned regardless of age. Supports RFC3339 from/to, Unix epoch from_ts/to_ts, and cursor-based before_ts (returns the latest rows strictly older than the cursor — no lower bound, so pagination crosses activity gaps).
+ * Returns the ledger's trade rows filtered by `mint` and/or one-or-more `trader` params (AND-combined; at least one required). `trader` may be repeated (trader=a&trader=b) or comma-separated. `pool` narrows to one or more markets by the trade's primary pool and accepts the same repeated/comma-separated forms, OR-combined — pass the whole set when a token's market spans several pools (a graduated token's bonding curve plus the pool it migrated to). Every money field is a `{sol, usd}` pair fixed at execution (lamports and micro-USD; null = unpriced). A quote-registry mint (SOL or a registered dollar) lists the legs whose base it is, keyed by the leg, with no realized PnL. All time params are optional; with none supplied the latest rows are returned regardless of age. Supports RFC3339 from/to, Unix epoch from_ts/to_ts, and cursor-based before_ts (returns the latest rows strictly older than the cursor — no lower bound, so pagination crosses activity gaps). A page never ends inside a second: when `limit` falls inside a second, the page stops before it and the next page returns it whole, so a page can hold fewer than `limit` rows while older rows remain, and a page that is a single second returns that whole second, up to 5000 rows. Page by passing the oldest returned row's second (`floor(ts_ms / 1000)`) as before_ts until a page comes back empty; no row is skipped or repeated.
  */
 export const getSwaps = <ThrowOnError extends boolean = false>(options?: Options<GetSwapsData, ThrowOnError>) => (options?.client ?? client).get<GetSwapsResponses, GetSwapsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -686,7 +686,7 @@ export const getTradersByWalletByWalletAddress = <ThrowOnError extends boolean =
 /**
  * Search Traders
  *
- * Fuzzy searches traders by wallet address or known name.
+ * Finds leaderboard traders by wallet address: a full base58 address matches exactly, anything shorter matches as an address prefix.
  */
 export const getTradersSearch = <ThrowOnError extends boolean = false>(options?: Options<GetTradersSearchData, ThrowOnError>) => (options?.client ?? client).get<GetTradersSearchResponses, GetTradersSearchErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],

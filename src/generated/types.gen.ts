@@ -96,8 +96,8 @@ export type InternalAdaptersPrimaryHttpHandlerNeighborRowResponse = {
     /**
      * MedSlotDelta is the median signed slot gap (neighbour minus subject), so
      * a negative value means the neighbour traded first. Real copy-trading
-     * clusters at 1-2 slots, roughly 0.3-0.6s at current block times, while
-     * coincidence scatters over tens of slots. Zero means the SAME block, the
+     * clusters at 1-2 slots, while coincidence scatters over tens of slots.
+     * Zero means the SAME block, the
      * tightest gap this endpoint can report: the source data carries no
      * transaction index, so which of the two went first inside that block is
      * unknown, not absent.
@@ -248,6 +248,14 @@ export type InternalAdaptersPrimaryHttpHandlerSnapshotRow = {
      * the buckets measured on the USD stamps
      */
     pnl_distribution_usd?: Array<number>;
+    /**
+     * lamports per day, window=30d only
+     */
+    pnl_sparkline_30d?: Array<number>;
+    /**
+     * micro-USD per day, window=30d only
+     */
+    pnl_sparkline_30d_usd?: Array<number>;
     /**
      * lamports per day
      */
@@ -838,11 +846,13 @@ export type PulsightInternalCoreDomainAggregatorMevTipSharePoint = {
 
 export type PulsightInternalCoreDomainAggregatorMintActivityBase = {
     fees_lamports?: number;
+    fees_micro_usd?: number;
     swaps?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintActivityPoint = {
     fees_lamports?: number;
+    fees_micro_usd?: number;
     swaps?: number;
     ts?: number;
 };
@@ -940,9 +950,8 @@ export type PulsightInternalCoreDomainAggregatorMintLiveMetrics = {
 
 export type PulsightInternalCoreDomainAggregatorMintMarket = {
     /**
-     * BaseMint is the pool's base side as the aggregator oriented it — the
-     * page's own mint except on a money mint's page, where the mint may be
-     * the quote of the pools listed. BaseSymbol is its symbol, empty when
+     * BaseMint is the page's own mint, whichever side of the pool the
+     * aggregator filed its legs under. BaseSymbol is its symbol, empty when
      * unknown.
      */
     base_mint?: string;
@@ -961,11 +970,11 @@ export type PulsightInternalCoreDomainAggregatorMintMarket = {
     pool?: string;
     quote_decimals?: number;
     /**
-     * QuoteMint is the pool's quote side as the aggregator oriented it: a
-     * registry quote when one side is one (USDC > USDT > USD1 > WSOL), else
-     * the pool's own quote token. This market's native candle prices and
-     * quote amounts are denominated in it, and the live chart folds only
-     * ticks that carry the same quote.
+     * QuoteMint is the pool's other side: a registry quote when one side is
+     * one (the registered dollars, USDC first, then WSOL), else the counter
+     * token. This market's native candle prices and quote amounts are
+     * denominated in it, and the live chart folds only ticks that carry the
+     * same quote.
      */
     quote_mint?: string;
     /**
@@ -976,6 +985,22 @@ export type PulsightInternalCoreDomainAggregatorMintMarket = {
     sol_volume_lamports?: number;
     sol_volume_share?: number;
     swap_count?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintMatchedPool = {
+    /**
+     * Address is the pool's address.
+     */
+    address?: string;
+    /**
+     * Base is true when the row's mint is the pool's base token, the side
+     * the pool prices; false when it is the pool's quote.
+     */
+    base?: boolean;
+    /**
+     * Dex is the pool's venue slug, same vocabulary as `?dex=`.
+     */
+    dex?: string;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintMigration = {
@@ -1012,14 +1037,20 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     /**
      * Bundled/Insiders are the audit-cell cohort flags (absent when not
      * notable). Bundled = the sealed launch bundle cohort; Insiders = the
-     * creator distributed supply via launch-window SPL transfers. Both are
-     * at-a-glance views of the per-mint risk card's cohorts.
+     * creator distributed supply via SPL transfers. Both are at-a-glance
+     * views of the per-mint risk card's cohorts.
      */
     bundled?: PulsightInternalCoreDomainAggregatorMintBundled;
     buy_count?: number;
     creator?: string;
     decimals?: number;
     dev_holdings?: PulsightInternalCoreDomainAggregatorDevHoldings;
+    /**
+     * DustFloat reports that the holders' circulating float is under 0.1 % of
+     * total supply: Top10Pct and the insiders' share measure dust, and the
+     * risk score's concentration rules did not fire on them.
+     */
+    dust_float?: boolean;
     fetch_status?: string;
     first_seen_ts?: string;
     freeze_authority?: string;
@@ -1056,6 +1087,12 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      */
     market_cap_usd?: number;
     markets_count?: number;
+    /**
+     * MatchedPool is set only on a `?search=` row the term reached through a
+     * pool address instead of the mint's own address, symbol or name: the row
+     * is one of that pool's tokens.
+     */
+    matched_pool?: PulsightInternalCoreDomainAggregatorMintMatchedPool;
     /**
      * MetadataURI/FetchStatus are detail-only identity fields the
      * frontend's TokenIdentityCard renders (off-chain JSON link + enrich
@@ -1495,6 +1532,12 @@ export type PulsightInternalCoreDomainAggregatorRiskReport = {
     authorities?: PulsightInternalCoreDomainAggregatorAuthorityStat;
     bundlers?: PulsightInternalCoreDomainAggregatorBundlerStat;
     dev?: PulsightInternalCoreDomainAggregatorDevStat;
+    /**
+     * DustFloat reports that the holders' circulating float is under 0.1 % of
+     * total supply: Top10 and the cohorts' held shares measure dust, and the
+     * concentration rules did not fire on them.
+     */
+    dust_float?: boolean;
     holder_count?: number;
     /**
      * top few (summary)
@@ -1611,13 +1654,20 @@ export type PulsightInternalCoreDomainAggregatorTrade = {
     kind?: string;
     label?: string;
     label_type?: string;
-    late?: boolean;
     mint?: string;
     mint_id?: number;
     price_age_ms?: number;
     price_source?: string;
     primary_pool?: string;
     primary_pool_id?: number;
+    /**
+     * PrimaryPoolQuoteMint is the primary pool's counter asset from this
+     * mint's side (its quote, or its base when the mint is the quote of a
+     * token-quoted pair) — the rule that decides whether a copy bot can
+     * execute there. REST decoration; absent when the catalog does not know
+     * the pool.
+     */
+    primary_pool_quote_mint?: string;
     qty?: string;
     realized?: PulsightInternalCoreDomainAggregatorMoney;
     route?: Array<PulsightInternalCoreDomainAggregatorHop>;
@@ -1854,6 +1904,13 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     total_tips?: number;
     total_tips_usd?: number;
     trader?: string;
+    /**
+     * UncoveredProceeds — proceeds of the window's sells of tokens with no
+     * known cost (received by transfer, or beyond the recorded buys). Neither
+     * RealizedProfit nor NetRealizedProfit includes them.
+     */
+    uncovered_proceeds_lamports?: number;
+    uncovered_proceeds_usd?: number;
     win_profit?: number;
     win_profit_usd?: number;
     win_sells?: number;
@@ -1937,7 +1994,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
+export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -2614,6 +2671,23 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     copies_reverted?: number;
     /**
+     * CopiesSkippedNonSolQuote is the part of CopiesSkippedUnpriced whose
+     * cause is the pool's quote: the target swapped in a USDC-, USDT- or
+     * token-quoted pool whose leg carries no SOL price, so the live bot has
+     * no route to copy it and both sides skip it (`non_sol_quote`). The
+     * runtime keeps ONE counter for both causes; this breakdown exists only
+     * here. Additive JSONB field — old rows decode as 0.
+     */
+    copies_skipped_non_sol_quote?: number;
+    /**
+     * CopiesSkippedPoolNotSimulated counts target swaps a per-pool run saw on a
+     * market it carried no instrument for (outside the mint's top pools, or a
+     * pool the catalog does not know). They fold into the target book and are
+     * recorded once as `pool_not_simulated`; nothing fills. A per-pool
+     * artefact, not in CopiesSkippedUnpriced. Additive JSONB field.
+     */
+    copies_skipped_pool_not_simulated?: number;
+    /**
      * CopiesSkippedUnpriced counts mirror trades that passed every rule and
      * would have fired, but whose triggering swap could not be priced honestly
      * — so they were NOT traded. Two causes, both data-side:
@@ -2682,6 +2756,16 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     per_pool?: boolean;
     /**
+     * PlatformFeeBps is the platform fee rate the run charged: the account's
+     * rate when the run was submitted.
+     */
+    platform_fee_bps?: number;
+    /**
+     * PlatformFeesPaidSol is the platform fee paid across every fill, folded
+     * out of realized PnL like priority fees and tips.
+     */
+    platform_fees_paid_sol?: number;
+    /**
      * PositionsOpenedUnmarked counts positions the run opened while it had NO
      * price to mark them with — so for as long as that lasted, every
      * price-based exit rule (take-profit, stop, trailing stop, max-drawdown)
@@ -2730,6 +2814,11 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     tips_paid_sol?: number;
     total_pnl_sol?: number;
     trades?: number;
+    /**
+     * TransferFeesPaidSol is the SOL value Token-2022 transfer fees took across
+     * every fill; it is already inside the fill prices, so it is not folded again.
+     */
+    transfer_fees_paid_sol?: number;
     unrealized_pnl_sol?: number;
     wins?: number;
 };
@@ -2748,6 +2837,10 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
      */
     landing_drift_bps?: number;
     mint?: string;
+    /**
+     * PlatformFeeSol is the platform fee this fill pays, in SOL.
+     */
+    platform_fee_sol?: number;
     /**
      * Pool is the AMM market this trade executed in. For a COPY trade it's the
      * pool the mirrored target actually swapped in (per-leg dex_swaps); for an
@@ -2770,6 +2863,10 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     sol_amount?: number;
     source?: PulsightInternalCoreUsecasesBacktestTradeSource;
     /**
+     * SwapFeeBps is the venue swap fee this fill paid, in basis points.
+     */
+    swap_fee_bps?: number;
+    /**
      * TargetPriceImpactPct is the MIRRORED trader's own price impact on the
      * swap we copied — set on copy trades triggered by a target swap, measured
      * against the reconstructed pre-swap reserve. It describes THEIR fill, so
@@ -2779,11 +2876,16 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     target_price_impact_pct?: number;
     tip_sol?: number;
     token_amount?: number;
+    /**
+     * TransferFeeSol is the SOL value the token's Token-2022 transfer fee took
+     * from this fill.
+     */
+    transfer_fee_sol?: number;
     triggering_swap_sig?: string;
     ts?: string;
 };
 
-export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored';
+export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'non_sol_quote' | 'pool_not_simulated' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored';
 
 export type PulsightInternalCoreUsecasesBacktestPreviewMarker = {
     pool_sol_at_trigger?: number;
@@ -2815,6 +2917,14 @@ export type PulsightInternalCoreUsecasesBacktestPreviewRequest = {
 export type PulsightInternalCoreUsecasesBacktestPreviewResponse = {
     markers?: Array<PulsightInternalCoreUsecasesBacktestPreviewMarker>;
     simulation_assumptions?: Array<string>;
+    skipped?: Array<PulsightInternalCoreUsecasesBacktestPreviewSkip>;
+};
+
+export type PulsightInternalCoreUsecasesBacktestPreviewSkip = {
+    reason?: PulsightInternalCoreUsecasesBacktestDeclineReason;
+    side?: PulsightInternalCoreUsecasesBacktestSide;
+    signature?: string;
+    ts?: number;
 };
 
 export type PulsightInternalCoreUsecasesBacktestSide = 'buy' | 'sell';
@@ -3021,10 +3131,10 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      */
     holding_pnl_lamports?: number;
     /**
-     * HoldingPnlUsd, PnlDistributionUsd and PnlSparkline7dUsd are the USD
-     * twins of the three snapshot figures below (micro-USD, stamped at
-     * execution), and TraderUsd carries the twin of every windowed money
-     * figure on the row.
+     * HoldingPnlUsd, PnlDistributionUsd, PnlSparkline7dUsd and
+     * PnlSparkline30dUsd are the USD twins of the four snapshot figures below
+     * (micro-USD, stamped at execution), and TraderUsd carries the twin of
+     * every windowed money figure on the row.
      */
     holding_pnl_usd?: number;
     id?: string;
@@ -3085,9 +3195,17 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      */
     pnl_distributions?: Array<PulsightInternalCoreUsecasesTraderTraderPnlDistributionRow>;
     /**
-     * PnlSparkline7d is the 7-day realised-PnL series, oldest first,
-     * expressed in lamports per day on the wire (the FormattedSol
-     * contract). Nil when the snapshot wasn't inlined.
+     * PnlSparkline30d is the net-PnL series over the last 30 UTC days,
+     * one point per day, oldest first, in lamports per day. Only a 30d page
+     * carries it.
+     */
+    pnl_sparkline_30d?: Array<number>;
+    pnl_sparkline_30d_usd?: Array<number>;
+    /**
+     * PnlSparkline7d is the 7-day net-PnL series (NetProfit7d's measure,
+     * one point per UTC day), oldest first, expressed in lamports per day
+     * on the wire (the FormattedSol contract). Nil when the snapshot wasn't
+     * inlined.
      */
     pnl_sparkline_7d?: Array<number>;
     pnl_sparkline_7d_usd?: Array<number>;
@@ -3679,7 +3797,7 @@ export type GetMintsData = {
          */
         window: string;
         /**
-         * Mint pubkey prefix or case-insensitive symbol/name substring (lifts the default liquidity floor)
+         * Mint pubkey prefix, case-insensitive symbol/name substring, or a pool address, which returns the pool's tokens first with `matched_pool` set (lifts the default liquidity floor)
          */
         search?: string;
         /**
@@ -5031,6 +5149,10 @@ export type PutStrategiesByIdErrors = {
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
+     * Forbidden
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
      * Not Found
      */
     404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
@@ -5109,11 +5231,11 @@ export type GetSwapsData = {
          */
         to_ts?: number;
         /**
-         * Cursor: return the latest rows strictly before this Unix epoch timestamp (no lower bound)
+         * Cursor: return the latest rows strictly before this Unix epoch timestamp (no lower bound); pass the oldest returned row's second
          */
         before_ts?: number;
         /**
-         * Max rows (default 100, max 1000)
+         * Page size (default 100, max 1000); a page never ends inside a second, so it can hold fewer rows while older ones remain, and a single-second page holds that whole second (up to 5000 rows)
          */
         limit?: number;
     };
@@ -5851,7 +5973,7 @@ export type GetTradersSearchData = {
     path?: never;
     query?: {
         /**
-         * Search query
+         * Wallet address or address prefix
          */
         q?: string;
         /**
