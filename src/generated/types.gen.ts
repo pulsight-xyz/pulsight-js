@@ -1156,6 +1156,12 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     swap_count?: number;
     symbol?: string;
     /**
+     * TippedSharePct — share of the mint's trades whose transaction paid a
+     * landing tip, in percent, over every trade since tips were recorded and
+     * arbitrage excluded. nil until 20 such trades.
+     */
+    tipped_share_pct?: number;
+    /**
      * Top10Pct is the top-10 holder concentration as a PERCENT of circulating
      * supply (0..100), off the mint's holder-stats plane — the figure the
      * listing's Distribution column leads with. nil until the plane has
@@ -3852,6 +3858,14 @@ export type GetMintsData = {
          * Lamport alias of min_fees, accepted only with unit=sol.
          */
         min_fees_sol?: number;
+        /**
+         * Min LIFETIME network fees per lifetime trade, whole units of `unit` — total_fees over total_tx_count.
+         */
+        min_fee_per_swap?: number;
+        /**
+         * Min share of the mint's trades whose transaction paid a landing tip, in percent — the row's tipped_share_pct. Mints without it are excluded.
+         */
+        min_tipped_share?: number;
         /**
          * Only mints first seen within the last N seconds (launched < N ago). Mints with no observed first_seen are excluded.
          */
