@@ -43,7 +43,7 @@ export const postBacktests = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * Get Backtest Limits
  *
- * Returns the per-run backtest cost ceiling (max credits per run) and the per-timeframe maximum run window in seconds, so clients can show and pre-check them. An absent timeframe is unlimited; admins are exempt.
+ * Returns the per-run backtest cost ceiling (max credits per run) and the per-timeframe maximum run window in seconds, so clients can show and pre-check them. An absent timeframe is unlimited.
  */
 export const getBacktestsLimits = <ThrowOnError extends boolean = false>(options?: Options<GetBacktestsLimitsData, ThrowOnError>) => (options?.client ?? client).get<GetBacktestsLimitsResponses, GetBacktestsLimitsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -361,7 +361,7 @@ export const getProgramLogosByProgramId = <ThrowOnError extends boolean = false>
 /**
  * Programs leaderboard
  *
- * On-chain programs ranked over a window: volume (SOL-projected; venue-executed for AMM-category programs, tx-level otherwise), unique users, revenue (category-gated: net arb extraction for arbitrage programs, decoded venue fees for AMMs, 0 = not measured for routers/unknowns), landed tx count, success / spam / non-swap rates, and a resolved category (admin identity > curated AMM seed > 7d arb-share auto-rule > unknown). Numeric filters are flat query params; SOL values in whole SOL, rates in percent.
+ * On-chain programs ranked over a window: volume (SOL-projected; venue-executed for AMM-category programs, tx-level otherwise), unique users, revenue (category-gated: net arb extraction for arbitrage programs, decoded venue fees for AMMs, 0 = not measured for routers/unknowns), landed tx count, success / spam / non-swap rates, and a resolved category (assigned identity > curated AMM seed > 7d arb-share auto-rule > unknown). Numeric filters are flat query params; SOL values in whole SOL, rates in percent.
  */
 export const getProgramsLeaderboard = <ThrowOnError extends boolean = false>(options?: Options<GetProgramsLeaderboardData, ThrowOnError>) => (options?.client ?? client).get<GetProgramsLeaderboardResponses, GetProgramsLeaderboardErrors, ThrowOnError>({ url: '/api/programs/leaderboard', ...options });
 

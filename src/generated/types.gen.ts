@@ -445,7 +445,7 @@ export type PulsightInternalCoreDomainAggregatorBundlerEntry = {
     initial_pct_of_supply?: number;
     /**
      * Label/LabelType identify a known wallet (e.g. "Bybit"/"cex") from the
-     * admin-managed registry; empty when unknown. Same provenance as
+     * known-addresses registry; empty when unknown. Same provenance as
      * HolderEntry.Label.
      */
     label?: string;
@@ -774,7 +774,7 @@ export type PulsightInternalCoreDomainAggregatorHolderEntry = {
     is_sniper?: boolean;
     /**
      * Label/LabelType identify a known wallet (e.g. "Bybit"/"cex",
-     * "Pump.fun Fees"/"fee") from the admin-managed registry; empty when
+     * "Pump.fun Fees"/"fee") from the known-addresses registry; empty when
      * unknown.
      */
     label?: string;
@@ -1268,7 +1268,7 @@ export type PulsightInternalCoreDomainAggregatorMintTraderRow = {
     is_sniper?: boolean;
     /**
      * Label/LabelType identify a known wallet (CEX/fee/...) from the
-     * admin-managed registry; empty when unknown.
+     * known-addresses registry; empty when unknown.
      */
     label?: string;
     label_type?: string;
@@ -1387,28 +1387,22 @@ export type PulsightInternalCoreDomainAggregatorProgramBoardPage = {
 export type PulsightInternalCoreDomainAggregatorProgramBoardRow = {
     arb_txs?: number;
     /**
-     * Category is the RESOLVED category: admin identity > embedded
+     * Category is the RESOLVED category: assigned identity > embedded
      * program seed > 7d auto-arb rule > "unknown".
      */
     category?: string;
     censored?: boolean;
     failed_txs?: number;
     first_seen_ms?: number;
-    /**
-     * Hidden mirrors the admin identity's hide flag. Hidden rows never
-     * reach the public board (dropped before ranking) — only the admin
-     * listing serves them.
-     */
-    hidden?: boolean;
     last_seen_ms?: number;
     /**
-     * LogoURI is the admin-assigned identity logo, falling back to the
+     * LogoURI is the program's assigned identity logo, falling back to the
      * embedded seed's self-hosted mirror path (/program-logos/…); empty
      * when the program has none.
      */
     logo_uri?: string;
     /**
-     * Name is the admin-assigned identity name, falling back to the
+     * Name is the program's assigned identity name, falling back to the
      * embedded seed name; empty when unnamed.
      */
     name?: string;
@@ -2000,7 +1994,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -2009,7 +2003,7 @@ export type PulsightInternalCoreDomainCreditReason = 'grant' | 'consume' | 'refu
 export type PulsightInternalCoreDomainCreditTransaction = {
     /**
      * APIKeyID attributes a metered consume to the api token that caused
-     * it. nil for interactive sessions, OAuth callers, admin adjustments
+     * it. nil for interactive sessions, OAuth callers, manual adjustments
      * and period grants — and for every row written before changeset 079.
      */
     api_key_id?: string;
@@ -2442,7 +2436,7 @@ export type PulsightInternalCorePortsInputPlanLimitsRead = {
     max_filters?: number;
     /**
      * MaxStrategies is the strategy cap, 0 meaning UNLIMITED (see
-     * subscription.PlanLimits.MaxStrategies). It carries the admin's
+     * subscription.PlanLimits.MaxStrategies). It carries the per-tier
      * `tier_plan_limits` override, not the compiled-in default.
      */
     max_strategies?: number;
@@ -2495,7 +2489,7 @@ export type PulsightInternalCorePortsInputUserPoolCredits = {
      */
     balance?: number;
     /**
-     * Gifted is the persistent admin-gift reserve still available. It is
+     * Gifted is the persistent gifted reserve still available. It is
      * spent down before the cycle allowance and survives tier changes.
      * Cycle tier balance remaining = Balance − Gifted.
      */
