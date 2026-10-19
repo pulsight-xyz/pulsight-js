@@ -744,24 +744,67 @@ export type PulsightInternalCoreDomainAggregatorDevStat = {
 };
 
 export type PulsightInternalCoreDomainAggregatorGlobalTipStats = {
+    /**
+     * P50TipLamports, P90TipLamports and P99TipLamports are the median, 90th
+     * and 99th percentile tip (t-digest estimates). Lamports only: there is no
+     * USD twin of a percentile.
+     */
     p50_tip_lamports?: number;
     p90_tip_lamports?: number;
-    priority_fee_sum?: number;
-    swap_count?: number;
-    tip_avg_lamports?: number;
-    tip_count?: number;
-    tip_sum_lamports?: number;
+    p99_tip_lamports?: number;
     /**
-     * TippedFraction is tip_count / swap_count over the window (0..1).
+     * Previous holds the same figures over the window of equal length just
+     * before this one. Omitted for `all`, and when the ledger does not cover
+     * that window.
+     */
+    previous?: PulsightInternalCoreDomainAggregatorTipPeriodStats;
+    /**
+     * PriorityFeeSum is the priority fees the tipped transactions paid
+     * alongside their tips, in lamports.
+     */
+    priority_fee_sum?: number;
+    priority_fee_sum_usd?: number;
+    /**
+     * SwapCount is every landed transaction of the period, tipped or not,
+     * read off the hourly program plane with each hour weighted by its
+     * overlap with the period.
+     */
+    swap_count?: number;
+    /**
+     * TipAvgLamports is the mean tip per tipped transaction.
+     */
+    tip_avg_lamports?: number;
+    tip_avg_usd?: number;
+    /**
+     * TipCount is the number of tipped transactions.
+     */
+    tip_count?: number;
+    /**
+     * TipSumLamports is the tips those transactions paid.
+     */
+    tip_sum_lamports?: number;
+    tip_sum_usd?: number;
+    /**
+     * TippedFraction is tip_count / swap_count (0..1).
      */
     tipped_fraction?: number;
+    /**
+     * TippedVolumeFraction is tipped_volume_lamports / total_volume_lamports
+     * (0..1).
+     */
+    tipped_volume_fraction?: number;
+    /**
+     * TippedVolumeLamports is the value the tipped transactions traded.
+     */
+    tipped_volume_lamports?: number;
+    tipped_volume_usd?: number;
+    /**
+     * TotalVolumeLamports is the value every landed transaction traded,
+     * weighted like SwapCount.
+     */
+    total_volume_lamports?: number;
+    total_volume_usd?: number;
     window?: string;
-};
-
-export type PulsightInternalCoreDomainAggregatorHeatmapResponse = {
-    bucket?: string;
-    horizon_hours?: number;
-    points?: Array<PulsightInternalCoreDomainAggregatorTipHeatmapPoint>;
 };
 
 export type PulsightInternalCoreDomainAggregatorHolderEntry = {
@@ -830,36 +873,69 @@ export type PulsightInternalCoreDomainAggregatorMarketStat = {
     total_liquidity_usd?: number;
 };
 
-export type PulsightInternalCoreDomainAggregatorMatPoint = {
-    bucket_ts?: number;
-    ma_1h?: number;
-    ma_5m?: number;
-    tip_avg?: number;
-};
-
-export type PulsightInternalCoreDomainAggregatorMevTipSharePoint = {
-    bucket_ts?: number;
-    share_pct?: number;
-    tipped_volume_lamports?: number;
-    total_volume_lamports?: number;
-};
-
 export type PulsightInternalCoreDomainAggregatorMintActivityBase = {
     fees_lamports?: number;
     fees_micro_usd?: number;
     swaps?: number;
+    /**
+     * TipTrades is a point's tip_trades over everything before the range.
+     * Served with the `tips` field.
+     */
+    tip_trades?: number;
+    /**
+     * TippedTrades is a point's tipped_trades over everything before the
+     * range. Served with the `tips` field.
+     */
+    tipped_trades?: number;
+    /**
+     * Traders packs the key of every wallet with a buy or sell row before the
+     * range, as a point's traders. Served with the `trader_base` field.
+     */
+    traders?: string;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintActivityPoint = {
     fees_lamports?: number;
     fees_micro_usd?: number;
     swaps?: number;
+    /**
+     * TipTrades counts the bucket's buy and sell rows, arbitrage excluded,
+     * whose transaction's landing tip was recorded — the denominator of the
+     * token page's tipped share. Served with the `tips` field.
+     */
+    tip_trades?: number;
+    /**
+     * TippedTrades counts those of them whose transaction paid a landing
+     * tip. Served with the `tips` field.
+     */
+    tipped_trades?: number;
+    /**
+     * Traders packs one key per wallet with a buy or sell row in the bucket:
+     * ClickHouse cityHash64 of the wallet's 32 bytes, 8 bytes little-endian
+     * each, base64-encoded. Served with the `traders` field.
+     */
+    traders?: string;
     ts?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintActivitySeed = {
     base?: PulsightInternalCoreDomainAggregatorMintActivityBase;
+    /**
+     * Fields names the opt-in parts the response carries, in the request's
+     * vocabulary.
+     */
+    fields?: Array<string>;
+    /**
+     * FirstTradeTS is the mint's first trade, unix seconds, absent when it
+     * has none. Served with the `launch` field.
+     */
+    first_trade_ts?: number;
     from?: number;
+    /**
+     * Launch is the mint's sealed launch bundle, absent until it is sealed.
+     * Served with the `launch` field.
+     */
+    launch?: PulsightInternalCoreDomainAggregatorMintLaunchBundle;
     mint?: string;
     points?: Array<PulsightInternalCoreDomainAggregatorMintActivityPoint>;
     to?: number;
@@ -908,6 +984,19 @@ export type PulsightInternalCoreDomainAggregatorMintHoneypot = {
 export type PulsightInternalCoreDomainAggregatorMintInsiders = {
     pct_of_supply?: number;
     wallets?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorMintLaunchBundle = {
+    /**
+     * MeasuredAt is when the bundle became measurable, unix seconds: 302 s
+     * after the mint's first trade, when its seal falls due.
+     */
+    measured_at?: number;
+    /**
+     * Pct is the share of supply the launch bundle took, in percent — the
+     * risk card's bundled at launch.
+     */
+    pct?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintLiveMetrics = {
@@ -1605,29 +1694,232 @@ export type PulsightInternalCoreDomainAggregatorSafetyEvent = {
 };
 
 export type PulsightInternalCoreDomainAggregatorServiceDominanceRow = {
+    /**
+     * P50TipLamports and P90TipLamports are the median and 90th percentile
+     * tip paid to this service.
+     */
+    p50_tip_lamports?: number;
+    p90_tip_lamports?: number;
+    /**
+     * PrevSharePct is SharePct over the window of equal length just before
+     * this one: 0 for a service absent from it, null for `all` and when the
+     * ledger does not cover it.
+     */
+    prev_share_pct?: number;
     share_pct?: number;
+    /**
+     * TipAvgLamports is the mean tip per tipped transaction.
+     */
+    tip_avg_lamports?: number;
+    tip_avg_usd?: number;
     tip_service?: string;
+    /**
+     * TipSharePct is this service's share of the tips paid in the window
+     * (0..100).
+     */
+    tip_share_pct?: number;
     tip_sum_lamports?: number;
+    /**
+     * TipSumUsd is TipSumLamports on the transactions' USD stamps
+     * (micro-USD).
+     */
+    tip_sum_usd?: number;
     tipped_count?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorTimeframe = '1s' | '5s' | '15s' | '30s' | '1m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '12h' | '24h';
 
-export type PulsightInternalCoreDomainAggregatorTipHeatmapPoint = {
+export type PulsightInternalCoreDomainAggregatorTipAdoption = {
     /**
-     * unix epoch seconds at bucket start
+     * BucketSecs is the bucket width in seconds, a whole number of hours;
+     * buckets start on multiples of it since the Unix epoch.
+     */
+    bucket_secs?: number;
+    /**
+     * From is the first bucket's start (unix seconds).
+     */
+    from?: number;
+    /**
+     * Points is ascending; a bucket with neither tipped nor landed
+     * transactions is absent.
+     */
+    points?: Array<PulsightInternalCoreDomainAggregatorTipAdoptionPoint>;
+    /**
+     * To is the read time (unix seconds); the bucket containing it is still
+     * filling.
+     */
+    to?: number;
+    window?: string;
+};
+
+export type PulsightInternalCoreDomainAggregatorTipAdoptionPoint = {
+    /**
+     * BucketTS is the bucket start, unix seconds.
      */
     bucket_ts?: number;
-    median_tip_lamports?: number;
+    /**
+     * LandedCount is the bucket's landed transactions, tipped or not.
+     */
+    landed_count?: number;
+    /**
+     * TippedCount is the bucket's tipped transactions.
+     */
+    tipped_count?: number;
+    /**
+     * TippedVolumeLamports is the value the tipped transactions traded.
+     */
+    tipped_volume_lamports?: number;
+    tipped_volume_usd?: number;
+    /**
+     * TotalVolumeLamports is the value every landed transaction traded.
+     */
+    total_volume_lamports?: number;
+    total_volume_usd?: number;
+    /**
+     * TxShare is tipped_count / landed_count (0..1), null when nothing
+     * landed.
+     */
+    tx_share?: number;
+    /**
+     * VolumeShare is tipped_volume_lamports / total_volume_lamports (0..1),
+     * null when nothing traded.
+     */
+    volume_share?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorTipPeriodStats = {
+    /**
+     * P50TipLamports, P90TipLamports and P99TipLamports are the median, 90th
+     * and 99th percentile tip (t-digest estimates). Lamports only: there is no
+     * USD twin of a percentile.
+     */
+    p50_tip_lamports?: number;
     p90_tip_lamports?: number;
+    p99_tip_lamports?: number;
+    /**
+     * PriorityFeeSum is the priority fees the tipped transactions paid
+     * alongside their tips, in lamports.
+     */
+    priority_fee_sum?: number;
+    priority_fee_sum_usd?: number;
+    /**
+     * SwapCount is every landed transaction of the period, tipped or not,
+     * read off the hourly program plane with each hour weighted by its
+     * overlap with the period.
+     */
+    swap_count?: number;
+    /**
+     * TipAvgLamports is the mean tip per tipped transaction.
+     */
+    tip_avg_lamports?: number;
+    tip_avg_usd?: number;
+    /**
+     * TipCount is the number of tipped transactions.
+     */
+    tip_count?: number;
+    /**
+     * TipSumLamports is the tips those transactions paid.
+     */
+    tip_sum_lamports?: number;
+    tip_sum_usd?: number;
+    /**
+     * TippedFraction is tip_count / swap_count (0..1).
+     */
+    tipped_fraction?: number;
+    /**
+     * TippedVolumeFraction is tipped_volume_lamports / total_volume_lamports
+     * (0..1).
+     */
+    tipped_volume_fraction?: number;
+    /**
+     * TippedVolumeLamports is the value the tipped transactions traded.
+     */
+    tipped_volume_lamports?: number;
+    tipped_volume_usd?: number;
+    /**
+     * TotalVolumeLamports is the value every landed transaction traded,
+     * weighted like SwapCount.
+     */
+    total_volume_lamports?: number;
+    total_volume_usd?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorTipSeries = {
+    /**
+     * BucketSecs is the bucket width in seconds; buckets start on multiples
+     * of it since the Unix epoch.
+     */
+    bucket_secs?: number;
+    /**
+     * From is the first bucket's start (unix seconds): the window start
+     * rounded down to a bucket.
+     */
+    from?: number;
+    /**
+     * Points holds the buckets with at least one tipped transaction, oldest
+     * first; a bucket without one is absent rather than zero.
+     */
+    points?: Array<PulsightInternalCoreDomainAggregatorTipSeriesPoint>;
+    /**
+     * To is the read time (unix seconds); the bucket containing it is still
+     * filling.
+     */
+    to?: number;
+    window?: string;
+};
+
+export type PulsightInternalCoreDomainAggregatorTipSeriesPoint = {
+    /**
+     * BucketTS is the bucket start, unix seconds.
+     */
+    bucket_ts?: number;
+    /**
+     * P50TipLamports, P90TipLamports and P99TipLamports are the bucket's
+     * median, 90th and 99th percentile tip.
+     */
+    p50_tip_lamports?: number;
+    p90_tip_lamports?: number;
+    p99_tip_lamports?: number;
+    priority_fee_sum?: number;
+    priority_fee_sum_usd?: number;
+    tip_sum_lamports?: number;
+    tip_sum_usd?: number;
     tipped_count?: number;
 };
 
-export type PulsightInternalCoreDomainAggregatorTipPriorityRatioPoint = {
-    bucket_ts?: number;
-    priority_fee_sum?: number;
-    ratio?: number;
-    tip_sum_lamports?: number;
+export type PulsightInternalCoreDomainAggregatorTipServiceSeries = {
+    /**
+     * BucketSecs is the bucket width in seconds; buckets start on multiples
+     * of it since the Unix epoch.
+     */
+    bucket_secs?: number;
+    /**
+     * Buckets is every bucket start from `from` through the bucket
+     * containing `to`, ascending.
+     */
+    buckets?: Array<number>;
+    /**
+     * From is the first bucket's start (unix seconds).
+     */
+    from?: number;
+    /**
+     * Services is ordered by the window's tipped transactions, descending.
+     */
+    services?: Array<PulsightInternalCoreDomainAggregatorTipServiceSeriesRow>;
+    /**
+     * To is the read time (unix seconds); the last bucket contains it and is
+     * still filling.
+     */
+    to?: number;
+    window?: string;
+};
+
+export type PulsightInternalCoreDomainAggregatorTipServiceSeriesRow = {
+    tip_service?: string;
+    /**
+     * TippedCount is aligned with `buckets`; a bucket without one is 0.
+     */
+    tipped_count?: Array<number>;
 };
 
 export type PulsightInternalCoreDomainAggregatorTrade = {
@@ -3964,6 +4256,10 @@ export type GetMintsByPubkeyActivityData = {
          * Range end, unix seconds (exclusive)
          */
         to: number;
+        /**
+         * Opt-in parts, comma-separated: tips, traders, trader_base, launch
+         */
+        fields?: string;
     };
     url: '/api/mints/{pubkey}/activity';
 };
@@ -5275,6 +5571,36 @@ export type GetSwapsResponses = {
 
 export type GetSwapsResponse = GetSwapsResponses[keyof GetSwapsResponses];
 
+export type GetTipsAdoptionData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Window (30m|1h|12h|1d|7d|30d|all)
+         */
+        window?: string;
+    };
+    url: '/api/tips/adoption';
+};
+
+export type GetTipsAdoptionErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTipsAdoptionError = GetTipsAdoptionErrors[keyof GetTipsAdoptionErrors];
+
+export type GetTipsAdoptionResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorTipAdoption;
+};
+
+export type GetTipsAdoptionResponse = GetTipsAdoptionResponses[keyof GetTipsAdoptionResponses];
+
 export type GetTipsGlobalData = {
     body?: never;
     path?: never;
@@ -5305,41 +5631,7 @@ export type GetTipsGlobalResponses = {
 
 export type GetTipsGlobalResponse = GetTipsGlobalResponses[keyof GetTipsGlobalResponses];
 
-export type GetTipsHeatmapData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Bucket (1m|5m|10m)
-         */
-        bucket?: string;
-        /**
-         * Horizon hours (1..24)
-         */
-        horizon_hours?: number;
-    };
-    url: '/api/tips/heatmap';
-};
-
-export type GetTipsHeatmapErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetTipsHeatmapError = GetTipsHeatmapErrors[keyof GetTipsHeatmapErrors];
-
-export type GetTipsHeatmapResponses = {
-    /**
-     * OK
-     */
-    200: PulsightInternalCoreDomainAggregatorHeatmapResponse;
-};
-
-export type GetTipsHeatmapResponse = GetTipsHeatmapResponses[keyof GetTipsHeatmapResponses];
-
-export type GetTipsMatData = {
+export type GetTipsSeriesData = {
     body?: never;
     path?: never;
     query?: {
@@ -5348,86 +5640,26 @@ export type GetTipsMatData = {
          */
         window?: string;
     };
-    url: '/api/tips/mat';
+    url: '/api/tips/series';
 };
 
-export type GetTipsMatErrors = {
+export type GetTipsSeriesErrors = {
     /**
      * Bad Request
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
 
-export type GetTipsMatError = GetTipsMatErrors[keyof GetTipsMatErrors];
+export type GetTipsSeriesError = GetTipsSeriesErrors[keyof GetTipsSeriesErrors];
 
-export type GetTipsMatResponses = {
+export type GetTipsSeriesResponses = {
     /**
      * OK
      */
-    200: Array<PulsightInternalCoreDomainAggregatorMatPoint>;
+    200: PulsightInternalCoreDomainAggregatorTipSeries;
 };
 
-export type GetTipsMatResponse = GetTipsMatResponses[keyof GetTipsMatResponses];
-
-export type GetTipsMevShareData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Window (30m|1h|12h|1d|7d|30d|all)
-         */
-        window?: string;
-    };
-    url: '/api/tips/mev-share';
-};
-
-export type GetTipsMevShareErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetTipsMevShareError = GetTipsMevShareErrors[keyof GetTipsMevShareErrors];
-
-export type GetTipsMevShareResponses = {
-    /**
-     * OK
-     */
-    200: Array<PulsightInternalCoreDomainAggregatorMevTipSharePoint>;
-};
-
-export type GetTipsMevShareResponse = GetTipsMevShareResponses[keyof GetTipsMevShareResponses];
-
-export type GetTipsPriorityRatioData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Window (30m|1h|12h|1d|7d|30d|all)
-         */
-        window?: string;
-    };
-    url: '/api/tips/priority-ratio';
-};
-
-export type GetTipsPriorityRatioErrors = {
-    /**
-     * Bad Request
-     */
-    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
-};
-
-export type GetTipsPriorityRatioError = GetTipsPriorityRatioErrors[keyof GetTipsPriorityRatioErrors];
-
-export type GetTipsPriorityRatioResponses = {
-    /**
-     * OK
-     */
-    200: Array<PulsightInternalCoreDomainAggregatorTipPriorityRatioPoint>;
-};
-
-export type GetTipsPriorityRatioResponse = GetTipsPriorityRatioResponses[keyof GetTipsPriorityRatioResponses];
+export type GetTipsSeriesResponse = GetTipsSeriesResponses[keyof GetTipsSeriesResponses];
 
 export type GetTipsServicesData = {
     body?: never;
@@ -5458,6 +5690,36 @@ export type GetTipsServicesResponses = {
 };
 
 export type GetTipsServicesResponse = GetTipsServicesResponses[keyof GetTipsServicesResponses];
+
+export type GetTipsServicesSeriesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Window (30m|1h|12h|1d|7d|30d|all)
+         */
+        window?: string;
+    };
+    url: '/api/tips/services/series';
+};
+
+export type GetTipsServicesSeriesErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetTipsServicesSeriesError = GetTipsServicesSeriesErrors[keyof GetTipsServicesSeriesErrors];
+
+export type GetTipsServicesSeriesResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorTipServiceSeries;
+};
+
+export type GetTipsServicesSeriesResponse = GetTipsServicesSeriesResponses[keyof GetTipsServicesSeriesResponses];
 
 export type GetTokenFiltersData = {
     body?: never;
