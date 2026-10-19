@@ -837,6 +837,25 @@ export type PulsightInternalCoreDomainAggregatorHop = {
     pool_id?: number;
 };
 
+export type PulsightInternalCoreDomainAggregatorLegsExportCatalog = {
+    /**
+     * Days are the exportable UTC days, newest first (YYYY-MM-DD).
+     */
+    days?: Array<string>;
+    /**
+     * Parts is how many parts each day is split into; a pool's legs are always in part pool_id % parts.
+     */
+    parts?: number;
+    /**
+     * Schema is the column set every part of every day carries.
+     */
+    schema?: string;
+    /**
+     * Venues are the venues whose legs are exported.
+     */
+    venues?: Array<string>;
+};
+
 export type PulsightInternalCoreDomainAggregatorLpEvent = {
     base_amount?: string;
     base_mint?: string;
@@ -2286,7 +2305,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -3999,6 +4018,131 @@ export type GetHealthLiveResponses = {
 };
 
 export type GetHealthLiveResponse = GetHealthLiveResponses[keyof GetHealthLiveResponses];
+
+export type GetLegsExportData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/legs/export';
+};
+
+export type GetLegsExportErrors = {
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * The caller is not an api token, the token lacks data:export, or the export is not granted to the account
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetLegsExportError = GetLegsExportErrors[keyof GetLegsExportErrors];
+
+export type GetLegsExportResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainAggregatorLegsExportCatalog;
+};
+
+export type GetLegsExportResponse = GetLegsExportResponses[keyof GetLegsExportResponses];
+
+export type GetLegsExportByDayLegsByPartData = {
+    body?: never;
+    path: {
+        /**
+         * UTC day (YYYY-MM-DD) listed by the catalog
+         */
+        day: string;
+        /**
+         * Part number, 0 to parts-1
+         */
+        part: number;
+    };
+    query?: never;
+    url: '/api/legs/export/{day}/legs/{part}';
+};
+
+export type GetLegsExportByDayLegsByPartErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * CREDIT_EXHAUSTED — api credit pool empty
+     */
+    402: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * The caller is not an api token, the token lacks data:export, or the export is not granted to the account
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Every export slot is busy; retry after Retry-After seconds
+     */
+    429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetLegsExportByDayLegsByPartError = GetLegsExportByDayLegsByPartErrors[keyof GetLegsExportByDayLegsByPartErrors];
+
+export type GetLegsExportByDayLegsByPartResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GetLegsExportByDayLegsByPartResponse = GetLegsExportByDayLegsByPartResponses[keyof GetLegsExportByDayLegsByPartResponses];
+
+export type GetLegsExportByDayPoolsData = {
+    body?: never;
+    path: {
+        /**
+         * UTC day (YYYY-MM-DD) listed by the catalog
+         */
+        day: string;
+    };
+    query?: never;
+    url: '/api/legs/export/{day}/pools';
+};
+
+export type GetLegsExportByDayPoolsErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * CREDIT_EXHAUSTED — api credit pool empty
+     */
+    402: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * The caller is not an api token, the token lacks data:export, or the export is not granted to the account
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Every export slot is busy; retry after Retry-After seconds
+     */
+    429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetLegsExportByDayPoolsError = GetLegsExportByDayPoolsErrors[keyof GetLegsExportByDayPoolsErrors];
+
+export type GetLegsExportByDayPoolsResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GetLegsExportByDayPoolsResponse = GetLegsExportByDayPoolsResponses[keyof GetLegsExportByDayPoolsResponses];
 
 export type GetMeCreditsData = {
     body?: never;
