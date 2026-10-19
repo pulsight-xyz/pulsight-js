@@ -850,10 +850,6 @@ export type PulsightInternalCoreDomainAggregatorLegsExportCatalog = {
      * Schema is the column set every part of every day carries.
      */
     schema?: string;
-    /**
-     * Venues are the venues whose legs are exported.
-     */
-    venues?: Array<string>;
 };
 
 export type PulsightInternalCoreDomainAggregatorLpEvent = {

@@ -135,7 +135,7 @@ export const getHealthLive = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * List the exportable days of DEX legs
  *
- * Lists the complete UTC days of PumpSwap and Raydium CPMM legs the export serves (inside the ledger's 90-day history), how many parts each day is split into and the column schema. Free. Needs an api token with the `data:export` scope on an account the export is granted to.
+ * Lists the complete UTC days of DEX legs the export serves, every venue the ledger records (inside the ledger's 90-day history), how many parts each day is split into and the column schema. Free. Needs an api token with the `data:export` scope on an account the export is granted to.
  */
 export const getLegsExport = <ThrowOnError extends boolean = false>(options?: Options<GetLegsExportData, ThrowOnError>) => (options?.client ?? client).get<GetLegsExportResponses, GetLegsExportErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -146,7 +146,7 @@ export const getLegsExport = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * Download one part of a day's DEX legs
  *
- * Streams, as Parquet (zstd), every PumpSwap and Raydium CPMM leg of the UTC day whose pool_id modulo the catalog's parts equals `part`, sorted by pool_id, slot, tx_index, ix_index. A pool's legs are in the same part every day. Columns: pool_id, mint_id, quote_mint_id (u64 ledger ids), dex, ts_ms, slot, tx_index, ix_index, trader (32 raw bytes), is_buy (the base side), base_amount, quote_amount, base_reserve_pre, quote_reserve_pre, base_reserve_post, quote_reserve_post (raw units), value_sol (lamports), swap_fee_bps (0 = unknown), flags. A request refused before streaming (400, 403, 429) is not charged, and one the server fails to deliver is refunded.
+ * Streams, as Parquet (zstd), every DEX leg of the UTC day, on every venue the ledger records, whose pool_id modulo the catalog's parts equals `part`, sorted by pool_id, slot, tx_index, ix_index. A pool's legs are in the same part every day. Columns: pool_id, mint_id, quote_mint_id (u64 ledger ids), dex, ts_ms, slot, tx_index, ix_index, trader (32 raw bytes), is_buy (the base side), base_amount, quote_amount, base_reserve_pre, quote_reserve_pre, base_reserve_post, quote_reserve_post (raw units), value_sol (lamports), swap_fee_bps (0 = unknown), flags. A request refused before streaming (400, 403, 429) is not charged, and one the server fails to deliver is refunded.
  */
 export const getLegsExportByDayLegsByPart = <ThrowOnError extends boolean = false>(options: Options<GetLegsExportByDayLegsByPartData, ThrowOnError>) => (options.client ?? client).get<GetLegsExportByDayLegsByPartResponses, GetLegsExportByDayLegsByPartErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -157,7 +157,7 @@ export const getLegsExportByDayLegsByPart = <ThrowOnError extends boolean = fals
 /**
  * Download the pools of a day's DEX legs
  *
- * Streams, as Parquet (zstd), every pool with a PumpSwap or Raydium CPMM leg on the UTC day: pool_id, pool (base58), dex, mint_id and mint (the base, base58), quote_mint_id and quote_mint (base58), first_slot (the pool's first swap the ledger saw, which may predate the 90-day history). A request refused before streaming (400, 403, 429) is not charged, and one the server fails to deliver is refunded.
+ * Streams, as Parquet (zstd), every pool with a leg on the UTC day, on any venue: pool_id, pool (base58), dex, mint_id and mint (the base, base58), quote_mint_id and quote_mint (base58), first_slot (the pool's first swap the ledger saw, which may predate the 90-day history). A request refused before streaming (400, 403, 429) is not charged, and one the server fails to deliver is refunded.
  */
 export const getLegsExportByDayPools = <ThrowOnError extends boolean = false>(options: Options<GetLegsExportByDayPoolsData, ThrowOnError>) => (options.client ?? client).get<GetLegsExportByDayPoolsResponses, GetLegsExportByDayPoolsErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
