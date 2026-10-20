@@ -4044,6 +4044,39 @@ export type GetLegsExportResponses = {
 
 export type GetLegsExportResponse = GetLegsExportResponses[keyof GetLegsExportResponses];
 
+export type GetLegsExportDeclaredQuotesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/legs/export/declared-quotes';
+};
+
+export type GetLegsExportDeclaredQuotesErrors = {
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * The caller is not an api token, the token lacks data:export, or the export is not granted to the account
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Every export slot is busy; retry after Retry-After seconds
+     */
+    429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetLegsExportDeclaredQuotesError = GetLegsExportDeclaredQuotesErrors[keyof GetLegsExportDeclaredQuotesErrors];
+
+export type GetLegsExportDeclaredQuotesResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GetLegsExportDeclaredQuotesResponse = GetLegsExportDeclaredQuotesResponses[keyof GetLegsExportDeclaredQuotesResponses];
+
 export type GetLegsExportByDayLegsByPartData = {
     body?: never;
     path: {
