@@ -843,6 +843,18 @@ export type PulsightInternalCoreDomainAggregatorLegsExportCatalog = {
      */
     days?: Array<string>;
     /**
+     * Facts are the token facts files every exportable day carries.
+     */
+    facts?: Array<string>;
+    /**
+     * FactsSchema is the column set of the token facts files.
+     */
+    facts_schema?: string;
+    /**
+     * InsidersSinceMs is when the insider plane found its first insider (unix ms), 0 before it found any; insider holdings before it are unknown.
+     */
+    insiders_since_ms?: number;
+    /**
      * Parts is how many parts each day is split into; a pool's legs are always in part pool_id % parts.
      */
     parts?: number;
@@ -2301,7 +2313,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
+export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
@@ -4076,6 +4088,56 @@ export type GetLegsExportDeclaredQuotesResponses = {
 };
 
 export type GetLegsExportDeclaredQuotesResponse = GetLegsExportDeclaredQuotesResponses[keyof GetLegsExportDeclaredQuotesResponses];
+
+export type GetLegsExportByDayFactsByDatasetData = {
+    body?: never;
+    path: {
+        /**
+         * UTC day (YYYY-MM-DD) listed by the catalog
+         */
+        day: string;
+        /**
+         * Facts file
+         */
+        dataset: 'minutes' | 'mints' | 'bundles' | 'insiders';
+    };
+    query?: never;
+    url: '/api/legs/export/{day}/facts/{dataset}';
+};
+
+export type GetLegsExportByDayFactsByDatasetErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * CREDIT_EXHAUSTED — api credit pool empty
+     */
+    402: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * The caller is not an api token, the token lacks data:export, or the export is not granted to the account
+     */
+    403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Every export slot is busy; retry after Retry-After seconds
+     */
+    429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetLegsExportByDayFactsByDatasetError = GetLegsExportByDayFactsByDatasetErrors[keyof GetLegsExportByDayFactsByDatasetErrors];
+
+export type GetLegsExportByDayFactsByDatasetResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GetLegsExportByDayFactsByDatasetResponse = GetLegsExportByDayFactsByDatasetResponses[keyof GetLegsExportByDayFactsByDatasetResponses];
 
 export type GetLegsExportByDayLegsByPartData = {
     body?: never;
