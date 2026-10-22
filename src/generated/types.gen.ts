@@ -855,6 +855,10 @@ export type PulsightInternalCoreDomainAggregatorLegsExportCatalog = {
      */
     insiders_since_ms?: number;
     /**
+     * LedgerStartMs is the time of the oldest leg the ledger holds (unix ms), 0 when it holds none; a pool's swaps before it are unknown.
+     */
+    ledger_start_ms?: number;
+    /**
      * Parts is how many parts each day is split into; a pool's legs are always in part pool_id % parts.
      */
     parts?: number;
@@ -2313,7 +2317,7 @@ export type PulsightInternalCoreDomainAggregatorTraderReliabilityStats = {
     window?: PulsightInternalCoreDomainAggregatorWindow;
 };
 
-export type PulsightInternalCoreDomainAggregatorWindow = '1d' | '7d' | '30d' | 'all' | '3m';
+export type PulsightInternalCoreDomainAggregatorWindow = '3m' | '1d' | '7d' | '30d' | 'all';
 
 export type PulsightInternalCoreDomainCreditPool = 'api';
 
