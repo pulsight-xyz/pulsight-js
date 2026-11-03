@@ -4103,7 +4103,7 @@ export type GetLegsExportByDayFactsByDatasetData = {
         /**
          * Facts file
          */
-        dataset: 'minutes' | 'mints' | 'bundles' | 'insiders' | 'activity' | 'activity_base' | 'insider_flows';
+        dataset: 'minutes' | 'mints' | 'bundles' | 'insiders' | 'activity' | 'activity_base' | 'insider_flows' | 'activity_slots';
     };
     query?: never;
     url: '/api/legs/export/{day}/facts/{dataset}';
