@@ -4077,7 +4077,7 @@ export type GetLegsExportDeclaredQuotesErrors = {
      */
     403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
-     * Every export slot is busy; retry after Retry-After seconds
+     * Every export slot is busy, or the account already has an export file streaming; retry after Retry-After seconds
      */
     429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
@@ -4127,7 +4127,7 @@ export type GetLegsExportByDayFactsByDatasetErrors = {
      */
     403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
-     * Every export slot is busy; retry after Retry-After seconds
+     * Every export slot is busy, or the account already has an export file streaming; retry after Retry-After seconds
      */
     429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
@@ -4177,7 +4177,7 @@ export type GetLegsExportByDayLegsByPartErrors = {
      */
     403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
-     * Every export slot is busy; retry after Retry-After seconds
+     * Every export slot is busy, or the account already has an export file streaming; retry after Retry-After seconds
      */
     429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
@@ -4223,7 +4223,7 @@ export type GetLegsExportByDayPoolsErrors = {
      */
     403: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
-     * Every export slot is busy; retry after Retry-After seconds
+     * Every export slot is busy, or the account already has an export file streaming; retry after Retry-After seconds
      */
     429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
 };
