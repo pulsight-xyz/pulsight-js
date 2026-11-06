@@ -847,10 +847,6 @@ export type PulsightInternalCoreDomainAggregatorLegsExportCatalog = {
      */
     facts?: Array<string>;
     /**
-     * FactsSchema is the column set of the token facts files.
-     */
-    facts_schema?: string;
-    /**
      * InsidersSinceMs is when the insider plane found its first insider (unix ms), 0 before it found any; insider holdings before it are unknown.
      */
     insiders_since_ms?: number;
@@ -862,10 +858,6 @@ export type PulsightInternalCoreDomainAggregatorLegsExportCatalog = {
      * Parts is how many parts each day is split into; a pool's legs are always in part pool_id % parts.
      */
     parts?: number;
-    /**
-     * Schema is the column set every part of every day carries.
-     */
-    schema?: string;
 };
 
 export type PulsightInternalCoreDomainAggregatorLpEvent = {
