@@ -6381,6 +6381,10 @@ export type GetTradersData = {
          */
         favorites_only?: boolean;
         /**
+         * Restrict to the caller's tracked wallets (authenticated only); with favorites_only, to the tracked favorites
+         */
+        tracked_only?: boolean;
+        /**
          * Comma list of DISPLAY-only window families to include: 1d, all. They ride the same board row; sorting is unaffected (it reads 7d/30d board columns) and f= filters read 1d/7d/30d board columns.
          */
         extra_windows?: string;
