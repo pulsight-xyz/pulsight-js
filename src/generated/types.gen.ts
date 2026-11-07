@@ -694,6 +694,11 @@ export type PulsightInternalCoreDomainAggregatorCosts = {
     rent_refunded?: PulsightInternalCoreDomainAggregatorMoney;
     tip?: PulsightInternalCoreDomainAggregatorMoney;
     tip_service?: string;
+    /**
+     * TopUp is what the payer deposited into a pump holder-rewards pot in the
+     * transaction: a cost of the sender, which net PnL subtracts, and no fee.
+     */
+    topup?: PulsightInternalCoreDomainAggregatorMoney;
 };
 
 export type PulsightInternalCoreDomainAggregatorCreatedMintRow = {
@@ -2168,6 +2173,12 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     cashback_claimed_lamports?: number;
     cashback_claimed_usd?: number;
     /**
+     * DexFees is the venue fees paid on top of the swap amounts, with the
+     * cashback a venue charges on top.
+     */
+    dex_fees?: number;
+    dex_fees_usd?: number;
+    /**
      * DidntBuySells / SoldGtBoughtSells count the window's uncovered sells:
      * sells of a mint with no observed buy, and sells that exceeded the
      * observed bought balance.
@@ -2185,13 +2196,18 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     loss_sells_usd?: number;
     /**
      * NetRealizedProfit is the board row's net PnL: RealizedProfit minus
-     * TotalFees, TotalTips and FailedCostLamports, plus the kept cashback and
-     * the holder rewards received — what the wallet actually kept. This is the
-     * HEADLINE PnL; RealizedProfit is the pre-cost component (accrual + arb
-     * take-home).
+     * TotalFees, Topups, TotalTips and FailedCostLamports, plus the kept
+     * cashback and the holder rewards received — what the wallet actually
+     * kept. This is the HEADLINE PnL; RealizedProfit is the pre-cost component
+     * (accrual + arb take-home).
      */
     net_realized_profit?: number;
     net_realized_profit_usd?: number;
+    /**
+     * PlatformFees is what trading tools and routers charged.
+     */
+    platform_fees?: number;
+    platform_fees_usd?: number;
     /**
      * RealizedProfit is the window's PnL: accrual realized profit PLUS the
      * arbitrage take-home (ArbPnlLamports). The two are disjoint (an arb round
@@ -2204,11 +2220,18 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     sold_gt_bought_sells?: number;
     swap_count?: number;
     token_num?: number;
+    /**
+     * Topups is what the wallet deposited into pump holder-rewards pots. It is
+     * a cost, not a fee: TotalFees leaves it out and NetRealizedProfit
+     * subtracts it.
+     */
+    topups?: number;
+    topups_usd?: number;
     total_buys?: number;
     /**
      * TotalFees is the window's execution costs other than tips: network fees
      * (base + priority) counted once per transaction, plus venue, platform and
-     * cashback-on-top fees.
+     * cashback-on-top fees — TxFees + DexFees + PlatformFees.
      */
     total_fees?: number;
     total_fees_usd?: number;
@@ -2219,6 +2242,12 @@ export type PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow = {
     total_tips?: number;
     total_tips_usd?: number;
     trader?: string;
+    /**
+     * TxFees is the network fees (base + priority), counted once per
+     * transaction.
+     */
+    tx_fees?: number;
+    tx_fees_usd?: number;
     /**
      * UncoveredProceeds — proceeds of the window's sells of tokens with no
      * known cost (received by transfer, or beyond the recorded buys). Neither
@@ -2527,6 +2556,12 @@ export type PulsightInternalCoreDomainTraderTrader = {
      */
     chain?: string;
     created_at?: string;
+    dex_fees_1d?: number;
+    dex_fees_1d_usd?: number;
+    dex_fees_30d?: number;
+    dex_fees_30d_usd?: number;
+    dex_fees_7d?: number;
+    dex_fees_7d_usd?: number;
     didnt_buy_sells_1d?: number;
     didnt_buy_sells_30d?: number;
     /**
@@ -2584,8 +2619,9 @@ export type PulsightInternalCoreDomainTraderTrader = {
     net_profit_30d_usd?: number;
     /**
      * Net-of-costs windowed figures, lamports. NetProfit is realized PnL
-     * minus tips, per-transaction fees and the fees burned on failed / no-CPI
-     * transactions — what the wallet actually kept. The gross figure stays on
+     * minus TotalCosts (fees, pot top-ups, tips and the fees burned on failed
+     * / no-CPI transactions), plus the cashback claimed and the holder rewards
+     * received — what the wallet actually kept. The gross figure stays on
      * RealizedProfit*d so both are readable. SuccessRate / SpamRate are nil
      * when the window observed no transactions at all (0 would read as
      * "never lands").
@@ -2595,6 +2631,12 @@ export type PulsightInternalCoreDomainTraderTrader = {
     net_profit_all?: number;
     net_profit_all_usd?: number;
     oldest_trade_at?: number;
+    platform_fees_1d?: number;
+    platform_fees_1d_usd?: number;
+    platform_fees_30d?: number;
+    platform_fees_30d_usd?: number;
+    platform_fees_7d?: number;
+    platform_fees_7d_usd?: number;
     /**
      * RealizedProfit is the lifetime realized PnL in lamports.
      */
@@ -2672,6 +2714,12 @@ export type PulsightInternalCoreDomainTraderTrader = {
     token_num_30d?: number;
     token_num_7d?: number;
     token_num_all?: number;
+    topups_1d?: number;
+    topups_1d_usd?: number;
+    topups_30d?: number;
+    topups_30d_usd?: number;
+    topups_7d?: number;
+    topups_7d_usd?: number;
     total_costs_1d?: number;
     total_costs_1d_usd?: number;
     total_costs_30d?: number;
@@ -2684,6 +2732,18 @@ export type PulsightInternalCoreDomainTraderTrader = {
     total_profit_7d?: number;
     total_profit_pnl_30d?: number;
     total_profit_pnl_7d?: number;
+    tx_fees_1d?: number;
+    tx_fees_1d_usd?: number;
+    tx_fees_30d?: number;
+    tx_fees_30d_usd?: number;
+    /**
+     * TotalCosts lines: TxFees the network fees, DexFees the venue fees and
+     * venue cashback charged on top, PlatformFees what trading tools and
+     * routers charged, Topups what the wallet deposited into pump
+     * holder-rewards pots. Tips and failed-tx burn are the rest.
+     */
+    tx_fees_7d?: number;
+    tx_fees_7d_usd?: number;
     updated_at?: string;
     wallet_address?: string;
     winrate_1d?: number;
@@ -3296,16 +3356,18 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     cashback?: number;
     cashback_usd?: number;
     day?: string;
+    dex_fees?: number;
+    dex_fees_usd?: number;
     failed_cost?: number;
     failed_cost_usd?: number;
     failed_txs?: number;
     /**
-     * Costs of the day (lamports): per-tx fees, tips, and failed-tx burn,
-     * against what pump paid the wallet that day — cashback CLAIMED and
+     * Costs of the day (lamports): fees, pot top-ups, tips, and failed-tx
+     * burn, against what pump paid the wallet that day — cashback CLAIMED and
      * holder rewards RECEIVED, both cash basis — with `net = profit - fees
-     * - tips - failed_cost + cashback + holder_rewards` (profit already
-     * includes the arbitrage take-home). The charts plot NET as the headline
-     * series; `profit` stays as the flat/gross component.
+     * - topups - tips - failed_cost + cashback + holder_rewards` (profit
+     * already includes the arbitrage take-home). The charts plot NET as the
+     * headline series; `profit` stays as the flat/gross component.
      */
     fees?: number;
     fees_usd?: number;
@@ -3320,6 +3382,8 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     holder_rewards_usd?: number;
     net?: number;
     net_usd?: number;
+    platform_fees?: number;
+    platform_fees_usd?: number;
     profit?: number;
     /**
      * The Usd twins are the same day's figures on the trades' USD stamps
@@ -3329,6 +3393,19 @@ export type PulsightInternalCoreUsecasesTraderPnlSeriesPoint = {
     success_rate?: number;
     tips?: number;
     tips_usd?: number;
+    /**
+     * Topups is what the wallet deposited into pump holder-rewards pots: a
+     * cost in no fee line.
+     */
+    topups?: number;
+    topups_usd?: number;
+    /**
+     * TxFees, DexFees and PlatformFees itemize Fees: the network fees once
+     * per transaction, the venue fees and venue cashback charged on top of the
+     * swap amounts, and what trading tools and routers charged.
+     */
+    tx_fees?: number;
+    tx_fees_usd?: number;
     /**
      * Txs is the day's landed transaction count; FailedTxs the failed-tx
      * ledger's failed swaps+arbs+other. SuccessRate divides the OBSERVED
@@ -3408,6 +3485,12 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     cashback_share_all?: number;
     chain?: string;
     created_at?: string;
+    dex_fees_1d?: number;
+    dex_fees_1d_usd?: number;
+    dex_fees_30d?: number;
+    dex_fees_30d_usd?: number;
+    dex_fees_7d?: number;
+    dex_fees_7d_usd?: number;
     didnt_buy_sells_1d?: number;
     didnt_buy_sells_30d?: number;
     /**
@@ -3493,6 +3576,12 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      * trader-detail page.
      */
     periods?: Array<PulsightInternalCoreDomainAggregatorTraderPeriodStatsRow>;
+    platform_fees_1d?: number;
+    platform_fees_1d_usd?: number;
+    platform_fees_30d?: number;
+    platform_fees_30d_usd?: number;
+    platform_fees_7d?: number;
+    platform_fees_7d_usd?: number;
     /**
      * PnlDistribution is the 5-bucket realised-PnL distribution for
      * the request window: [<-50%, -50–0%, 0–2×, 2–5×, >5×]. Nil when
@@ -3586,6 +3675,12 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      */
     tokens_created?: number;
     tokens_graduated?: number;
+    topups_1d?: number;
+    topups_1d_usd?: number;
+    topups_30d?: number;
+    topups_30d_usd?: number;
+    topups_7d?: number;
+    topups_7d_usd?: number;
     total_costs_1d?: number;
     total_costs_1d_usd?: number;
     total_costs_30d?: number;
@@ -3598,6 +3693,17 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     total_profit_7d?: number;
     total_profit_pnl_30d?: number;
     total_profit_pnl_7d?: number;
+    tx_fees_1d?: number;
+    tx_fees_1d_usd?: number;
+    tx_fees_30d?: number;
+    tx_fees_30d_usd?: number;
+    /**
+     * The lines of TotalCosts7d beside tips and failed-tx burn: network fees,
+     * venue fees (with venue cashback charged on top), platform fees, and
+     * what the wallet deposited into pump holder-rewards pots.
+     */
+    tx_fees_7d?: number;
+    tx_fees_7d_usd?: number;
     updated_at?: string;
     wallet_address?: string;
     winrate_1d?: number;
