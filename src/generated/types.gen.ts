@@ -20,26 +20,72 @@ export type InternalAdaptersPrimaryHttpHandlerPaginatedCreditLedger = {
     total?: number;
 };
 
+export type InternalAdaptersPrimaryHttpHandlerSimulationAssumptionsResponse = {
+    /**
+     * SimulationAssumptions is the list every run's
+     * summary.simulation_assumptions and every preview carry.
+     */
+    simulation_assumptions?: Array<string>;
+};
+
 export type InternalAdaptersPrimaryHttpHandlerStrategyListItem = {
     record?: PulsightInternalCoreDomainStrategyRecord;
     stats?: InternalAdaptersPrimaryHttpHandlerStrategyStats;
 };
 
+export type InternalAdaptersPrimaryHttpHandlerStrategyRunPoint = {
+    backtest_id?: string;
+    /**
+     * CreatedAt is when the run was submitted, the key the series is
+     * ordered by.
+     */
+    created_at?: string;
+    roi_pct?: number;
+    /**
+     * TimeFrom and TimeTo bound the window the run replayed.
+     */
+    time_from?: string;
+    time_to?: string;
+    /**
+     * TotalPnlSol is the run's summary.total_pnl_sol, not a running sum.
+     */
+    total_pnl_sol?: number;
+};
+
 export type InternalAdaptersPrimaryHttpHandlerStrategyStats = {
     draft?: boolean;
     /**
-     * EquityPoints is the cumulative-P&L curve across the most
-     * recent ≤20 `done` runs, ordered ascending by finished_at.
-     * Each element is the running sum of `summary.total_pnl_sol`
-     * through that run, so a frontend <polyline> over these points
-     * renders the dashboard sparkline directly.
+     * LastRunAt is when that run finished, or when it was submitted
+     * while it has not finished.
      */
-    equity_points?: Array<number>;
     last_run_at?: string;
+    /**
+     * LastRunPnlSol is that run's summary.total_pnl_sol; null until
+     * the run has a summary.
+     */
     last_run_pnl_sol?: number;
+    /**
+     * LastRunStatus is the status of the newest run by created_at,
+     * whatever its outcome.
+     */
     last_run_status?: string;
+    /**
+     * LastRunTrades is that run's summary.trades: every fill, buys
+     * included.
+     */
     last_run_trades?: number;
+    /**
+     * LastRunWinRatePct is that run's wins / (wins + losses) × 100, the
+     * win rate the run page shows; null until the run has closed a trade.
+     */
     last_run_win_rate_pct?: number;
+    /**
+     * RunPoints is one point per `done` run among the newest 20 by
+     * created_at, in ascending created_at order. Each point carries
+     * that run's own total_pnl_sol, never a running sum: runs differ
+     * in window and scope, so their PnL does not add up to an equity.
+     */
+    run_points?: Array<InternalAdaptersPrimaryHttpHandlerStrategyRunPoint>;
     total_runs?: number;
 };
 
@@ -2879,6 +2925,20 @@ export type PulsightInternalCorePortsInputUserPoolCredits = {
     used?: number;
 };
 
+export type PulsightInternalCoreUsecasesBacktestBacktestBreakdown = {
+    backtest_id?: string;
+    declines_by_reason?: {
+        [key: string]: number;
+    };
+    equity?: PulsightInternalCoreUsecasesBacktestEquityCurve;
+    mints?: Array<PulsightInternalCoreUsecasesBacktestMintBreakdown>;
+    target?: Array<PulsightInternalCoreUsecasesBacktestTargetMintComparison>;
+    /**
+     * TargetWallets are the mirrored wallets the target comparison reads.
+     */
+    target_wallets?: Array<string>;
+};
+
 export type PulsightInternalCoreUsecasesBacktestBacktestDecline = {
     backtest_id?: string;
     /**
@@ -2916,6 +2976,41 @@ export type PulsightInternalCoreUsecasesBacktestBacktestDecline = {
     tip_sol?: number;
     triggering_swap_sig?: string;
     ts?: string;
+};
+
+export type PulsightInternalCoreUsecasesBacktestBacktestEstimate = {
+    /**
+     * Credits is what the run would debit: one api credit per estimated tick.
+     */
+    credits?: number;
+    /**
+     * EstimatedTicks is the run's tick count: candles in the window times
+     * the scope's token slots (times the pools per mint on a per-pool run).
+     */
+    estimated_ticks?: number;
+    /**
+     * MaxTickBudget is the per-run tick ceiling, the most a run may cost.
+     */
+    max_tick_budget?: number;
+    /**
+     * MaxWindowSecs is the longest window the request's timeframe allows, in
+     * seconds; 0 means unlimited.
+     */
+    max_window_secs?: number;
+    /**
+     * MintsCount is how many tokens the scope admits over the window: the
+     * explicit list, or the strategy's own selection resolved minute by
+     * minute as a run resolves it.
+     */
+    mints_count?: number;
+    /**
+     * WithinBudget reports EstimatedTicks <= MaxTickBudget.
+     */
+    within_budget?: boolean;
+    /**
+     * WithinWindow reports that the window fits MaxWindowSecs.
+     */
+    within_window?: boolean;
 };
 
 export type PulsightInternalCoreUsecasesBacktestBacktestPosition = {
@@ -2958,6 +3053,10 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRecord = {
     starting_balance_sol?: number;
     status?: PulsightInternalCoreUsecasesBacktestBacktestStatus;
     strategy_id?: string;
+    /**
+     * StrategySnapshot is the def the run executed, frozen at submit. A run
+     * list carries it only with include=snapshot.
+     */
     strategy_snapshot?: PulsightInternalCoreDomainStrategyStrategyDef;
     summary?: PulsightInternalCoreUsecasesBacktestBacktestSummary;
     target_trader?: string;
@@ -3023,6 +3122,11 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      * RevertFeesSol + missed entries). Nil when the run had no landing fills.
      */
     avg_landing_drift_bps?: number;
+    /**
+     * CapitalRequiredSol is the starting balance that would have kept the cash
+     * walk at or above zero: max(StartingBalanceSol, StartingBalanceSol-MinCashSol).
+     */
+    capital_required_sol?: number;
     /**
      * CopiesDeclined counts target swaps a signal-driven exec wanted to act
      * on but that a RULE refused: cooldown, sizing, max_buys_per_open_position,
@@ -3107,6 +3211,14 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     losses?: number;
     max_drawdown_sol?: number;
     /**
+     * MinCashSol is the low point of the chronological cash walk: the starting
+     * balance minus every buy's size and costs, plus every sell's proceeds net
+     * of costs, minus reverted fills' costs. Negative means the run spent SOL
+     * the starting balance never had — the engine replays each token's whole
+     * window before the next one and cannot gate a buy on portfolio cash.
+     */
+    min_cash_sol?: number;
+    /**
      * Price-impact rollups, in percent of mid. "Our*" averages over every
      * simulated trade that had a pool snapshot; "Target*" averages over the
      * copy trades that mirrored a target swap 1:1 (same timestamp). Zero when
@@ -3175,11 +3287,19 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     revert_fees_sol?: number;
     roi_pct?: number;
     /**
+     * ScopeExitsUnpriced counts the forced closes an `on_retire: sell` policy
+     * could not fill because no candle had priced the token yet when it left
+     * the selection: the position stays open, its exits keep firing, and
+     * whatever is left at the end is marked in HeldPositions. Additive JSONB
+     * field — old rows decode as 0.
+     */
+    scope_exits_unpriced?: number;
+    /**
      * SimulationAssumptions is free-text notes about which real-world
      * cost components the simulator did NOT model (route hops, MEV,
      * partial fills, pre-trade gas estimation, etc.). Rendered
      * prominently on the result page so users don't read "won 4.2 SOL"
-     * too literally.
+     * too literally. A run list carries them only with include=assumptions.
      */
     simulation_assumptions?: Array<string>;
     starting_balance_sol?: number;
@@ -3261,6 +3381,48 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
 
 export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'non_sol_quote' | 'pool_not_simulated' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored';
 
+export type PulsightInternalCoreUsecasesBacktestEquityCurve = {
+    max_drawdown_at?: string;
+    max_drawdown_sol?: number;
+    points?: Array<PulsightInternalCoreUsecasesBacktestEquityPoint>;
+    /**
+     * SampledEveryNSteps is 1 when every step is a point, more when the walk
+     * was sampled to MaxEquityPoints.
+     */
+    sampled_every_n_steps?: number;
+};
+
+export type PulsightInternalCoreUsecasesBacktestEquityPoint = {
+    balance_sol?: number;
+    ts?: string;
+};
+
+export type PulsightInternalCoreUsecasesBacktestMintBreakdown = {
+    buys?: number;
+    /**
+     * Declines counts the target swaps on the mint a copy exec wanted to act
+     * on but did not fill.
+     */
+    declines?: number;
+    /**
+     * FeesSol is the swap, tip, platform and transfer fees its fills paid.
+     */
+    fees_sol?: number;
+    first_ts?: string;
+    /**
+     * HeldAtEnd reports a position still open when the run ended.
+     */
+    held_at_end?: boolean;
+    last_ts?: string;
+    mint?: string;
+    /**
+     * Pool is the pool most of the mint's fills priced on.
+     */
+    pool?: string;
+    realized_pnl_sol?: number;
+    sells?: number;
+};
+
 export type PulsightInternalCoreUsecasesBacktestPreviewMarker = {
     pool_sol_at_trigger?: number;
     /**
@@ -3302,6 +3464,27 @@ export type PulsightInternalCoreUsecasesBacktestPreviewSkip = {
 };
 
 export type PulsightInternalCoreUsecasesBacktestSide = 'buy' | 'sell';
+
+export type PulsightInternalCoreUsecasesBacktestTargetMintComparison = {
+    /**
+     * FollowedPct is our buys over the target's, in percent; absent when the
+     * target bought nothing.
+     */
+    followed_pct?: number;
+    mint?: string;
+    our_buys?: number;
+    our_realized_sol?: number;
+    our_sells?: number;
+    target_buys?: number;
+    target_sells?: number;
+    /**
+     * TargetSolIn and TargetSolOut are the SOL the target spent buying and
+     * received selling in the window; their difference is a cash flow, not a
+     * realized PnL, since a position can stay open.
+     */
+    target_sol_in?: number;
+    target_sol_out?: number;
+};
 
 export type PulsightInternalCoreUsecasesBacktestTimeRange = {
     from?: string;
@@ -3747,11 +3930,23 @@ export type PulsightInternalCorePortsInputFilterUpdateRequest2 = PulsightInterna
 export type GetBacktestsData = {
     body?: never;
     path?: never;
-    query?: {
+    query: {
         /**
-         * Strategy ID (when called via /api/backtests)
+         * Strategy ID
          */
-        strategy_id?: string;
+        strategy_id: string;
+        /**
+         * Page size (default 20, max 200)
+         */
+        limit?: number;
+        /**
+         * Page offset (default 0)
+         */
+        offset?: number;
+        /**
+         * Comma-separated: snapshot (strategy_snapshot), assumptions (summary.simulation_assumptions). Default none.
+         */
+        include?: string;
     };
     url: '/api/backtests';
 };
@@ -3811,6 +4006,63 @@ export type PostBacktestsResponses = {
 };
 
 export type PostBacktestsResponse = PostBacktestsResponses[keyof PostBacktestsResponses];
+
+export type GetBacktestsAssumptionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/backtests/assumptions';
+};
+
+export type GetBacktestsAssumptionsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetBacktestsAssumptionsError = GetBacktestsAssumptionsErrors[keyof GetBacktestsAssumptionsErrors];
+
+export type GetBacktestsAssumptionsResponses = {
+    /**
+     * OK
+     */
+    200: InternalAdaptersPrimaryHttpHandlerSimulationAssumptionsResponse;
+};
+
+export type GetBacktestsAssumptionsResponse = GetBacktestsAssumptionsResponses[keyof GetBacktestsAssumptionsResponses];
+
+export type PostBacktestsEstimateData = {
+    /**
+     * The body POST /api/backtests takes
+     */
+    body: PulsightInternalCoreUsecasesBacktestBacktestRequest;
+    path?: never;
+    query?: never;
+    url: '/api/backtests/estimate';
+};
+
+export type PostBacktestsEstimateErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PostBacktestsEstimateError = PostBacktestsEstimateErrors[keyof PostBacktestsEstimateErrors];
+
+export type PostBacktestsEstimateResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreUsecasesBacktestBacktestEstimate;
+};
+
+export type PostBacktestsEstimateResponse = PostBacktestsEstimateResponses[keyof PostBacktestsEstimateResponses];
 
 export type GetBacktestsLimitsData = {
     body?: never;
@@ -3920,6 +4172,45 @@ export type GetBacktestsByIdResponses = {
 
 export type GetBacktestsByIdResponse = GetBacktestsByIdResponses[keyof GetBacktestsByIdResponses];
 
+export type GetBacktestsByIdBreakdownData = {
+    body?: never;
+    path: {
+        /**
+         * Backtest ID
+         */
+        id: string;
+    };
+    query?: {
+        /**
+         * Comma-separated: mints, declines, equity, target (default mints,declines,equity)
+         */
+        include?: string;
+    };
+    url: '/api/backtests/{id}/breakdown';
+};
+
+export type GetBacktestsByIdBreakdownErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Not Found
+     */
+    404: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type GetBacktestsByIdBreakdownError = GetBacktestsByIdBreakdownErrors[keyof GetBacktestsByIdBreakdownErrors];
+
+export type GetBacktestsByIdBreakdownResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreUsecasesBacktestBacktestBreakdown;
+};
+
+export type GetBacktestsByIdBreakdownResponse = GetBacktestsByIdBreakdownResponses[keyof GetBacktestsByIdBreakdownResponses];
+
 export type GetBacktestsByIdDeclinesData = {
     body?: never;
     path: {
@@ -3930,13 +4221,29 @@ export type GetBacktestsByIdDeclinesData = {
     };
     query?: {
         /**
-         * Page size (default 200, max 2000)
+         * Page size (default 200, max 5000)
          */
         limit?: number;
         /**
          * Page offset (default 0)
          */
         offset?: number;
+        /**
+         * Only this mint's declines
+         */
+        mint?: string;
+        /**
+         * buy or sell
+         */
+        side?: string;
+        /**
+         * copy_buy, copy_sell, emit_buy or emit_sell
+         */
+        source?: string;
+        /**
+         * One decline reason, e.g. max_buys_per_position
+         */
+        reason?: string;
     };
     url: '/api/backtests/{id}/declines';
 };
@@ -3969,13 +4276,25 @@ export type GetBacktestsByIdTradesData = {
     };
     query?: {
         /**
-         * Page size (default 200, max 2000)
+         * Page size (default 200, max 5000)
          */
         limit?: number;
         /**
          * Page offset (default 0)
          */
         offset?: number;
+        /**
+         * Only this mint's trades
+         */
+        mint?: string;
+        /**
+         * buy or sell
+         */
+        side?: string;
+        /**
+         * copy_buy, copy_sell, emit_buy, emit_sell or scope_exit
+         */
+        source?: string;
     };
     url: '/api/backtests/{id}/trades';
 };
