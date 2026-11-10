@@ -1828,6 +1828,12 @@ export type PulsightInternalCoreDomainAggregatorTax = {
      */
     buy_bps?: number;
     /**
+     * BuyPpm is the tax a buy pays in millionths of the traded value,
+     * SwapFeePpm plus TransferFeeBps × 100: BuyBps exactly. Absent while
+     * either is unknown.
+     */
+    buy_ppm?: number;
+    /**
      * Dex is Pool's venue slug, same vocabulary as `?dex=`.
      */
     dex?: string;
@@ -1850,14 +1856,20 @@ export type PulsightInternalCoreDomainAggregatorTax = {
      */
     sell_bps?: number;
     /**
+     * SellPpm is the tax a sell pays in millionths, on the same components as
+     * BuyPpm.
+     */
+    sell_ppm?: number;
+    /**
      * SwapFeeAt is the minute a recorded SwapFeeBps was recorded in. Omitted on
      * a listing row and for a configured fee.
      */
     swap_fee_at?: string;
     /**
      * SwapFeeBps is the pool's swap fee, the venue's whole schedule (LP,
-     * protocol, creator and partner shares). Absent when it is unknown —
-     * never free.
+     * protocol, creator and partner shares), rounded to the nearest basis
+     * point: a known fee under half a basis point reads 0 here and exactly in
+     * SwapFeePpm. Absent when it is unknown — never free.
      */
     swap_fee_bps?: number;
     /**
@@ -1867,6 +1879,10 @@ export type PulsightInternalCoreDomainAggregatorTax = {
      */
     swap_fee_min_bps?: number;
     /**
+     * SwapFeeMinPpm is SwapFeeMinBps in millionths, exactly.
+     */
+    swap_fee_min_ppm?: number;
+    /**
      * SwapFeeParts splits SwapFeeBps into the shares the venue defines,
      * summing to it: always for a configured fee, and for a recorded one where
      * the venue defines its split as shares of whatever fee it charges.
@@ -1874,6 +1890,12 @@ export type PulsightInternalCoreDomainAggregatorTax = {
      * row.
      */
     swap_fee_parts?: Array<PulsightInternalCoreDomainAggregatorTaxPart>;
+    /**
+     * SwapFeePpm is the pool's swap fee in millionths of the traded value, set
+     * whenever SwapFeeBps is: a configured fee to the millionth, a recorded one
+     * to the basis point.
+     */
+    swap_fee_ppm?: number;
     /**
      * SwapFeeSource says where the swap fee comes from: `recorded`, the highest
      * fee the pool's trades recorded in the latest minute that recorded one;
@@ -1931,6 +1953,10 @@ export type PulsightInternalCoreDomainAggregatorTaxVia = {
      */
     pool?: string;
     /**
+     * Ppm is Bps in millionths of the traded value, exactly.
+     */
+    ppm?: number;
+    /**
      * PumpRouted reports that pump's own router (`multi_hop_swap`) serves this
      * route: Pool is a PumpSwap pool and the token's pool is a pump pool.
      * Through that router the hop adds nothing: pump charges the far pool's
@@ -1956,6 +1982,14 @@ export type PulsightInternalCoreDomainAggregatorTaxVia = {
      * SwapFeeBps is unknown.
      */
     swap_fee_min_bps?: number;
+    /**
+     * SwapFeeMinPpm is SwapFeeMinBps in millionths, exactly.
+     */
+    swap_fee_min_ppm?: number;
+    /**
+     * SwapFeePpm is SwapFeeBps in millionths, exactly.
+     */
+    swap_fee_ppm?: number;
     /**
      * TransferFeeBps is the quote token's Token-2022 transfer fee; absent
      * until its mint account has been read.
@@ -4970,7 +5004,7 @@ export type GetMintsData = {
          */
         min_tipped_share?: number;
         /**
-         * Min tax in percent — the row's own tax: its reference pool's swap fee plus the mint's Token-2022 transfer fee, never the hop a token-quoted pool adds for a SOL trade (`tax.via`). Compared on the known part: a swap fee known only as a lower bound counts as that bound, and a mint whose swap fee is unknown passes only when its transfer fee alone reaches the floor.
+         * Min tax in percent — the row's own tax: its reference pool's swap fee plus the mint's Token-2022 transfer fee, never the hop a token-quoted pool adds for a SOL trade (`tax.via`). Compared exactly, to the millionth (`tax.buy_ppm`), on the known part: a swap fee known only as a lower bound counts as that bound, and a mint whose swap fee is unknown passes only when its transfer fee alone reaches the floor; a fee under a basis point is known, never unknown (0.004 % passes `min_tax=0.003`).
          */
         min_tax?: number;
         /**
@@ -5309,7 +5343,7 @@ export type GetMintsByPubkeyMarketsData = {
          */
         window?: string;
         /**
-         * Min tax in percent — each row's own tax: that pool's swap fee plus the mint's transfer fee. Compared on the known part: a swap fee known only as a lower bound counts as that bound, and a pool whose swap fee is unknown passes only when the mint's transfer fee alone reaches the floor.
+         * Min tax in percent — each row's own tax: that pool's swap fee plus the mint's transfer fee. Compared exactly, to the millionth (`tax.buy_ppm`), on the known part: a swap fee known only as a lower bound counts as that bound, and a pool whose swap fee is unknown passes only when the mint's transfer fee alone reaches the floor.
          */
         min_tax?: number;
         /**
