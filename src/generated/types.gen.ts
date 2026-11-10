@@ -1332,8 +1332,9 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
     /**
      * Tax is what a trade of the mint pays on its reference pool, the pool
      * its price is read from: that pool's swap fee plus the mint's transfer
-     * fee. nil when the mint has no reference pool and no transfer fee on
-     * file.
+     * fee. When that pool is quoted in another token, the hop a SOL trade adds
+     * rides apart as Tax.Via. nil when the mint has no reference pool and no
+     * transfer fee on file.
      */
     tax?: PulsightInternalCoreDomainAggregatorTax;
     /**
@@ -1822,7 +1823,8 @@ export type PulsightInternalCoreDomainAggregatorServiceDominanceRow = {
 export type PulsightInternalCoreDomainAggregatorTax = {
     /**
      * BuyBps is the tax a buy pays, SwapFeeBps plus TransferFeeBps. Absent
-     * while either is unknown: the tax is then at least TransferFeeBps.
+     * while either is unknown: the tax is then at least TransferFeeBps, plus
+     * SwapFeeMinBps when that is known.
      */
     buy_bps?: number;
     /**
@@ -1832,8 +1834,9 @@ export type PulsightInternalCoreDomainAggregatorTax = {
     /**
      * HolderRewards reports that the creator share inside SwapFeeBps is paid
      * to the coin's holders: the mint is a pump.fun holder-rewards coin and
-     * the pool is its own pump.fun curve or PumpSwap pool. Never set on a
-     * listing row, whose pool is not named.
+     * the pool is its own pump.fun curve or PumpSwap pool. SwapFeeParts sizes
+     * the share as `holder_rewards` when the pool's configuration is known.
+     * Never set on a listing row, whose pool is not named.
      */
     holder_rewards?: boolean;
     /**
@@ -1847,21 +1850,102 @@ export type PulsightInternalCoreDomainAggregatorTax = {
      */
     sell_bps?: number;
     /**
-     * SwapFeeAt is the minute SwapFeeBps was recorded in. Omitted on a
-     * listing row.
+     * SwapFeeAt is the minute a recorded SwapFeeBps was recorded in. Omitted on
+     * a listing row and for a configured fee.
      */
     swap_fee_at?: string;
     /**
      * SwapFeeBps is the pool's swap fee, the venue's whole schedule (LP,
-     * protocol, creator and partner shares): the highest fee its trades
-     * recorded in the latest minute that recorded one. Absent when no trade
-     * on the pool ever recorded a fee — unknown, never free.
+     * protocol, creator and partner shares). Absent when it is unknown —
+     * never free.
      */
     swap_fee_bps?: number;
+    /**
+     * SwapFeeMinBps is a lower bound on the pool's swap fee, set only while
+     * SwapFeeBps is unknown: the pool's configuration fixes a base fee and the
+     * venue adds a variable fee on top that no recorded trade has priced yet.
+     */
+    swap_fee_min_bps?: number;
+    /**
+     * SwapFeeParts splits a configured SwapFeeBps into the shares the venue
+     * defines, summing to it. Absent when the swap fee is recorded, a lower
+     * bound or unknown, and on a listing row.
+     */
+    swap_fee_parts?: Array<PulsightInternalCoreDomainAggregatorTaxPart>;
+    /**
+     * SwapFeeSource says where the swap fee comes from: `recorded`, the highest
+     * fee the pool's trades recorded in the latest minute that recorded one;
+     * `configured`, the pool's fee configuration read from chain. The
+     * configuration stands while the trades record its total or one hop's share
+     * of it, and a recorded fee it does not explain wins. Omitted on a listing
+     * row.
+     */
+    swap_fee_source?: 'recorded' | 'configured';
     /**
      * TransferFeeBps is the mint's Token-2022 transfer fee, the higher of its
      * current and scheduled rate with its per-transfer cap not applied; 0 for
      * a mint without one. Absent until the mint account has been read.
+     */
+    transfer_fee_bps?: number;
+    /**
+     * Via is the extra a SOL trade pays when Pool is quoted in another token:
+     * the hop between SOL and that token. Absent when Pool is quoted in SOL or
+     * in a money mint, on a listing row and on a market row. Never part of
+     * BuyBps, SellBps or a tax filter.
+     */
+    via?: PulsightInternalCoreDomainAggregatorTaxVia;
+};
+
+export type PulsightInternalCoreDomainAggregatorTaxPart = {
+    /**
+     * Bps is the share in basis points of the traded value, to two decimals.
+     */
+    bps?: number;
+    /**
+     * Kind names the share: `lp` (paid to liquidity providers), `protocol`
+     * (the venue), `fund` (the venue's fund), `creator` (the coin's creator),
+     * `holder_rewards` (the coin's holders), `cashback` (paid back to the
+     * trader).
+     */
+    kind?: 'lp' | 'protocol' | 'fund' | 'creator' | 'holder_rewards' | 'cashback';
+};
+
+export type PulsightInternalCoreDomainAggregatorTaxVia = {
+    /**
+     * Bps is what the hop adds, SwapFeeBps plus TransferFeeBps; absent while
+     * either is unknown.
+     */
+    bps?: number;
+    /**
+     * Dex is Pool's venue slug.
+     */
+    dex?: string;
+    /**
+     * Pool is the hop's pool: the quote token's deepest pool paired with SOL,
+     * else its reference pool.
+     */
+    pool?: string;
+    /**
+     * QuoteMint is the quote token the hop swaps through.
+     */
+    quote_mint?: string;
+    /**
+     * QuoteSymbol is QuoteMint's symbol, empty when unknown.
+     */
+    quote_symbol?: string;
+    /**
+     * SwapFeeBps is the swap fee of the hop's pool, on the basis of
+     * Tax.SwapFeeBps; absent when unknown.
+     */
+    swap_fee_bps?: number;
+    /**
+     * SwapFeeMinBps is a lower bound on that swap fee, set only while
+     * SwapFeeBps is unknown.
+     */
+    swap_fee_min_bps?: number;
+    /**
+     * TransferFeeBps is the quote token's Token-2022 transfer fee; absent
+     * until its mint account has been read.
      */
     transfer_fee_bps?: number;
 };
@@ -4873,11 +4957,11 @@ export type GetMintsData = {
          */
         min_tipped_share?: number;
         /**
-         * Min tax in percent — the row's tax: its reference pool's swap fee plus the mint's Token-2022 transfer fee. Compared on the known part: a mint whose swap fee is unknown passes only when its transfer fee alone reaches the floor.
+         * Min tax in percent — the row's own tax: its reference pool's swap fee plus the mint's Token-2022 transfer fee, never the hop a token-quoted pool adds for a SOL trade (`tax.via`). Compared on the known part: a swap fee known only as a lower bound counts as that bound, and a mint whose swap fee is unknown passes only when its transfer fee alone reaches the floor.
          */
         min_tax?: number;
         /**
-         * Max tax in percent, on the same basis as min_tax: a mint whose swap fee is unknown passes unless its transfer fee alone exceeds the ceiling.
+         * Max tax in percent, on the same basis as min_tax (the reference pool's swap fee plus the transfer fee, without `tax.via`): a mint whose swap fee is unknown passes unless its transfer fee alone exceeds the ceiling.
          */
         max_tax?: number;
         /**
@@ -5212,11 +5296,11 @@ export type GetMintsByPubkeyMarketsData = {
          */
         window?: string;
         /**
-         * Min tax in percent, compared on the known part: a pool whose swap fee is unknown passes only when the mint's transfer fee alone reaches the floor.
+         * Min tax in percent — each row's own tax: that pool's swap fee plus the mint's transfer fee. Compared on the known part: a swap fee known only as a lower bound counts as that bound, and a pool whose swap fee is unknown passes only when the mint's transfer fee alone reaches the floor.
          */
         min_tax?: number;
         /**
-         * Max tax in percent, on the same basis: a pool whose swap fee is unknown passes unless the mint's transfer fee alone exceeds the ceiling.
+         * Max tax in percent, on the same basis as min_tax: a pool whose swap fee is unknown passes unless the mint's transfer fee alone exceeds the ceiling.
          */
         max_tax?: number;
     };
