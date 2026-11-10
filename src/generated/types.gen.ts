@@ -1867,9 +1867,11 @@ export type PulsightInternalCoreDomainAggregatorTax = {
      */
     swap_fee_min_bps?: number;
     /**
-     * SwapFeeParts splits a configured SwapFeeBps into the shares the venue
-     * defines, summing to it. Absent when the swap fee is recorded, a lower
-     * bound or unknown, and on a listing row.
+     * SwapFeeParts splits SwapFeeBps into the shares the venue defines,
+     * summing to it: always for a configured fee, and for a recorded one where
+     * the venue defines its split as shares of whatever fee it charges.
+     * Absent when the swap fee is a lower bound or unknown, and on a listing
+     * row.
      */
     swap_fee_parts?: Array<PulsightInternalCoreDomainAggregatorTaxPart>;
     /**
@@ -1888,7 +1890,7 @@ export type PulsightInternalCoreDomainAggregatorTax = {
      */
     transfer_fee_bps?: number;
     /**
-     * Via is the extra a SOL trade pays when Pool is quoted in another token:
+     * Via is the most a SOL trade adds when Pool is quoted in another token:
      * the hop between SOL and that token. Absent when Pool is quoted in SOL or
      * in a money mint, on a listing row and on a market row. Never part of
      * BuyBps, SellBps or a tax filter.
@@ -1903,17 +1905,20 @@ export type PulsightInternalCoreDomainAggregatorTaxPart = {
     bps?: number;
     /**
      * Kind names the share: `lp` (paid to liquidity providers), `protocol`
-     * (the venue), `fund` (the venue's fund), `creator` (the coin's creator),
+     * (the venue), `fund` (the venue's fund), `platform` (the launchpad
+     * platform the pool belongs to), `creator` (the coin's creator),
      * `holder_rewards` (the coin's holders), `cashback` (paid back to the
      * trader).
      */
-    kind?: 'lp' | 'protocol' | 'fund' | 'creator' | 'holder_rewards' | 'cashback';
+    kind?: 'lp' | 'protocol' | 'fund' | 'platform' | 'creator' | 'holder_rewards' | 'cashback';
 };
 
 export type PulsightInternalCoreDomainAggregatorTaxVia = {
     /**
-     * Bps is what the hop adds, SwapFeeBps plus TransferFeeBps; absent while
-     * either is unknown.
+     * Bps is the most the hop adds: SwapFeeBps plus TransferFeeBps, what a SOL
+     * trade pays when it swaps through Pool as a hop of its own. Absent while
+     * either is unknown. A router that prices the two hops together can charge
+     * less; see PumpRouted.
      */
     bps?: number;
     /**
@@ -1925,6 +1930,14 @@ export type PulsightInternalCoreDomainAggregatorTaxVia = {
      * else its reference pool.
      */
     pool?: string;
+    /**
+     * PumpRouted reports that pump's own router (`multi_hop_swap`) serves this
+     * route: Pool is a PumpSwap pool and the token's pool is a pump pool.
+     * Through that router the hop adds nothing: pump charges the far pool's
+     * protocol share on the hop instead of on the far pool, so a buyer it
+     * routes pays the token's own tax alone.
+     */
+    pump_routed?: boolean;
     /**
      * QuoteMint is the quote token the hop swaps through.
      */
