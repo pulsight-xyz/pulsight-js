@@ -1102,6 +1102,11 @@ export type PulsightInternalCoreDomainAggregatorMintLiveMetrics = {
      */
     price_usd?: number;
     /**
+     * Tax carries MintRow.Tax verbatim, read the same way, so a dynamic pool
+     * fee stays current between identity reads.
+     */
+    tax?: PulsightInternalCoreDomainAggregatorTax;
+    /**
      * UniqueTraders is read straight off the insert-time `mint_traders`
      * plane, so it is as fresh as ingest. nil when the plane has no row: this
      * route never falls back to a lifetime fold over positions, which is the
@@ -1148,6 +1153,12 @@ export type PulsightInternalCoreDomainAggregatorMintMarket = {
     sol_volume_lamports?: number;
     sol_volume_share?: number;
     swap_count?: number;
+    /**
+     * Tax is what a trade of the page's mint pays on this pool: the pool's
+     * swap fee plus the mint's transfer fee. Always present; its unknown
+     * components are omitted.
+     */
+    tax?: PulsightInternalCoreDomainAggregatorTax;
 };
 
 export type PulsightInternalCoreDomainAggregatorMintMatchedPool = {
@@ -1318,6 +1329,13 @@ export type PulsightInternalCoreDomainAggregatorMintRow = {
      */
     swap_count?: number;
     symbol?: string;
+    /**
+     * Tax is what a trade of the mint pays on its reference pool, the pool
+     * its price is read from: that pool's swap fee plus the mint's transfer
+     * fee. nil when the mint has no reference pool and no transfer fee on
+     * file.
+     */
+    tax?: PulsightInternalCoreDomainAggregatorTax;
     /**
      * TippedSharePct — share of the mint's trades whose transaction paid a
      * landing tip, in percent, over every trade since tips were recorded and
@@ -1799,6 +1817,53 @@ export type PulsightInternalCoreDomainAggregatorServiceDominanceRow = {
      */
     tip_sum_usd?: number;
     tipped_count?: number;
+};
+
+export type PulsightInternalCoreDomainAggregatorTax = {
+    /**
+     * BuyBps is the tax a buy pays, SwapFeeBps plus TransferFeeBps. Absent
+     * while either is unknown: the tax is then at least TransferFeeBps.
+     */
+    buy_bps?: number;
+    /**
+     * Dex is Pool's venue slug, same vocabulary as `?dex=`.
+     */
+    dex?: string;
+    /**
+     * HolderRewards reports that the creator share inside SwapFeeBps is paid
+     * to the coin's holders: the mint is a pump.fun holder-rewards coin and
+     * the pool is its own pump.fun curve or PumpSwap pool. Never set on a
+     * listing row, whose pool is not named.
+     */
+    holder_rewards?: boolean;
+    /**
+     * Pool is the pool SwapFeeBps was read from: on the token page's row the
+     * mint's reference pool, the one its price is read from. Omitted on a
+     * listing row and on a market row, which is its own pool.
+     */
+    pool?: string;
+    /**
+     * SellBps is the tax a sell pays, on the same components as BuyBps.
+     */
+    sell_bps?: number;
+    /**
+     * SwapFeeAt is the minute SwapFeeBps was recorded in. Omitted on a
+     * listing row.
+     */
+    swap_fee_at?: string;
+    /**
+     * SwapFeeBps is the pool's swap fee, the venue's whole schedule (LP,
+     * protocol, creator and partner shares): the highest fee its trades
+     * recorded in the latest minute that recorded one. Absent when no trade
+     * on the pool ever recorded a fee — unknown, never free.
+     */
+    swap_fee_bps?: number;
+    /**
+     * TransferFeeBps is the mint's Token-2022 transfer fee, the higher of its
+     * current and scheduled rate with its per-transfer cap not applied; 0 for
+     * a mint without one. Absent until the mint account has been read.
+     */
+    transfer_fee_bps?: number;
 };
 
 export type PulsightInternalCoreDomainAggregatorTimeframe = '1s' | '5s' | '15s' | '30s' | '1m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '12h' | '24h';
@@ -4808,6 +4873,14 @@ export type GetMintsData = {
          */
         min_tipped_share?: number;
         /**
+         * Min tax in percent — the row's tax: its reference pool's swap fee plus the mint's Token-2022 transfer fee. Compared on the known part: a mint whose swap fee is unknown passes only when its transfer fee alone reaches the floor.
+         */
+        min_tax?: number;
+        /**
+         * Max tax in percent, on the same basis as min_tax: a mint whose swap fee is unknown passes unless its transfer fee alone exceeds the ceiling.
+         */
+        max_tax?: number;
+        /**
          * Only mints first seen within the last N seconds (launched < N ago). Mints with no observed first_seen are excluded.
          */
         max_age_secs?: number;
@@ -5138,6 +5211,14 @@ export type GetMintsByPubkeyMarketsData = {
          * Window (1m|5m|1h|24h|all, default 24h)
          */
         window?: string;
+        /**
+         * Min tax in percent, compared on the known part: a pool whose swap fee is unknown passes only when the mint's transfer fee alone reaches the floor.
+         */
+        min_tax?: number;
+        /**
+         * Max tax in percent, on the same basis: a pool whose swap fee is unknown passes unless the mint's transfer fee alone exceeds the ceiling.
+         */
+        max_tax?: number;
     };
     url: '/api/mints/{pubkey}/markets';
 };
