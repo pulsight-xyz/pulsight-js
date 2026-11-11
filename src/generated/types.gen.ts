@@ -247,6 +247,8 @@ export type InternalAdaptersPrimaryHttpHandlerSnapshotRow = {
      */
     avg_rp_all_usd?: number;
     avg_sells_per_token?: number;
+    buy_impact_samples_30d?: number;
+    buy_impact_samples_7d?: number;
     holding_pnl_lamports?: number;
     /**
      * micro-USD, stamped at execution
@@ -288,7 +290,18 @@ export type InternalAdaptersPrimaryHttpHandlerSnapshotRow = {
      */
     med_rp_all_usd?: number;
     med_sells_per_token?: number;
+    median_buy_impact_pct_30d?: number;
+    /**
+     * Buy-impact figures of the snapshot's wallet, the same fields and null
+     * rules as the trader listing: percent price move per constant-product
+     * buy, quote reserve before it in SOL, buys measured.
+     */
+    median_buy_impact_pct_7d?: number;
+    median_entry_pool_sol_30d?: number;
+    median_entry_pool_sol_7d?: number;
     oldest_trade_at?: string;
+    p90_buy_impact_pct_30d?: number;
+    p90_buy_impact_pct_7d?: number;
     pnl_distribution?: Array<number>;
     /**
      * the buckets measured on the USD stamps
@@ -3355,7 +3368,7 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     copies_skipped_non_sol_quote?: number;
     /**
      * CopiesSkippedPoolNotSimulated counts target swaps a per-pool run saw on a
-     * market it carried no instrument for (outside the mint's top pools, or a
+     * market it carried no instrument for (past the per-mint pool cap, or a
      * pool the catalog does not know). They fold into the target book and are
      * recorded once as `pool_not_simulated`; nothing fills. A per-pool
      * artefact, not in CopiesSkippedUnpriced. Additive JSONB field.
@@ -3449,26 +3462,11 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     platform_fees_paid_sol?: number;
     /**
      * PositionsOpenedUnmarked counts positions the run opened while it had NO
-     * price to mark them with — so for as long as that lasted, every
-     * price-based exit rule (take-profit, stop, trailing stop, max-drawdown)
-     * evaluated as undefined and could not fire.
-     *
-     * It happens because a copy fills at the price the TARGET left behind, on
-     * the pool THEY traded, while the position is marked against the run's own
-     * candle stream. Normally those are the same market. They are not when the
-     * fill lands somewhere the stream does not cover — a parallel venue, or a
-     * market whose candles simply have not started yet.
-     *
-     * Like CopiesSkippedUnpriced this is a COVERAGE number, not a result: an
-     * exit rule that could not be evaluated did not decline to fire, it never
-     * ran, and the position rode on until something else closed it. A non-zero
-     * value means the run UNDER-represents its own exit rules — read the ROI
-     * with that in mind.
-     *
-     * Mid-window graduations used to dominate this and no longer do: the
-     * candle stream now merges a token's whole migration lineage, so a
-     * bonding-curve entry is marked from the moment it opens. Additive JSONB
-     * field — old rows decode as 0.
+     * price to mark them with, so that every price-based exit rule
+     * (take-profit, stop, trailing stop, max-drawdown) evaluated as undefined
+     * and could not fire. A copy seeds the mark from its own triggering swap
+     * until the first candle closes, so a run records 0; a non-zero value is a
+     * run from before that rule. Additive JSONB field — old rows decode as 0.
      */
     positions_opened_unmarked?: number;
     realized_pnl_sol?: number;
@@ -3484,7 +3482,7 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     roi_pct?: number;
     /**
      * ScopeExitsUnpriced counts the forced closes an `on_retire: sell` policy
-     * could not fill because no candle had priced the token yet when it left
+     * could not fill because nothing had priced the token yet when it left
      * the selection: the position stays open, its exits keep firing, and
      * whatever is left at the end is marked in HeldPositions. Additive JSONB
      * field — old rows decode as 0.
@@ -3553,7 +3551,8 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     sol_amount?: number;
     source?: PulsightInternalCoreUsecasesBacktestTradeSource;
     /**
-     * SwapFeeBps is the venue swap fee this fill paid, in basis points.
+     * SwapFeeBps is the venue swap fee this fill paid, rounded to the nearest
+     * basis point; the fill itself is charged to the millionth.
      */
     swap_fee_bps?: number;
     /**
@@ -3830,6 +3829,14 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     buy_30d?: number;
     buy_7d?: number;
     buy_all?: number;
+    /**
+     * Buys measured for the 30-day buy-impact figures.
+     */
+    buy_impact_samples_30d?: number;
+    /**
+     * Buys measured for the 7-day buy-impact figures.
+     */
+    buy_impact_samples_7d?: number;
     buy_sell_ratio_1d?: number;
     buy_sell_ratio_30d?: number;
     buy_sell_ratio_7d?: number;
@@ -3926,6 +3933,29 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     landed_txs_all?: number;
     last_active_timestamp?: number;
     median_buy_count_per_token?: number;
+    /**
+     * Median price move per buy over the last 30 days, in percent.
+     */
+    median_buy_impact_pct_30d?: number;
+    /**
+     * Median price move per buy over the last 7 days, in percent (2 = 2 %):
+     * (B_pre/B_post)^2 - 1 on the pool's base reserve, capped at 1000 %.
+     * Constant-product venues only (pump bonding curve, PumpSwap, Raydium
+     * AMM v4/CPMM, Meteora pools, Fluxbeam, Heaven, Omnipair); about twice the
+     * backtest's target_price_impact_pct for the same swap. Null until the
+     * window is served or when no buy was measured.
+     */
+    median_buy_impact_pct_7d?: number;
+    /**
+     * Median quote reserve of the pool before each buy over the last 30 days, in SOL.
+     */
+    median_entry_pool_sol_30d?: number;
+    /**
+     * Median quote reserve of the pool before each buy over the last 7 days,
+     * in SOL; on the pump bonding curve it includes the curve's virtual SOL.
+     * Null when no measured buy was valued.
+     */
+    median_entry_pool_sol_7d?: number;
     median_first_buy_reactivity?: number;
     median_holding_time?: number;
     median_realized_profit_1d?: number;
@@ -3949,6 +3979,14 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     net_profit_all?: number;
     net_profit_all_usd?: number;
     oldest_trade_at?: number;
+    /**
+     * 90th-percentile price move per buy over the last 30 days, in percent.
+     */
+    p90_buy_impact_pct_30d?: number;
+    /**
+     * 90th-percentile price move per buy over the last 7 days, in percent.
+     */
+    p90_buy_impact_pct_7d?: number;
     /**
      * Periods is one row per canonical window (1d, 7d, 30d, all) off the
      * wallet's board row. Drives the period stats panel on the
