@@ -199,7 +199,7 @@ export const getLegsExportByDayFactsByDataset = <ThrowOnError extends boolean = 
 /**
  * Download one part of a day's DEX legs
  *
- * Streams, as Parquet (zstd), every DEX leg of the UTC day, on every venue the ledger records, whose pool_id modulo the catalog's parts equals `part`, sorted by pool_id, slot, tx_index, ix_index. A pool's legs are in the same part every day. Columns: pool_id, mint_id, quote_mint_id (u64 ledger ids), dex, ts_ms, slot, tx_index, ix_index, trader (32 raw bytes), is_buy (the base side), base_amount, quote_amount, base_reserve_pre, quote_reserve_pre, base_reserve_post, quote_reserve_post (raw units), value_sol (lamports), swap_fee_bps (0 = unknown), flags, marginal_price_q (f64, raw quote units per raw base unit after the leg: the pool's marginal price, else the leg's own quote_amount / base_amount; 0 = unknown). A request refused before streaming (400, 403, 429) is not charged, and one the server fails to deliver is refunded.
+ * Streams, as Parquet (zstd), every DEX leg of the UTC day, on every venue the ledger records, whose pool_id modulo the catalog's parts equals `part`, sorted by pool_id, slot, tx_index, ix_index. A pool's legs are in the same part every day. Columns: pool_id, mint_id, quote_mint_id (u64 ledger ids), dex, ts_ms, slot, tx_index, ix_index, trader (32 raw bytes), is_buy (the base side), base_amount, quote_amount, base_reserve_pre, quote_reserve_pre, base_reserve_post, quote_reserve_post (raw units), value_sol (lamports), swap_fee_bps (0 = unknown), flags, marginal_price_q (f64, raw quote units per raw base unit after the leg: the pool's marginal price, else the leg's own quote_amount / base_amount; 0 = unknown), mayhem (flags & 1: the leg traded a pump.fun bonding curve or PumpSwap pool the ledger knows is in mayhem mode; false when it is not or its mode is unknown), custodial (the leg is pump.fun's Mayhem agent trading through its custody program, not a wallet trading for itself). A request refused before streaming (400, 403, 429) is not charged, and one the server fails to deliver is refunded.
  */
 export const getLegsExportByDayLegsByPart = <ThrowOnError extends boolean = false>(options: Options<GetLegsExportByDayLegsByPartData, ThrowOnError>) => (options.client ?? client).get<GetLegsExportByDayLegsByPartResponses, GetLegsExportByDayLegsByPartErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],
@@ -755,7 +755,7 @@ export const putTraderFiltersById = <ThrowOnError extends boolean = false>(optio
 /**
  * List Traders
  *
- * Retrieves a list of traders supporting advanced filtering and sorting.
+ * Retrieves a list of traders supporting advanced filtering and sorting. The page is ranked by `sort_by` at `window`; every row carries its 7d and 30d figures, plus the 1d and lifetime families the window or `extra_windows` names.
  */
 export const getTraders = <ThrowOnError extends boolean = false>(options?: Options<GetTradersData, ThrowOnError>) => (options?.client ?? client).get<GetTradersResponses, GetTradersErrors, ThrowOnError>({
     security: [{ name: 'Authorization', type: 'apiKey' }],

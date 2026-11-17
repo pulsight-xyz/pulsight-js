@@ -2705,6 +2705,12 @@ export type PulsightInternalCoreDomainStrategyStrategyDef = {
      * wallets or an explicit run-time scope.
      */
     selection?: PulsightInternalCoreDomainStrategySubGraph;
+    /**
+     * Timeframe is the candle timeframe the strategy was built for, one of
+     * the run timeframes; empty when it names none. A run still takes its
+     * own timeframe.
+     */
+    timeframe?: string;
 };
 
 export type PulsightInternalCoreDomainStrategySubGraph = {
@@ -3213,6 +3219,11 @@ export type PulsightInternalCoreUsecasesBacktestBacktestEstimate = {
      */
     mints_count?: number;
     /**
+     * Warnings are caveats about the resolution the run would replay, such
+     * as a token selection that stopped at its candidate cap.
+     */
+    warnings?: Array<string>;
+    /**
      * WithinBudget reports EstimatedTicks <= MaxTickBudget.
      */
     within_budget?: boolean;
@@ -3394,6 +3405,18 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      * and looking profitable. Additive JSONB field — old rows decode as 0.
      */
     copies_skipped_unpriced?: number;
+    /**
+     * EmitBuysDeclined counts the candle closes on which an Emit buy whose
+     * rule held was refused by a rule — sizing, max_buys_per_open_position,
+     * exposure cap, bracket placement, rate limit — once per refusal: an Emit
+     * buy refused on consecutive closes for the same reason counts once, until
+     * it fills, a close finds it not ready to fire or the reason changes. Each
+     * one is persisted as a `backtest_declines` row with its reason, source
+     * `emit_buy` and no triggering swap. An Emit buy a target's swap triggered
+     * counts in CopiesDeclined instead. Additive JSONB field — old rows decode
+     * as 0.
+     */
+    emit_buys_declined?: number;
     ending_balance_sol?: number;
     fees_paid_sol?: number;
     /**
@@ -3508,6 +3531,11 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     transfer_fees_paid_sol?: number;
     unrealized_pnl_sol?: number;
+    /**
+     * Warnings are caveats about this run's own inputs, such as a token
+     * selection that stopped at its candidate cap. Additive JSONB field.
+     */
+    warnings?: Array<string>;
     wins?: number;
 };
 
@@ -3574,7 +3602,7 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     ts?: string;
 };
 
-export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'non_sol_quote' | 'pool_not_simulated' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored';
+export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'non_sol_quote' | 'pool_not_simulated' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored' | 'curve_complete';
 
 export type PulsightInternalCoreUsecasesBacktestEquityCurve = {
     max_drawdown_at?: string;
@@ -3943,7 +3971,9 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
      * Constant-product venues only (pump bonding curve, PumpSwap, Raydium
      * AMM v4/CPMM, Meteora pools, Fluxbeam, Heaven, Omnipair); about twice the
      * backtest's target_price_impact_pct for the same swap. Null until the
-     * window is served or when no buy was measured.
+     * window is served or when no buy was measured. The figures fold a daily
+     * plane: "7 days" spans 7 to 8 calendar days (the oldest UTC day counts
+     * whole), "30 days" 30 to 31.
      */
     median_buy_impact_pct_7d?: number;
     /**
@@ -7036,13 +7066,21 @@ export type GetTradersData = {
          */
         offset?: number;
         /**
-         * Sort key: realized_profit, winrate or last_active_ts
+         * Ranking key. `realized_profit` (the default) ranks NET PnL after costs, the opposite of the `f=` key `realized_profit`, which is gross; `total_profit` ranks gross realized PnL. Every other key is the `f=` key of the figure it ranks, plus `roi` and `total_costs`; `pnl` and `net_profit` alias `realized_profit`, `last_seen` aliases `last_active_ts`, and an unknown key ranks net PnL. A key with no figure for the window is refused with a 400: token_num, didnt_buy_sells, sold_gt_bought_sells, success_rate, spam_rate, failed_txs, landed_txs and total_costs have no lifetime figure.
          */
-        sort_by?: string;
+        sort_by?: 'realized_profit' | 'net_profit' | 'pnl' | 'total_profit' | 'roi' | 'winrate' | 'arb_tx_ratio' | 'avg_realized_profit' | 'median_realized_profit' | 'buy' | 'sell' | 'buy_sell_ratio' | 'token_num' | 'didnt_buy_sells' | 'sold_gt_bought_sells' | 'rewards_total' | 'holder_rewards' | 'holder_reward_payouts' | 'cashback' | 'cashback_claimed' | 'cashback_share' | 'cashback_claim_count' | 'landed_txs' | 'failed_txs' | 'spam_rate' | 'success_rate' | 'total_costs' | 'sol_balance' | 'holding_pnl' | 'avg_buy_count_per_token' | 'median_buy_count_per_token' | 'avg_sell_count_per_token' | 'median_sell_count_per_token' | 'avg_first_buy_reactivity' | 'median_first_buy_reactivity' | 'avg_holding_time' | 'median_holding_time' | 'oldest_trade_at' | 'creator_tokens_created' | 'creator_tokens_graduated' | 'last_active_ts' | 'last_seen';
         /**
          * Sort Direction
          */
         direction?: string;
+        /**
+         * The window the page is ranked over: the sorted figure's window and the listed population. 1d, 7d and 30d list the traders who traded in it; all ranks lifetime figures of the traders with 10+ trades in the last 30 days (the unfiltered 7d/30d pages ranked by net PnL, win rate or last active list every trader who traded in the window; every other page also needs those 10+ trades). An `f=` clause without a window suffix compiles at 30d when window=30d and at 7d otherwise, whatever this window.
+         */
+        window?: '1d' | '7d' | '30d' | 'all';
+        /**
+         * Filter clauses `key[_window]|op|value[|value2]`, AND-combined. A windowed key without a suffix compiles at 30d when window=30d and at 7d otherwise; a buy-impact key without a suffix is refused on a 1d or all page.
+         */
+        f?: Array<string>;
         /**
          * Restrict to the caller's favorited traders (authenticated only)
          */
@@ -7052,7 +7090,7 @@ export type GetTradersData = {
          */
         tracked_only?: boolean;
         /**
-         * Comma list of DISPLAY-only window families to include: 1d, all. They ride the same board row; sorting is unaffected (it reads 7d/30d board columns) and f= filters read 1d/7d/30d board columns.
+         * Comma list of the window families each row carries beyond 7d and 30d: 1d, all. They ride the same board row; the family of the page's window is always included.
          */
         extra_windows?: string;
         /**
@@ -7065,7 +7103,7 @@ export type GetTradersData = {
 
 export type GetTradersErrors = {
     /**
-     * Bad Request
+     * INVALID_INPUT — a sort_by with no figure for the window, an unknown unit, or a buy-impact filter the ledger does not serve yet
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
@@ -7077,7 +7115,7 @@ export type GetTradersErrors = {
      */
     402: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
-     * Internal Server Error
+     * The leaderboard read failed; a failed read is never served as an empty page
      */
     500: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
