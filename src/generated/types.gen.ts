@@ -2746,6 +2746,56 @@ export type PulsightInternalCoreDomainTraderFilter = {
     user_id?: string;
 };
 
+export type PulsightInternalCoreDomainTraderMoneyTraitValue = {
+    closeness?: number;
+    value?: number;
+    value_usd?: number;
+};
+
+export type PulsightInternalCoreDomainTraderSimilarity = {
+    buy_size?: PulsightInternalCoreDomainTraderMoneyTraitValue;
+    /**
+     * Label names the score's band; null with the score.
+     */
+    label?: PulsightInternalCoreDomainTraderSimilarityLabel;
+    median_hold_secs?: PulsightInternalCoreDomainTraderTraitValue;
+    /**
+     * Score is the similarity, 0–100, and the page's sort value rounded; null
+     * when fewer than three traits are measured on both wallets.
+     */
+    score?: number;
+    tags?: PulsightInternalCoreDomainTraderTagsTrait;
+    tokens_traded?: PulsightInternalCoreDomainTraderTraitValue;
+    trades_per_token?: PulsightInternalCoreDomainTraderTradesPerTokenTrait;
+    /**
+     * TraitsTotal counts the traits the window carries: 6, or 5 at lifetime,
+     * which has no token count.
+     */
+    traits_total?: number;
+    /**
+     * TraitsUsed counts the traits measured on both wallets.
+     */
+    traits_used?: number;
+    /**
+     * Volume is the window's bought plus sold value in lamports, with its USD
+     * twin (micro-USD). It is shown beside the score, never part of it.
+     */
+    volume?: number;
+    volume_usd?: number;
+    /**
+     * Window is the window the windowed traits are read at (the page's).
+     */
+    window?: string;
+    winrate?: PulsightInternalCoreDomainTraderTraitValue;
+};
+
+export type PulsightInternalCoreDomainTraderSimilarityLabel = 'very_alike' | 'alike' | 'somewhat_alike' | 'different';
+
+export type PulsightInternalCoreDomainTraderTagsTrait = {
+    closeness?: number;
+    value?: Array<string>;
+};
+
 export type PulsightInternalCoreDomainTraderTrader = {
     arb_tx_ratio_1d?: number;
     arb_tx_ratio_30d?: number;
@@ -2954,6 +3004,11 @@ export type PulsightInternalCoreDomainTraderTrader = {
     sell_7d?: number;
     sell_all?: number;
     /**
+     * Similarity is the row's style closeness to the reference wallet of a
+     * similar listing (`ref`); absent without one.
+     */
+    similarity?: PulsightInternalCoreDomainTraderSimilarity;
+    /**
      * SolBalance is the wallet's SOL balance in lamports.
      */
     sol_balance?: number;
@@ -3015,6 +3070,17 @@ export type PulsightInternalCoreDomainTraderTrader = {
     winrate_7d_usd?: number;
     winrate_all?: number;
     winrate_all_usd?: number;
+};
+
+export type PulsightInternalCoreDomainTraderTradesPerTokenTrait = {
+    buys?: number;
+    closeness?: number;
+    sells?: number;
+};
+
+export type PulsightInternalCoreDomainTraderTraitValue = {
+    closeness?: number;
+    value?: number;
 };
 
 export type PulsightInternalCoreDomainWebhookNotifier = {
@@ -4098,6 +4164,11 @@ export type PulsightInternalCoreUsecasesTraderTraderListItem = {
     sell_30d?: number;
     sell_7d?: number;
     sell_all?: number;
+    /**
+     * Similarity is the row's style closeness to the page's reference wallet
+     * (`ref`); absent without one.
+     */
+    similarity?: PulsightInternalCoreDomainTraderSimilarity;
     sol_balance?: number;
     sold_gt_bought_sells_1d?: number;
     sold_gt_bought_sells_30d?: number;
@@ -4169,6 +4240,12 @@ export type PulsightInternalCoreUsecasesTraderTraderListResult = {
     next_cursor_pubkey?: string;
     next_cursor_value?: number;
     offset?: number;
+    /**
+     * Reference is the reference wallet's own row on the page's basis (its
+     * similarity block compares it with itself), on a page read with `ref`;
+     * absent when the board holds no row for it.
+     */
+    reference?: PulsightInternalCoreUsecasesTraderTraderListItem;
     total?: number;
     /**
      * Unit is the currency the page was ranked, filtered and cursored in
@@ -7066,15 +7143,15 @@ export type GetTradersData = {
          */
         offset?: number;
         /**
-         * Ranking key. `realized_profit` (the default) ranks NET PnL after costs, the opposite of the `f=` key `realized_profit`, which is gross; `total_profit` ranks gross realized PnL. Every other key is the `f=` key of the figure it ranks, plus `roi` and `total_costs`; `pnl` and `net_profit` alias `realized_profit`, `last_seen` aliases `last_active_ts`, and an unknown key ranks net PnL. A key with no figure for the window is refused with a 400: token_num, didnt_buy_sells, sold_gt_bought_sells, success_rate, spam_rate, failed_txs, landed_txs and total_costs have no lifetime figure.
+         * Ranking key. `realized_profit` (the default) ranks NET PnL after costs, the opposite of the `f=` key `realized_profit`, which is gross; `total_profit` ranks gross realized PnL. Every other key is the `f=` key of the figure it ranks, plus `roi` and `total_costs`; `pnl` and `net_profit` alias `realized_profit`, `last_seen` aliases `last_active_ts`, and an unknown key ranks net PnL. A key with no figure for the window is refused with a 400: token_num, didnt_buy_sells, sold_gt_bought_sells, success_rate, spam_rate, failed_txs, landed_txs and total_costs have no lifetime figure. `similarity` ranks by the rows' similarity to `ref`, which it requires (400 without it, and 400 when the reference has fewer than 3 traits measured at the window); rows with no score rank last in both directions, and the cursor is the unrounded score.
          */
-        sort_by?: 'realized_profit' | 'net_profit' | 'pnl' | 'total_profit' | 'roi' | 'winrate' | 'arb_tx_ratio' | 'avg_realized_profit' | 'median_realized_profit' | 'buy' | 'sell' | 'buy_sell_ratio' | 'token_num' | 'didnt_buy_sells' | 'sold_gt_bought_sells' | 'rewards_total' | 'holder_rewards' | 'holder_reward_payouts' | 'cashback' | 'cashback_claimed' | 'cashback_share' | 'cashback_claim_count' | 'landed_txs' | 'failed_txs' | 'spam_rate' | 'success_rate' | 'total_costs' | 'sol_balance' | 'holding_pnl' | 'avg_buy_count_per_token' | 'median_buy_count_per_token' | 'avg_sell_count_per_token' | 'median_sell_count_per_token' | 'avg_first_buy_reactivity' | 'median_first_buy_reactivity' | 'avg_holding_time' | 'median_holding_time' | 'oldest_trade_at' | 'creator_tokens_created' | 'creator_tokens_graduated' | 'last_active_ts' | 'last_seen';
+        sort_by?: 'realized_profit' | 'net_profit' | 'pnl' | 'total_profit' | 'roi' | 'winrate' | 'arb_tx_ratio' | 'avg_realized_profit' | 'median_realized_profit' | 'buy' | 'sell' | 'buy_sell_ratio' | 'token_num' | 'didnt_buy_sells' | 'sold_gt_bought_sells' | 'rewards_total' | 'holder_rewards' | 'holder_reward_payouts' | 'cashback' | 'cashback_claimed' | 'cashback_share' | 'cashback_claim_count' | 'landed_txs' | 'failed_txs' | 'spam_rate' | 'success_rate' | 'total_costs' | 'sol_balance' | 'holding_pnl' | 'avg_buy_count_per_token' | 'median_buy_count_per_token' | 'avg_sell_count_per_token' | 'median_sell_count_per_token' | 'avg_first_buy_reactivity' | 'median_first_buy_reactivity' | 'avg_holding_time' | 'median_holding_time' | 'oldest_trade_at' | 'creator_tokens_created' | 'creator_tokens_graduated' | 'last_active_ts' | 'last_seen' | 'similarity';
         /**
          * Sort Direction
          */
         direction?: string;
         /**
-         * The window the page is ranked over: the sorted figure's window and the listed population. 1d, 7d and 30d list the traders who traded in it; all ranks lifetime figures of the traders with 10+ trades in the last 30 days (the unfiltered 7d/30d pages ranked by net PnL, win rate or last active list every trader who traded in the window; every other page also needs those 10+ trades). An `f=` clause without a window suffix compiles at 30d when window=30d and at 7d otherwise, whatever this window.
+         * The window the page is ranked over: the sorted figure's window and the listed population. A ranked page lists the traders with 10+ trades in the last 30 days: at 1d, 7d and 30d those of them who traded in the window, at all their lifetime figures; a `search`, `favorites_only` or `tracked_only` page matches its wallets whatever their activity. An `f=` clause without a window suffix compiles at 30d when window=30d and at 7d otherwise, whatever this window.
          */
         window?: '1d' | '7d' | '30d' | 'all';
         /**
@@ -7097,13 +7174,17 @@ export type GetTradersData = {
          * Currency the page is ranked, filtered and cursored in: sol (lamports) or usd (micro-USD stamped at execution). Money clause values are whole units of that currency. Every row carries both currencies (`_usd` twins) whatever the unit.
          */
         unit?: string;
+        /**
+         * Reference wallet of a similar listing. Every row carries `similarity`, its style closeness to this wallet (0-100 over win rate, tokens traded and SOL per buy at `window`, median buys and sells per token and median hold over every position, and tags; an unmeasured trait counts half; no score below 3 measured traits), the envelope carries the wallet's own row as `reference`, and the wallet is left out of its own result. The page never ranks off a precomputed board. Required by sort_by=similarity.
+         */
+        ref?: string;
     };
     url: '/api/traders';
 };
 
 export type GetTradersErrors = {
     /**
-     * INVALID_INPUT — a sort_by with no figure for the window, an unknown unit, or a buy-impact filter the ledger does not serve yet
+     * INVALID_INPUT — a sort_by with no figure for the window, an unknown unit, a buy-impact filter the ledger does not serve yet, a `ref` that is not a wallet, or sort_by=similarity without `ref` or with a reference measured on fewer than 3 traits
      */
     400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
     /**
