@@ -4,6 +4,13 @@ export type ClientOptions = {
     baseUrl: `${string}://${string}` | (string & {});
 };
 
+export type InternalAdaptersPrimaryHttpHandlerConfluencePreviewRequest = {
+    /**
+     * Node is the node's data, as the strategy holds it.
+     */
+    node?: PulsightInternalCoreDomainStrategyWalletConfluenceCondition;
+};
+
 export type InternalAdaptersPrimaryHttpHandlerDashboardStats = {
     aggregate_sim_pnl_sol?: number;
     backtested_trades?: number;
@@ -2615,6 +2622,69 @@ export type PulsightInternalCoreDomainCreditTransaction = {
     user_id?: string;
 };
 
+export type PulsightInternalCoreDomainStrategyComparisonOp = 'gt' | 'gte' | 'lt' | 'lte' | 'eq';
+
+export type PulsightInternalCoreDomainStrategyConfluenceCount = 'entries' | 'buys';
+
+export type PulsightInternalCoreDomainStrategyConfluenceFire = {
+    /**
+     * At is the instant, unix seconds.
+     */
+    at?: number;
+    /**
+     * Mint is the token's address.
+     */
+    mint?: string;
+    /**
+     * Votes is how many wallets the condition counted then, after merging same-second buys.
+     */
+    votes?: number;
+};
+
+export type PulsightInternalCoreDomainStrategyConfluenceMetric = 'holders' | 'buyers' | 'sellers';
+
+export type PulsightInternalCoreDomainStrategyConfluencePreview = {
+    /**
+     * Capped is true when the wallets' trades exceeded what one preview reads; the counts are then lower bounds.
+     */
+    capped?: boolean;
+    /**
+     * Fires lists the 50 most recent of those instants, newest first.
+     */
+    fires?: Array<PulsightInternalCoreDomainStrategyConfluenceFire>;
+    /**
+     * Fires7d counts the instants the condition became true inside the window, across every token.
+     */
+    fires_7d?: number;
+    /**
+     * SameOperator lists up to 20 wallet pairs that bought the same tokens within 1 second of each other, highest rate first.
+     */
+    same_operator?: Array<PulsightInternalCoreDomainStrategySameOperatorPair>;
+    /**
+     * Tokens7d counts the tokens on which it became true at least once.
+     */
+    tokens_7d?: number;
+    /**
+     * WindowFrom is the start of the 7-day window, unix seconds.
+     */
+    window_from?: number;
+    /**
+     * WindowTo is the end of the window (now), unix seconds.
+     */
+    window_to?: number;
+};
+
+export type PulsightInternalCoreDomainStrategyConfluenceSource = {
+    /**
+     * GroupID is the favorites group, or "ungrouped".
+     */
+    group_id?: string;
+    /**
+     * SyncedAt is when the wallets were taken from the group.
+     */
+    synced_at?: string;
+};
+
 export type PulsightInternalCoreDomainStrategyEdge = {
     from?: string;
     port?: PulsightInternalCoreDomainStrategyEdgePort;
@@ -2694,6 +2764,33 @@ export type PulsightInternalCoreDomainStrategyRecord = {
     user_id?: string;
 };
 
+export type PulsightInternalCoreDomainStrategySameOperatorPair = {
+    /**
+     * A is the first wallet, in the order of the set.
+     */
+    a?: string;
+    /**
+     * B is the second wallet.
+     */
+    b?: string;
+    /**
+     * CoBoughtTokens counts the tokens both entered within 1 second of each other.
+     */
+    co_bought_tokens?: number;
+    /**
+     * CoBuyRate is CoBoughtTokens divided by SmallerTokens.
+     */
+    co_buy_rate?: number;
+    /**
+     * SharedTokens counts the tokens both wallets entered in the window.
+     */
+    shared_tokens?: number;
+    /**
+     * SmallerTokens is the smaller of the two wallets' counts of tokens entered.
+     */
+    smaller_tokens?: number;
+};
+
 export type PulsightInternalCoreDomainStrategyStrategyDef = {
     constraints?: PulsightInternalCoreDomainStrategyGlobalConstraints;
     entry?: PulsightInternalCoreDomainStrategySubGraph;
@@ -2719,6 +2816,53 @@ export type PulsightInternalCoreDomainStrategySubGraph = {
 };
 
 export type PulsightInternalCoreDomainStrategyVenueId = 'solana' | 'hyperliquid' | 'polymarket';
+
+export type PulsightInternalCoreDomainStrategyWalletConfluenceCondition = {
+    /**
+     * Count applies to buyers only: entries (positions opened, the default) or buys (any buy).
+     */
+    count?: PulsightInternalCoreDomainStrategyConfluenceCount;
+    /**
+     * DedupSecs merges wallets whose trades are within this many seconds of each other into one; absent is 1, 0 turns it off.
+     */
+    dedup_secs?: number;
+    /**
+     * MaxPremiumPct caps how far the price may sit above the counted wallets' average entry, in percent; holders and buyers only.
+     */
+    max_premium_pct?: number;
+    /**
+     * Metric is what a wallet is counted by: holding (entered within the window), buying or selling.
+     */
+    metric?: PulsightInternalCoreDomainStrategyConfluenceMetric;
+    /**
+     * MinBuySol is the SOL a wallet must have bought over its position to count; absent is no floor.
+     */
+    min_buy_sol?: number;
+    /**
+     * MinSellPct is the share of its position a wallet must have sold to count, required with sellers only.
+     */
+    min_sell_pct?: number;
+    /**
+     * Op is gte (at least) or lte (at most).
+     */
+    op?: PulsightInternalCoreDomainStrategyComparisonOp;
+    /**
+     * Sources records the favorites groups the wallets came from; nothing evaluates it.
+     */
+    sources?: Array<PulsightInternalCoreDomainStrategyConfluenceSource>;
+    /**
+     * Value is the threshold: 1 to the set size with gte, 0 to one less than the set size with lte.
+     */
+    value?: number;
+    /**
+     * Wallets is the set, 2 to 50 distinct addresses.
+     */
+    wallets?: Array<string>;
+    /**
+     * WindowSecs is the window in seconds, 10 to 604800.
+     */
+    window_secs?: number;
+};
 
 export type PulsightInternalCoreDomainSubscriptionSubscriptionTier = 'free' | 'tier1' | 'tier2' | 'tier3' | 'enterprise';
 
@@ -3168,6 +3312,18 @@ export type PulsightInternalCorePortsInputSubscriptionInfo = {
      */
     label?: string;
     limits?: PulsightInternalCorePortsInputPlanLimitsRead;
+    /**
+     * PendingAt is when the scheduled change takes effect: the end of the paid
+     * period.
+     */
+    pending_at?: string;
+    /**
+     * PendingTier is the plan a change scheduled for the end of the paid period
+     * moves to at PendingAt: a card downgrade, or the plan a crypto subscription
+     * that no longer renews is paid at when renewed. Absent when no change is
+     * scheduled, and while a cancellation is.
+     */
+    pending_tier?: PulsightInternalCoreDomainSubscriptionSubscriptionTier;
     price_usd?: number;
     provider?: string;
     started_at?: string;
@@ -6268,6 +6424,42 @@ export type PostStrategiesResponses = {
 };
 
 export type PostStrategiesResponse = PostStrategiesResponses[keyof PostStrategiesResponses];
+
+export type PostStrategiesConfluencePreviewData = {
+    /**
+     * The node's data
+     */
+    body: InternalAdaptersPrimaryHttpHandlerConfluencePreviewRequest;
+    path?: never;
+    query?: never;
+    url: '/api/strategies/confluence-preview';
+};
+
+export type PostStrategiesConfluencePreviewErrors = {
+    /**
+     * Bad Request
+     */
+    400: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+    /**
+     * Service Unavailable
+     */
+    503: InternalAdaptersPrimaryHttpHandlerErrorResponse;
+};
+
+export type PostStrategiesConfluencePreviewError = PostStrategiesConfluencePreviewErrors[keyof PostStrategiesConfluencePreviewErrors];
+
+export type PostStrategiesConfluencePreviewResponses = {
+    /**
+     * OK
+     */
+    200: PulsightInternalCoreDomainStrategyConfluencePreview;
+};
+
+export type PostStrategiesConfluencePreviewResponse = PostStrategiesConfluencePreviewResponses[keyof PostStrategiesConfluencePreviewResponses];
 
 export type GetStrategiesDashboardData = {
     body?: never;
