@@ -3413,6 +3413,12 @@ export type PulsightInternalCoreUsecasesBacktestBacktestDecline = {
     tip_sol?: number;
     triggering_swap_sig?: string;
     ts?: string;
+    /**
+     * TxFailed marks an `insufficient_balance` buy sent while the run's cash
+     * was at or below zero: a failed transaction that paid nothing. False on a
+     * buy declined before sending because the cash left was short.
+     */
+    tx_failed?: boolean;
 };
 
 export type PulsightInternalCoreUsecasesBacktestBacktestEstimate = {
@@ -3487,6 +3493,7 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRecord = {
     finished_at?: string;
     id?: string;
     latency_slots?: number;
+    native_reserve_pct?: number;
     per_pool?: boolean;
     progress_note?: string;
     progress_pct?: number;
@@ -3505,6 +3512,7 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRecord = {
     time_from?: string;
     time_to?: string;
     timeframe?: PulsightInternalCoreDomainAggregatorTimeframe;
+    unlimited_capital?: boolean;
     user_id?: string;
     /**
      * Venue / PerPool / LatencySlots echo the submitted run parameters. They
@@ -3532,6 +3540,13 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRequest = {
      */
     latency_slots?: number;
     /**
+     * NativeReservePct keeps that share of the run's cash (0..50, a percentage)
+     * out of reach of buys, with a 0.01 SOL floor when above 0, as a live
+     * session's native_reserve_pct does. 0 (default) reserves nothing, as a
+     * paper session does. Refused with unlimited_capital.
+     */
+    native_reserve_pct?: number;
+    /**
      * PerPool, when true, simulates each of a mint's significant markets as an
      * INDEPENDENT instrument — its own candle stream, indicators, ledger and
      * (for copy strategies) the target swaps on THAT pool — instead of a single
@@ -3546,6 +3561,12 @@ export type PulsightInternalCoreUsecasesBacktestBacktestRequest = {
     strategy_id?: string;
     time_range?: PulsightInternalCoreUsecasesBacktestTimeRange;
     timeframe?: PulsightInternalCoreDomainAggregatorTimeframe;
+    /**
+     * UnlimitedCapital lifts the run's cash gate: every buy fills whatever the
+     * cash, which may go negative, as runs did before the gate existed. Off
+     * (default), a buy the cash cannot pay is an `insufficient_balance` decline.
+     */
+    unlimited_capital?: boolean;
     /**
      * Venue selects the trading venue / chain for the run. Empty ⇒ solana
      * (back-compat). The runner gates chain-specific strategy nodes against
@@ -3565,16 +3586,39 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     avg_landing_drift_bps?: number;
     /**
+     * CapitalModel is how the run's cash constrained its buys: "portfolio" or
+     * "unlimited". Absent on a run from before the cash gate, which never
+     * constrained capital.
+     */
+    capital_model?: PulsightInternalCoreUsecasesBacktestCapitalModel;
+    /**
      * CapitalRequiredSol is the starting balance that would have kept the cash
-     * walk at or above zero: max(StartingBalanceSol, StartingBalanceSol-MinCashSol).
+     * at or above zero along the same fills: max(StartingBalanceSol,
+     * StartingBalanceSol-MinCashSol).
      */
     capital_required_sol?: number;
     /**
+     * CashDeclinedBuys counts the buy attempts the run declined before sending
+     * because the cash left could not pay them (`insufficient_balance`,
+     * tx_failed false), candle-driven Emit buys included; CashDeclinedSol is
+     * the SOL they asked for.
+     */
+    cash_declined_buys?: number;
+    cash_declined_sol?: number;
+    /**
+     * CashFailedBuys counts the buy attempts sent while the cash was at or
+     * below zero, which failed and paid nothing (`insufficient_balance`,
+     * tx_failed true); CashFailedSol is the SOL they asked for.
+     */
+    cash_failed_buys?: number;
+    cash_failed_sol?: number;
+    /**
      * CopiesDeclined counts target swaps a signal-driven exec wanted to act
      * on but that a RULE refused: cooldown, sizing, max_buys_per_open_position,
-     * exposure cap, bracket placement, rate limit — plus the sells this run sat
-     * out because the target only sold tokens it had never mirrored. Reverts
-     * and unpriced skips have their own counters and are not in here. Every
+     * exposure cap, bracket placement, rate limit, cash left too short — plus
+     * the sells this run sat out because the target only sold tokens it had
+     * never mirrored. Reverts, buys that failed on an empty cash and unpriced
+     * skips have their own counters and are not in here. Every
      * one is persisted as a `backtest_declines` row with its reason, so the
      * trade history reads as a complete account of the target's swaps.
      * Additive JSONB field — old rows decode as 0.
@@ -3608,9 +3652,11 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     copies_skipped_pool_not_simulated?: number;
     /**
-     * CopiesSkippedUnpriced counts mirror trades that passed every rule and
+     * CopiesSkippedUnpriced counts mirror BUYS that passed every rule and
      * would have fired, but whose triggering swap could not be priced honestly
-     * — so they were NOT traded. Two causes, both data-side:
+     * — so they were NOT traded. A signal-driven exit on such a swap is never
+     * skipped: it fills at a fallback mark (ExitsAtFallbackMark). Two causes,
+     * both data-side:
      *
      * 1. no post-swap price on the leg at all (every Meteora DLMM leg, and
      * every DAMM v2 / DBC leg ingested before those decoders were fixed);
@@ -3630,7 +3676,8 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     /**
      * EmitBuysDeclined counts the candle closes on which an Emit buy whose
      * rule held was refused by a rule — sizing, max_buys_per_open_position,
-     * exposure cap, bracket placement, rate limit — once per refusal: an Emit
+     * exposure cap, bracket placement, rate limit, cash left too short (a buy
+     * that failed on an empty cash is not in here) — once per refusal: an Emit
      * buy refused on consecutive closes for the same reason counts once, until
      * it fills, a close finds it not ready to fire or the reason changes. Each
      * one is persisted as a `backtest_declines` row with its reason, source
@@ -3640,6 +3687,24 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
      */
     emit_buys_declined?: number;
     ending_balance_sol?: number;
+    /**
+     * ExitsAtFallbackMark counts signal-driven exits whose triggering swap
+     * could not be priced (no SOL price on the leg, or no honest post-swap
+     * price) and that filled anyway on the run's own market: at the last mark
+     * (the last candle close, or the latest priceable swap before the first
+     * close) and its pool depth, else at the position's average cost. A copy
+     * sell needs only the target's fraction and the run's own market, so the
+     * run sells instead of holding the bag. Additive JSONB
+     * field — old rows decode as 0.
+     */
+    exits_at_fallback_mark?: number;
+    /**
+     * ExitsUnmarked is the part of ExitsAtFallbackMark that found no mark at
+     * all and filled at the position's average cost with no depth term, so
+     * it realizes no price move, only its costs. Additive JSONB field — old rows
+     * decode as 0.
+     */
+    exits_unmarked?: number;
     fees_paid_sol?: number;
     /**
      * HeldPositions is every mint still open at run end — the bags the
@@ -3665,13 +3730,19 @@ export type PulsightInternalCoreUsecasesBacktestBacktestSummary = {
     losses?: number;
     max_drawdown_sol?: number;
     /**
-     * MinCashSol is the low point of the chronological cash walk: the starting
-     * balance minus every buy's size and costs, plus every sell's proceeds net
-     * of costs, minus reverted fills' costs. Negative means the run spent SOL
-     * the starting balance never had — the engine replays each token's whole
-     * window before the next one and cannot gate a buy on portfolio cash.
+     * MinCashSol is the low point of the run's cash, walked in replay order:
+     * the starting balance minus every buy's size and costs, plus every sell's
+     * proceeds net of costs, minus reverted fills' costs. Under the portfolio
+     * capital model a buy the cash cannot pay never fills, so it dips below
+     * zero only when a fill's fixed fees outrun the fee headroom a buy keeps;
+     * under unlimited_capital, negative means the run spent SOL the starting
+     * balance never had.
      */
     min_cash_sol?: number;
+    /**
+     * NativeReservePct echoes the run's native reserve (req.NativeReservePct).
+     */
+    native_reserve_pct?: number;
     /**
      * Price-impact rollups, in percent of mid. "Our*" averages over every
      * simulated trade that had a pool snapshot; "Target*" averages over the
@@ -3824,7 +3895,9 @@ export type PulsightInternalCoreUsecasesBacktestBacktestTrade = {
     ts?: string;
 };
 
-export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'non_sol_quote' | 'pool_not_simulated' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored' | 'curve_complete';
+export type PulsightInternalCoreUsecasesBacktestCapitalModel = 'portfolio' | 'unlimited';
+
+export type PulsightInternalCoreUsecasesBacktestDeclineReason = 'cooldown' | 'unpriced' | 'non_sol_quote' | 'pool_not_simulated' | 'zero_size' | 'size_out_of_range' | 'max_buys_per_position' | 'exposure_cap' | 'no_bracket' | 'rate_limited' | 'reverted' | 'unmirrored' | 'curve_complete' | 'insufficient_balance';
 
 export type PulsightInternalCoreUsecasesBacktestEquityCurve = {
     max_drawdown_at?: string;
